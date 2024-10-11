@@ -9,11 +9,13 @@ import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system';
 import TransactionScreenStyles from '../../frontend/money/TransactionScreenStyles'; // Adjust the path as necessary
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker'; // Import date picker
-
+import { BarChart } from 'react-native-chart-kit'; // Import the bar chart component
+import { Dimensions } from 'react-native';
 const TransactionScreen = ({ route }) => {
   const { selectedBranch, userId } = route.params;
   const navigation = useNavigation();
-
+  const screenWidth = Dimensions.get('window').width;
+  const [selectedPeriod, setSelectedPeriod] = useState('month'); // Default to month
   const [transactions, setTransactions] = useState([]);
   const [userDetails, setUserDetails] = useState({
     firstName: '',
@@ -27,6 +29,13 @@ const TransactionScreen = ({ route }) => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [filteredTransactions, setFilteredTransactions] = useState([]);
+  const [barChartData, setBarChartData] = useState({
+    labels: [],
+    datasets: [
+      { label: 'Money In', data: [] },
+      { label: 'Money Out', data: [] },
+    ],
+  });
 
   useEffect(() => {
     const unsubscribeUser = fetchUserDetails();
@@ -318,14 +327,178 @@ const TransactionScreen = ({ route }) => {
       Alert.alert('Error', 'Could not create PDF file.');
     }
   };
+
+
   
   
+  const generateBarChartData = () => {
+    const data = {
+      labels: [],
+      datasets: [
+        {
+          label: 'Money In',
+          data: [],
+          color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`, // Green for income
+        },
+        {
+          label: 'Money Out',
+          data: [],
+          color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`, // Red for expenses
+        },
+      ],
+    };
+
+    const incomeData = {};
+    const expenseData = {};
+
+    filteredTransactions.forEach(transaction => {
+      const date = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
+      let key;
+
+      switch (selectedPeriod) {
+        case 'year':
+          key = date.getFullYear();
+          break;
+        case 'month':
+          key = `${date.getFullYear()}-${date.getMonth() + 1}`;
+          break;
+        case 'week':
+          const weekNumber = Math.ceil((date.getDate() + new Date(date.getFullYear(), date.getMonth(), 1).getDay()) / 7);
+          key = `${date.getFullYear()}-W${weekNumber}`;
+          break;
+        case 'day':
+          key = date.toLocaleDateString();
+          break;
+        default:
+          key = date.toLocaleDateString();
+          break;
+      }
+
+      if (!incomeData[key]) {
+        incomeData[key] = 0;
+      }
+      if (!expenseData[key]) {
+        expenseData[key] = 0;
+      }
+
+      if (transaction.type === 'in') {
+        incomeData[key] += parseFloat(transaction.amount);
+      } else {
+        expenseData[key] += parseFloat(transaction.amount);
+      }
+    });
+
+    Object.keys(incomeData).forEach(key => {
+      data.labels.push(key);
+      data.datasets[0].data.push(incomeData[key]); // Money In
+      data.datasets[1].data.push(expenseData[key] || 0); // Money Out
+    });
+
+    return data;
+  };
+
+  useEffect(() => {
+    const chartData = generateBarChartData();
+    setBarChartData(chartData); // Update state with generated data
+  }, [filteredTransactions, selectedPeriod]); // Update chart data when transactions or period change
+
+  useEffect(() => {
+    const chartData = generateBarChartData();
+    setBarChartData(chartData); // Update state with generated data
+  }, [filteredTransactions, selectedPeriod]); // Update chart data when transactions or period change
+
+   const getSortedTransactions = (transactions) => {
+    // Sort by latest date for monthly view
+    return transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+  };
+
+ const getMonthName = (date) => {
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    return monthNames[new Date(date).getMonth()];
+  };
   
+  const renderMonthlyGraph = (transactions) => {
+    const currentMonth = getMonthName(new Date());
+    
+    // Sort transactions by day within the selected month
+    const sortedTransactions = getSortedTransactions(transactions);
+    
+    return (
+      <Bar
+        data={{
+          labels: sortedTransactions.map(t => t.date), // display each date in the selected month
+          datasets: [
+            {
+              label: 'Income',
+              backgroundColor: 'green',
+              data: sortedTransactions.map(t => t.type === 'in' ? t.amount : 0)
+            },
+            {
+              label: 'Expenses',
+              backgroundColor: 'red',
+              data: sortedTransactions.map(t => t.type === 'out' ? t.amount : 0)
+            }
+          ]
+        }}
+        options={{
+          title: {
+            display: true,
+            text: currentMonth // Display current month on top
+          },
+          scales: {
+            x: {
+              reverse: true // Reverse x-axis to make latest date on the left
+            }
+          }
+        }}
+      />
+    );
+  };
   
+  const getSortedByYear = (transactions) => {
+    return transactions.sort((a, b) => new Date(a.date).getFullYear() - new Date(b.date).getFullYear());
+  };
   
-  
-  
-  
+  const renderYearlyGraph = (transactions) => {
+    const sortedByYear = getSortedByYear(transactions);
+    
+    return (
+      <Bar
+        data={{
+          labels: sortedByYear.map(t => new Date(t.date).getFullYear()), // display years
+          datasets: [
+            {
+              label: 'Income',
+              backgroundColor: 'green',
+              data: sortedByYear.map(t => t.type === 'in' ? t.amount : 0)
+            },
+            {
+              label: 'Expenses',
+              backgroundColor: 'red',
+              data: sortedByYear.map(t => t.type === 'out' ? t.amount : 0)
+            }
+          ]
+        }}
+        options={{
+          scales: {
+            x: {
+              reverse: false // Do not reverse for yearly view, keep ascending order
+            }
+          }
+        }}
+      />
+    );
+  };
+  const TransactionGraph = ({ transactions, viewType }) => {
+    if (viewType === 'monthly') {
+      return renderMonthlyGraph(transactions);
+    } else if (viewType === 'yearly') {
+      return renderYearlyGraph(transactions);
+    } else {
+      // Default or fallback if needed
+      return null;
+    }
+  };
   
   return (
     <View style={TransactionScreenStyles.container}>
@@ -359,6 +532,47 @@ const TransactionScreen = ({ route }) => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
+     <View style={TransactionScreenStyles.periodSelectionContainer}>
+        <TouchableOpacity onPress={() => setSelectedPeriod('day')} style={TransactionScreenStyles.periodButton}>
+          <Text>Day</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setSelectedPeriod('week')} style={TransactionScreenStyles.periodButton}>
+          <Text>Week</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setSelectedPeriod('month')} style={TransactionScreenStyles.periodButton}>
+          <Text>Month</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setSelectedPeriod('year')} style={TransactionScreenStyles.periodButton}>
+          <Text>Year</Text>
+        </TouchableOpacity>
+      </View>
+      {/* Bar Chart */}
+      <View style={{ alignItems: 'center', marginVertical: 20 }}>
+      <BarChart
+        data={barChartData}
+        width={screenWidth - 30} // Define your screen width
+        height={220}
+        chartConfig={{
+          backgroundColor: '#94E334FF',
+          backgroundGradientFrom: '#9ED74AFF',
+          backgroundGradientTo: '#FFFFFFFF',
+          decimalPlaces: 2,
+          color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
+          labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+          style: {
+            borderRadius: 16,
+          },
+        }}
+        style={{
+          marginVertical: 8,
+          borderRadius: 16,
+        }}
+      />
+
+
+        
+        
+      </View>
         {filteredTransactions.length > 0 ? (
           Object.entries(groupedTransactions).map(([date, transactions]) => (
             <View key={date} style={TransactionScreenStyles.transactionContainer}>
