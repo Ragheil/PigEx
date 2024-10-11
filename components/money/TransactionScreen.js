@@ -141,16 +141,15 @@ const TransactionScreen = ({ route }) => {
   };
 
   const filterTransactionsByDate = () => {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+    // Reset time to the start of the day (00:00:00) for accurate comparisons
+    const start = new Date(startDate.setHours(0, 0, 0, 0));
+    const end = new Date(endDate.setHours(23, 59, 59, 999)); // Set to the end of the day
   
     const filtered = transactions
       .filter((transaction) => {
         // Check if the transaction.date is a Firebase Timestamp, and convert it
         const transactionDate = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
-  
-        console.log("Transaction Date:", transaction.date, "Parsed Date:", transactionDate);
-  
+        
         return transactionDate >= start && transactionDate <= end;
       })
       .sort((a, b) => {
@@ -162,6 +161,7 @@ const TransactionScreen = ({ route }) => {
     setFilteredTransactions(filtered);
     calculateTotals(filtered);
   };
+  
 
   const groupByDate = (transactions) => {
     return transactions.reduce((grouped, transaction) => {
