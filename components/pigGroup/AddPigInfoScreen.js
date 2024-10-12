@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, FlatList, Modal, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, FlatList, Modal, TouchableOpacity, Image, Switch  } from 'react-native';
 import { addDoc, collection, query, onSnapshot, doc, getDoc, updateDoc, deleteDoc, getDocs } from 'firebase/firestore';
 import { auth, firestore } from '../../firebase/config2';
 import { Picker } from '@react-native-picker/picker';
@@ -34,6 +34,11 @@ export default function AddPigInfoScreen({ route }) {
   const [isVitalityEditable, setIsVitalityEditable] = useState(false); // Controls the picker state
   const [date, setDate] = useState(new Date());
   const datePickerRef = useRef(null);
+  const handleOpenDeathDatePicker = () => setOpenDeathDatePicker(true);
+  const [isDeceased, setIsDeceased] = useState(false); // Toggle for deceased status
+  const [causeOfDeath, setCauseOfDeath] = useState('');  // Cause of death state
+  const [openDeathDatePicker, setOpenDeathDatePicker] = useState(false); // Control for death date picker
+  const [dateOfDeath, setDateOfDeath] = useState(new Date());  // Date of death state
 
   const user = auth.currentUser;
 
@@ -119,21 +124,21 @@ export default function AddPigInfoScreen({ route }) {
         tagNumber,
         gender,
         race,
-        dateOfBirth,  // Save date of birth
-        vitality,     // Save vitality
+        dateOfBirth,
+        vitality: isDeceased ? 'deceased' : 'alive', // Set vitality based on toggle
+        ...(isDeceased && { causeOfDeath, dateOfDeath }), // Add cause and date of death if deceased
         createdAt: new Date(),
       });
   
       Alert.alert('Success', 'Pig added successfully!');
-      
-      // Clear the input fields
-      resetFields(); 
-      setModalVisible(false); // Close the modal
+      resetFields();
+      setModalVisible(false);
     } catch (error) {
       console.error('Error adding pig:', error);
       Alert.alert('Error', 'There was a problem adding the pig.');
     }
   };
+  
   
 
   const resetFields = () => {
@@ -143,33 +148,51 @@ export default function AddPigInfoScreen({ route }) {
     setRace('');
     setDateOfBirth(new Date());
     setVitality('alive');
+    setIsDeceased(false);
+    setCauseOfDeath('');
+    setDateOfDeath(new Date());
   };
+
   // Edit Pig
-  const handleEditPig = async () => {
-    if (!pigName.trim() || !tagNumber.trim() || !gender || !race.trim()) {
-      Alert.alert('Validation Error', 'All fields are required.');
-      return;
+ // Edit Pig
+const handleEditPig = async () => {
+  if (!pigName.trim() || !tagNumber.trim() || !gender || !race.trim()) {
+    Alert.alert('Validation Error', 'All fields are required.');
+    return;
+  }
+  try {
+    const pigCollectionPath = `users/${user.uid}/farmBranches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${currentPigId}`;
+    const updatedData = {
+      pigName,
+      tagNumber,
+      gender,
+      race,
+      dateOfBirth,  // Update date of birth
+      vitality: isDeceased ? 'deceased' : 'alive',  // Update vitality
+    };
+
+    // Conditionally add causeOfDeath and dateOfDeath if the pig is deceased
+    if (isDeceased) {
+      updatedData.causeOfDeath = causeOfDeath;
+      updatedData.dateOfDeath = dateOfDeath;
+    } else {
+      // Remove causeOfDeath and dateOfDeath if the pig is alive
+      updatedData.causeOfDeath = null;
+      updatedData.dateOfDeath = null;
     }
-    try {
-      const pigCollectionPath = `users/${user.uid}/farmBranches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${currentPigId}`;
-      await updateDoc(doc(firestore, pigCollectionPath), {
-        pigName,
-        tagNumber,
-        gender,
-        race,
-        dateOfBirth,  // Update date of birth
-        vitality,     // Update vitality
-      });
-      Alert.alert('Success', 'Pig updated successfully!');
-      setIsEditing(false);
-      resetFields();
-      setModalVisible(false);
-      setCurrentPigId(null);
-    } catch (error) {
-      console.error('Error updating pig:', error);
-      Alert.alert('Error', 'There was a problem updating the pig.');
-    }
-  };
+
+    await updateDoc(doc(firestore, pigCollectionPath), updatedData);
+    Alert.alert('Success', 'Pig updated successfully!');
+    setIsEditing(false);
+    resetFields();
+    setModalVisible(false);
+    setCurrentPigId(null);
+  } catch (error) {
+    console.error('Error updating pig:', error);
+    Alert.alert('Error', 'There was a problem updating the pig.');
+  }
+};
+
   
   // Delete Pig
   const handleDeletePig = (pigId) => {
@@ -235,13 +258,15 @@ export default function AddPigInfoScreen({ route }) {
       <Text style={styles.title}>Pig Information</Text>
       <Text style={styles.groupName}>Current Pig Group: {pigGroupName}</Text>
       <View style={styles.searchContainer}>
-        <Button
+      <Button
           title="Add Pig"
           onPress={() => {
             setIsEditing(false);
+            setIsDeceased(false); // Automatically alive when adding
             setModalVisible(true);
           }}
-          style={styles.addButton} color="#4CAF50"
+          style={styles.addButton}
+          color="#4CAF50"
         />
         <TextInput
           style={styles.searchInput}
@@ -311,17 +336,43 @@ export default function AddPigInfoScreen({ route }) {
               onChangeText={setRace}
             />
 
-            {/* Vitality Picker */}
-            <Text>Vitality</Text>
-            <Picker
-              selectedValue={vitality}
-              onValueChange={setVitality}
-              enabled={isEditing || isVitalityEditable}  // Enable when editing
-              style={styles.picker}
-            >
-              <Picker.Item label="Alive" value="alive" />
-              <Picker.Item label="Deceased" value="deceased" />
-            </Picker>
+{isEditing && (
+  <View style={styles.switchContainer}>
+    <Text>Is the pig deceased?</Text>
+    <Switch
+      value={isDeceased}
+      onValueChange={setIsDeceased}
+    />
+  </View>
+)}
+
+
+
+{/* Show cause of death and date of death only if editing and the pig is deceased */}
+{isEditing && isDeceased && (
+  <>
+    <TextInput
+      style={styles.input}
+      placeholder="Cause of Death"
+      value={causeOfDeath}
+      onChangeText={setCauseOfDeath}
+    />
+    <TouchableOpacity onPress={handleOpenDeathDatePicker}>
+      <Text>Select Date of Death</Text>
+    </TouchableOpacity>
+    <DateTimePickerModal
+      isVisible={openDeathDatePicker}
+      mode="date"
+      date={dateOfDeath}
+      onConfirm={(date) => {
+        setDateOfDeath(date);
+        setOpenDeathDatePicker(false);
+      }}
+      onCancel={() => setOpenDeathDatePicker(false)}
+    />
+  </>
+)}
+
             <Button
               title={isEditing ? 'Update Pig' : 'Add Pig'}
               onPress={isEditing ? handleEditPig : handleAddPig}

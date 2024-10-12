@@ -137,129 +137,149 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {showWelcome ? (
-          <Stack.Screen
-            name="Welcome"
-            options={{ headerShown: false }}
-          >
-            {(props) => <WelcomeScreen {...props} onStart={() => setShowWelcome(false)} />}
-          </Stack.Screen>
-        ) : user ? (
+      {showWelcome ? (
+  <Stack.Screen
+    name="Welcome"
+    options={{ headerShown: false }}
+  >
+    {(props) => <WelcomeScreen {...props} onStart={() => setShowWelcome(false)} />}
+  </Stack.Screen>
+) : user ? (
+  <>
+    {!isFarmNameSet && isRegistering ? (
+      <Stack.Screen
+        name="FarmName"
+        options={{ headerShown: false }}
+      >
+        {(props) => (
+          <FarmNameScreen
+            {...props}
+            onFarmNameSet={(name) => {
+              setFarmName(name);
+              setIsFarmNameSet(true);
+              setIsRegistering(false);
+            }}
+          />
+        )}
+      </Stack.Screen>
+    ) : (
+      <>
+        {loading ? (
+          <Stack.Screen name="Loading" component={LoadingScreen} options={{ headerShown: false }} />
+        ) : (
           <>
-            {!isFarmNameSet && isRegistering ? (
+            {farmName ? (
               <Stack.Screen
-                name="FarmName"
+                name="Dashboard"
                 options={{ headerShown: false }}
               >
                 {(props) => (
-                  <FarmNameScreen
-                    {...props}
-                    onFarmNameSet={(name) => {
-                      setFarmName(name);
-                      setIsFarmNameSet(true);
-                      setIsRegistering(false);
-                    }}
+                  <DashboardScreen 
+                    {...props} 
+                    firstName={firstName} 
+                    lastName={lastName} 
+                    farmName={farmName} // Pass farmName here
+                    onLogout={handleLogout} 
                   />
                 )}
               </Stack.Screen>
             ) : (
-              <>
-                {loading ? (
-                  <Stack.Screen name="Loading" component={LoadingScreen} options={{ headerShown: false }} />
-                ) : (
-                  <Stack.Screen
-                    name="Dashboard"
-                    options={{ headerShown: false }}
-                  >
-                    {(props) => (
-                      <DashboardScreen {...props} firstName={firstName} lastName={lastName} farmName={farmName} onLogout={handleLogout} />
-                    )}
-                  </Stack.Screen>
-                )}
-              </>
+              // This renders if farmName is still being fetched
+              <Stack.Screen
+                name="LoadingFarmName"
+                options={{ headerShown: false }}
+              >
+                {(props) => <LoadingScreen {...props} />}
+              </Stack.Screen>
             )}
-            <Stack.Screen
-              name="PigGroups"
-              component={PigGroupsScreen}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="AddPigInfoScreen"
-              options={{ headerShown: false }}
-            >
-              {(props) => (
-                <AddPigInfoScreen
-                  {...props}
-                  onViewMedicalRecords={() => props.navigation.navigate('MedicalRecordScreen')}
-                />
-              )}
-            </Stack.Screen>
-            <Stack.Screen
-              name="MedicalRecordScreen"
-              component={MedicalRecordScreen}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="ContactScreen"
-              component={ContactScreen}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="PregnancyRecordsScreen"
-              component={PregnancyRecordsScreen}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="MoneyInScreen"
-              component={MoneyInScreen}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="MoneyOutScreen"
-              component={MoneyOutScreen}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="TransactionScreen" // Add TransactionScreen to the stack
-              component={TransactionScreen}
-              options={{ headerShown: false }}
-            />
           </>
-        ) : isLogin ? (
-          <Stack.Screen
-            name="Login"
-            options={{ headerShown: false }}
-          >
-            {(props) => (
-              <LoginScreen
-                {...props}
-                email={email}
-                setEmail={setEmail}
-                password={password}
-                setPassword={setPassword}
-                handleAuthentication={handleAuthentication}
-                navigateToRegister={() => setIsLogin(false)}
-              />
-            )}
-          </Stack.Screen>
-        ) : (
-          <Stack.Screen
-            name="Register"
-            options={{ headerShown: false }}
-          >
-            {(props) => (
-              <RegisterScreen
-                {...props}
-                email={email}
-                setEmail={setEmail}
-                password={password}
-                setPassword={setPassword}
-                handleAuthentication={handleAuthentication}
-                navigateToLogin={() => setIsLogin(true)}
-              />
-            )}
-          </Stack.Screen>
         )}
+      </>
+    )}
+    <Stack.Screen
+      name="PigGroups"
+      component={PigGroupsScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="AddPigInfoScreen"
+      options={{ headerShown: false }}
+    >
+      {(props) => (
+        <AddPigInfoScreen
+          {...props}
+          onViewMedicalRecords={() => props.navigation.navigate('MedicalRecordScreen')}
+        />
+      )}
+    </Stack.Screen>
+    <Stack.Screen
+      name="MedicalRecordScreen"
+      component={MedicalRecordScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="ContactScreen"
+      component={ContactScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="PregnancyRecordsScreen"
+      component={PregnancyRecordsScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="MoneyInScreen"
+      component={MoneyInScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="MoneyOutScreen"
+      component={MoneyOutScreen}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="TransactionScreen" // Add TransactionScreen to the stack
+      component={TransactionScreen}
+      options={{ headerShown: false }}
+    />
+  </>
+) : isLogin ? (
+  <Stack.Screen
+    name="Login"
+    options={{ headerShown: false }}
+  >
+    {(props) => (
+      <LoginScreen
+        {...props}
+        email={email}
+        setEmail={setEmail}
+        password={password}
+        setPassword={setPassword}
+        handleAuthentication={handleAuthentication}
+        navigateToRegister={() => setIsLogin(false)}
+      />
+    )}
+  </Stack.Screen>
+) : (
+  <Stack.Screen
+    name="Register"
+    options={{ headerShown: false }}
+  >
+    {(props) => (
+      <RegisterScreen
+        {...props}
+        email={email}
+        setEmail={setEmail}
+        password={password}
+        setPassword={setPassword}
+        handleAuthentication={handleAuthentication}
+        navigateToLogin={() => setIsLogin(true)}
+      />
+    )}
+  </Stack.Screen>
+)}
+
+
       </Stack.Navigator>
     </NavigationContainer>
   );

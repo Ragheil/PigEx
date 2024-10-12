@@ -102,6 +102,12 @@ export default StyleSheet.create({
       buttonText: {
         color: '#fff',
         fontWeight: 'bold',
+      },
+      switchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginVertical: 10,
       },      
 
 });
