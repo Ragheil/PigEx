@@ -296,7 +296,7 @@ const TransactionScreen = ({ route }) => {
           </tbody>
         </table>
         <div style="margin-top: 30px; text-align: center;">
-          <p>--- End of Report---</p>
+          <p>--- End of Report ---</p>
         </div>
       </div>
       `;
