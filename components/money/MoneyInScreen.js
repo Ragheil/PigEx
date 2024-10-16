@@ -220,7 +220,7 @@ const MoneyInScreen = ({ route }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Money In: {selectedBranch || 'No branch selected'} Branch</Text>
-      <Text style={styles.balance}>Total Balance: ${totalBalance.toFixed(2)}</Text>
+      <Text style={styles.balance}>Total Balance: ₱{totalBalance.toFixed(2)}</Text>
       <Text style={styles.farmName}>Current Branch: {selectedBranch || 'No branch selected'}</Text>
       <FlatList
         data={moneyRecords}

@@ -533,9 +533,6 @@ const TransactionScreen = ({ route }) => {
         }
       >
      <View style={TransactionScreenStyles.periodSelectionContainer}>
-        <TouchableOpacity onPress={() => setSelectedPeriod('day')} style={TransactionScreenStyles.periodButton}>
-          <Text>Day</Text>
-        </TouchableOpacity>
         <TouchableOpacity onPress={() => setSelectedPeriod('week')} style={TransactionScreenStyles.periodButton}>
           <Text>Week</Text>
         </TouchableOpacity>
