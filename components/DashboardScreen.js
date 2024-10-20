@@ -83,7 +83,9 @@ useEffect(() => {
   }
 }, [user]);
 
-
+const handleSeeAllBranches = () => {
+  navigation.navigate('SeeAllBranches'); // Navigate to the new screen
+};
 
 const getUserDetailsFromFirestore = async (uid) => {
   try {
@@ -319,7 +321,12 @@ const handleAddBranch = async () => {
           <TouchableOpacity style={styles.addBranchButton} onPress={() => setBranchModalVisible(true)}>
             <Text style={styles.addBranchText}>Add Branch</Text>
           </TouchableOpacity>
-
+          <TouchableOpacity
+            style={[styles.seeAllButton, { zIndex: 10, elevation: 5 }]}
+            onPress={handleSeeAllBranches} // New button functionality
+          >
+            <Text style={styles.seeAllText}>See All Farm Branches</Text>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.logoutButton} onPress={confirmLogout}>
             <Text style={styles.logoutButtonText}>Logout</Text>
           </TouchableOpacity>
