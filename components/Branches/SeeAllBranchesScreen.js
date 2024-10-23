@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Modal, Alert, Image, TextInput, Button } from 'react-native';
-import { collection, onSnapshot, doc, deleteDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { collection, onSnapshot, doc, deleteDoc, setDoc, getDocs, addDoc } from 'firebase/firestore';
 import { firestore, auth } from '../../firebase/config2';
 import styles from '../../frontend/componentsStyles/SeeAllBranchesStyles'; // Import styles
 import editIcon from '../../assets/images/buttons/editIcon.png';
@@ -10,14 +10,15 @@ const SeeAllBranchesScreen = () => {
   const [branches, setBranches] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState(null);
-  const [newBranchData, setNewBranchData] = useState({ name: '', otherField: '' });
+  const [newBranchName, setNewBranchName] = useState('');
+  const [branchModalVisible, setBranchModalVisible] = useState('');
 
   const user = auth.currentUser;
 
   useEffect(() => {
     if (user) {
       const userId = user.uid;
-      const branchRef = collection(firestore, `users/${userId}/farmBranches`);
+      const branchRef = collection(firestore, `users/${userId}/farmBranches/Farm Branch/Branches`);
 
       // Listen for branch updates
       const unsubscribe = onSnapshot(branchRef, (snapshot) => {
@@ -34,28 +35,23 @@ const SeeAllBranchesScreen = () => {
 
   // Handle branch selection
   const handleBranchSelect = (branch) => {
-    Alert.alert('Branch Selected', `You selected ${branch.name}`);
+    Alert.alert('Branch Selected', `You selected ${branch.farmName}`);
   };
 
   // Open the edit modal
   const openEditModal = (branch) => {
     setSelectedBranch(branch);
-    setNewBranchData({ name: branch.name, otherField: branch.otherField || '' });
+    setNewBranchName(branch.farmName);
     setModalVisible(true);
   };
 
   // Handle the editing of a branch
   const handleEdit = async () => {
-    if (newBranchData.name.trim()) {
+    if (newBranchName.trim()) {
       try {
-        const updatedBranchData = {
-          name: newBranchData.name,
-          otherField: newBranchData.otherField || '' // Ensure a value is sent to Firestore
-        };
-
         await setDoc(
-          doc(firestore, `users/${user.uid}/farmBranches/${selectedBranch.id}`),
-          updatedBranchData,
+          doc(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch.id}`),
+          { farmName: newBranchName },
           { merge: true } // Merge updates to avoid overwriting the whole document
         );
 
@@ -66,14 +62,14 @@ const SeeAllBranchesScreen = () => {
         Alert.alert('Error', 'Could not update the branch.');
       }
     } else {
-      Alert.alert('Error', 'Branch name cannot be empty.');
+      Alert.alert('Error', 'Farm name cannot be empty.');
     }
   };
 
   // Handle branch deletion
   const handleDelete = async (branchId) => {
     try {
-      await deleteDoc(doc(firestore, `users/${user.uid}/farmBranches/${branchId}`));
+      await deleteDoc(doc(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches/${branchId}`));
       Alert.alert('Success', 'Branch deleted successfully!');
     } catch (error) {
       Alert.alert('Error', 'Could not delete the branch.');
@@ -84,7 +80,7 @@ const SeeAllBranchesScreen = () => {
   const renderBranchItem = ({ item }) => (
     <View style={styles.branchItem}>
       <TouchableOpacity onPress={() => handleBranchSelect(item)}>
-        <Text style={styles.branchName}>{item.name}</Text>
+        <Text style={styles.branchName}>{item.farmName}</Text>
       </TouchableOpacity>
       <View style={styles.iconContainer}>
         <TouchableOpacity onPress={() => openEditModal(item)}>
@@ -106,6 +102,38 @@ const SeeAllBranchesScreen = () => {
     </View>
   );
 
+  // Handle adding a new branch
+  const handleAddBranch = async () => {
+    if (!newBranchName.trim()) {
+      Alert.alert('Validation Error', 'Farm name is required!');
+      return;
+    }
+
+    try {
+      if (user) {
+        const branchesCollectionRef = collection(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches`);
+        const branchSnapshot = await getDocs(branchesCollectionRef);
+
+        // Check if a branch with this farmName already exists
+        const branchExists = branchSnapshot.docs.some(doc => doc.data().farmName === newBranchName);
+        if (branchExists) {
+          Alert.alert('Branch Error', 'A branch with this farm name already exists!');
+          return;
+        }
+
+        // Add a new branch with a unique ID but with the 'newBranchName' field
+        await addDoc(branchesCollectionRef, { farmName: newBranchName });
+
+        // Reset input and close modal
+        setNewBranchName('');
+        setBranchModalVisible(false);
+        Alert.alert('Success', 'Branch added successfully!');
+      }
+    } catch (error) {
+      console.error('Error adding branch:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>All Farm Branches</Text>
@@ -115,6 +143,31 @@ const SeeAllBranchesScreen = () => {
         renderItem={renderBranchItem}
         ListEmptyComponent={<Text>No branches available.</Text>}
       />
+
+      {/* Add Branch Button */}
+      <Button title="Add Branch" onPress={() => setBranchModalVisible(true)} />
+
+      {/* Add Branch Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={branchModalVisible}
+        onRequestClose={() => setBranchModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalTitle}>Add Branch</Text>
+            <TextInput
+              style={styles.input}
+              value={newBranchName}
+              onChangeText={setNewBranchName}
+              placeholder="Enter farm name"
+            />
+            <Button title="Add" onPress={handleAddBranch} />
+            <Button title="Cancel" onPress={() => setBranchModalVisible(false)} color="red" />
+          </View>
+        </View>
+      </Modal>
 
       {/* Edit Modal */}
       <Modal
@@ -128,15 +181,9 @@ const SeeAllBranchesScreen = () => {
             <Text style={styles.modalTitle}>Edit Branch</Text>
             <TextInput
               style={styles.input}
-              value={newBranchData.name}
-              onChangeText={(text) => setNewBranchData({ ...newBranchData, name: text })}
-              placeholder="Enter new branch name"
-            />
-            <TextInput
-              style={styles.input}
-              value={newBranchData.otherField}
-              onChangeText={(text) => setNewBranchData({ ...newBranchData, otherField: text })}
-              placeholder="Other field (optional)"
+              value={newBranchName}
+              onChangeText={setNewBranchName}
+              placeholder="Enter new farm name"
             />
             <Button title="Update" onPress={handleEdit} />
             <Button title="Cancel" onPress={() => setModalVisible(false)} color="red" />

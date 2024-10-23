@@ -14,7 +14,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Divider } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
-import { collection, query, onSnapshot, updateDoc, doc, setDoc, getDoc } from 'firebase/firestore';
+import { collection, query, onSnapshot, updateDoc, doc, setDoc, getDoc, getDocs, addDoc } from 'firebase/firestore';
 import { firestore, auth } from '../firebase/config2';
 import FooterScreen from './footer/FooterScreen';
 import { Picker } from '@react-native-picker/picker';
@@ -216,23 +216,36 @@ const handleAddBranch = async () => {
 
   try {
     if (user) {
-      const branchRef = doc(firestore, `users/${user.uid}/farmBranches/${newBranchName}`);
-      const branchSnapshot = await getDoc(branchRef);
+      // Reference to the 'Branches' collection
+      const branchesCollectionRef = collection(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches`);
+      const branchSnapshot = await getDocs(branchesCollectionRef);
       
-      if (branchSnapshot.exists()) {
+      // Check if a branch with this name already exists
+      const branchExists = branchSnapshot.docs.some(doc => doc.id === newBranchName);
+      if (branchExists) {
         Alert.alert('Branch Error', 'A branch with this name already exists!');
         return;
       }
 
-      await setDoc(branchRef, { name: newBranchName });
+      // Add a new branch with a unique ID but with the 'newBranchName' field
+      const newBranchRef = await addDoc(branchesCollectionRef, { farmName: newBranchName });
+      
+      // Optionally, update the document ID to match the newBranchName
+      await setDoc(doc(branchesCollectionRef, newBranchRef.id), { farmName: newBranchName });
+
+      // Reset input and close modal
       setNewBranchName('');
       setBranchModalVisible(false);
       console.log('New branch added:', newBranchName);
     }
   } catch (error) {
     console.error('Error adding branch:', error);
-  }
+  } 
 };
+
+
+
+
   return (
     <View style={styles.container}>
       <LinearGradient
