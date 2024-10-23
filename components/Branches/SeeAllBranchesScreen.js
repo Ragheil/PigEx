@@ -11,7 +11,8 @@ const SeeAllBranchesScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState(null);
   const [newBranchName, setNewBranchName] = useState('');
-  const [branchModalVisible, setBranchModalVisible] = useState('');
+  const [branchModalVisible, setBranchModalVisible] = useState(false);  // Fix: Set boolean type
+  const [isLoading, setIsLoading] = useState(true); // Loading state
 
   const user = auth.currentUser;
 
@@ -24,9 +25,11 @@ const SeeAllBranchesScreen = () => {
       const unsubscribe = onSnapshot(branchRef, (snapshot) => {
         const branchList = snapshot.docs.map(doc => ({
           id: doc.id,
+          branch: doc.id,  // Add branch property here
           ...doc.data(),
         }));
         setBranches(branchList);
+        setIsLoading(false);  // Data loaded
       });
 
       return () => unsubscribe();
@@ -35,11 +38,19 @@ const SeeAllBranchesScreen = () => {
 
   // Handle branch selection
   const handleBranchSelect = (branch) => {
+    if (!branch || !branch.farmName) {
+      Alert.alert('Error', 'Branch data is incomplete.');
+      return;
+    }
     Alert.alert('Branch Selected', `You selected ${branch.farmName}`);
   };
 
   // Open the edit modal
   const openEditModal = (branch) => {
+    if (!branch) {
+      Alert.alert('Error', 'Branch data is missing.');
+      return;
+    }
     setSelectedBranch(branch);
     setNewBranchName(branch.farmName);
     setModalVisible(true);
@@ -47,22 +58,24 @@ const SeeAllBranchesScreen = () => {
 
   // Handle the editing of a branch
   const handleEdit = async () => {
-    if (newBranchName.trim()) {
-      try {
-        await setDoc(
-          doc(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch.id}`),
-          { farmName: newBranchName },
-          { merge: true } // Merge updates to avoid overwriting the whole document
-        );
+    if (!selectedBranch || !newBranchName.trim()) {
+      Alert.alert('Error', 'Farm name cannot be empty or no branch selected.');
+      return;
+    }
 
-        Alert.alert('Success', 'Branch updated successfully!');
-        setModalVisible(false);
-      } catch (error) {
-        console.error("Update Error: ", error);
-        Alert.alert('Error', 'Could not update the branch.');
-      }
-    } else {
-      Alert.alert('Error', 'Farm name cannot be empty.');
+    try {
+      await setDoc(
+        doc(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch.id}`),
+        { farmName: newBranchName },
+        { merge: true } // Merge updates to avoid overwriting the whole document
+      );
+
+      Alert.alert('Success', 'Branch updated successfully!');
+      setModalVisible(false);
+      setSelectedBranch(null); // Reset selected branch
+    } catch (error) {
+      console.error("Update Error: ", error);
+      Alert.alert('Error', 'Could not update the branch.');
     }
   };
 
@@ -70,8 +83,10 @@ const SeeAllBranchesScreen = () => {
   const handleDelete = async (branchId) => {
     try {
       await deleteDoc(doc(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches/${branchId}`));
+      setBranches((prevBranches) => prevBranches.filter(branch => branch.id !== branchId)); // Remove from state
       Alert.alert('Success', 'Branch deleted successfully!');
     } catch (error) {
+      console.error('Delete Error: ', error);
       Alert.alert('Error', 'Could not delete the branch.');
     }
   };
@@ -133,6 +148,10 @@ const SeeAllBranchesScreen = () => {
       console.error('Error adding branch:', error);
     }
   };
+
+  if (isLoading) {
+    return <Text>Loading...</Text>;  // Handle loading state
+  }
 
   return (
     <View style={styles.container}>
