@@ -18,7 +18,6 @@ export default function FooterScreen({ firstName, lastName, farmName, selectedBr
   const handleMoneyIn = () => {
     console.log(`Navigating to MoneyInScreen with farmName: ${farmName}, selectedBranch: ${selectedBranch}, userId: ${userId}`);
     
-    // Ensure farmName and selectedBranch are defined
     if (!farmName || !selectedBranch) {
       console.error('Error: farmName or selectedBranch is undefined.');
       Alert.alert('Error', 'Farm Name or Selected Branch is not set.');
@@ -31,6 +30,7 @@ export default function FooterScreen({ firstName, lastName, farmName, selectedBr
       userId: userId,
     });
   };
+  
   
   
 

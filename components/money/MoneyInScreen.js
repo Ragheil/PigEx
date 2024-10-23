@@ -29,53 +29,54 @@ const MoneyInScreen = ({ route }) => {
     try {
       const moneyInPath = selectedBranch === 'Main Farm'
         ? `users/${userId}/farmBranches/Main Farm/moneyInRecords`
-        : `users/${userId}/farmBranches/${selectedBranch}/moneyInRecords`;
-
+        : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyInRecords`;
+  
       const moneyInRecordsRef = collection(firestore, moneyInPath);
       const inRecordsSnapshot = await getDocs(moneyInRecordsRef);
-
+  
       let totalIn = 0;
       inRecordsSnapshot.forEach((doc) => {
         const data = doc.data();
         const recordAmount = parseFloat(data.amount) || 0;
         totalIn += recordAmount;
       });
-
+  
       const moneyOutPath = selectedBranch === 'Main Farm'
         ? `users/${userId}/farmBranches/Main Farm/moneyOutRecords`
-        : `users/${userId}/farmBranches/${selectedBranch}/moneyOutRecords`;
-
+        : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyOutRecords`;
+  
       const moneyOutRecordsRef = collection(firestore, moneyOutPath);
       const outRecordsSnapshot = await getDocs(moneyOutRecordsRef);
-
+  
       let totalOut = 0;
       outRecordsSnapshot.forEach((doc) => {
         const data = doc.data();
         const recordAmount = parseFloat(data.amount) || 0;
         totalOut += recordAmount;
       });
-
+  
       setTotalBalance(totalIn - totalOut); // Update total balance state
     } catch (error) {
       console.error('Error fetching total balance:', error);
     }
   };
+  
 
   const fetchMoneyRecords = async () => {
     try {
       const moneyInPath = selectedBranch === 'Main Farm'
         ? `users/${userId}/farmBranches/Main Farm/moneyInRecords`
-        : `users/${userId}/farmBranches/${selectedBranch}/moneyInRecords`;
-
+        : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyInRecords`;
+  
       const moneyInRecordsRef = collection(firestore, moneyInPath);
       const inRecordsSnapshot = await getDocs(moneyInRecordsRef);
-
+  
       const records = [];
       inRecordsSnapshot.forEach((doc) => {
         const data = doc.data();
         records.push({ id: doc.id, ...data }); // Store record with its ID
       });
-
+  
       setMoneyRecords(records); // Update state with fetched records
     } catch (error) {
       console.error('Error fetching money records:', error);
@@ -87,9 +88,9 @@ const MoneyInScreen = ({ route }) => {
       Alert.alert('Error', 'Please enter an amount.');
       return;
     }
-
+  
     const selectedCategory = category === 'other' ? otherCategory : category;
-
+  
     try {
       const moneyRecord = {
         amount: parseFloat(amount),
@@ -97,14 +98,14 @@ const MoneyInScreen = ({ route }) => {
         date: date.toISOString(),
         category: selectedCategory,
       };
-
+  
       const path = selectedBranch === 'Main Farm'
         ? `users/${userId}/farmBranches/Main Farm/moneyInRecords`
-        : `users/${userId}/farmBranches/${selectedBranch}/moneyInRecords`;
-
+        : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyInRecords`;
+  
       const moneyInRecordsRef = collection(firestore, path);
       await addDoc(moneyInRecordsRef, moneyRecord);
-
+  
       Alert.alert('Success', 'Money added successfully!');
       fetchTotalBalance(); // Update balance after adding money
       fetchMoneyRecords(); // Fetch updated records after adding money
@@ -118,6 +119,7 @@ const MoneyInScreen = ({ route }) => {
       Alert.alert('Error', 'Failed to add money. Please try again.');
     }
   };
+  
 
   const handleEditMoney = async () => {
     if (!amount) {
@@ -137,7 +139,7 @@ const MoneyInScreen = ({ route }) => {
 
       const path = selectedBranch === 'Main Farm'
         ? `users/${userId}/farmBranches/Main Farm/moneyInRecords/${currentRecordId}`
-        : `users/${userId}/farmBranches/${selectedBranch}/moneyInRecords/${currentRecordId}`;
+        : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyInRecords/${currentRecordId}`; // Use userId here
 
       const moneyRecordRef = doc(firestore, path);
       await updateDoc(moneyRecordRef, moneyRecord);
@@ -156,38 +158,38 @@ const MoneyInScreen = ({ route }) => {
       console.error('Error updating money record:', error);
       Alert.alert('Error', 'Failed to update money record. Please try again.');
     }
-  };
+};
 
-  const handleDeleteMoney = async (id) => {
-    try {
-      const confirmation = await new Promise((resolve) => {
-        Alert.alert(
-          'Confirm Deletion',
-          'Are you sure you want to delete this record?',
-          [
-            { text: 'Cancel', onPress: () => resolve(false), style: 'cancel' },
-            { text: 'Delete', onPress: () => resolve(true) },
-          ]
-        );
-      });
+const handleDeleteMoney = async (id) => {
+  try {
+    const confirmation = await new Promise((resolve) => {
+      Alert.alert(
+        'Confirm Deletion',
+        'Are you sure you want to delete this record?',
+        [
+          { text: 'Cancel', onPress: () => resolve(false), style: 'cancel' },
+          { text: 'Delete', onPress: () => resolve(true) },
+        ]
+      );
+    });
 
-      if (confirmation) {
-        const path = selectedBranch === 'Main Farm'
-          ? `users/${userId}/farmBranches/Main Farm/moneyInRecords/${id}`
-          : `users/${userId}/farmBranches/${selectedBranch}/moneyInRecords/${id}`;
+    if (confirmation) {
+      const path = selectedBranch === 'Main Farm'
+        ? `users/${userId}/farmBranches/Main Farm/moneyInRecords/${id}`
+        : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyInRecords/${id}`; // Use userId here
 
-        const moneyRecordRef = doc(firestore, path);
-        await deleteDoc(moneyRecordRef);
+      const moneyRecordRef = doc(firestore, path);
+      await deleteDoc(moneyRecordRef);
 
-        Alert.alert('Success', 'Money record deleted successfully!');
-        fetchTotalBalance(); // Update balance after deleting money
-        fetchMoneyRecords(); // Fetch updated records after deleting money
-      }
-    } catch (error) {
-      console.error('Error deleting money record:', error);
-      Alert.alert('Error', 'Failed to delete money record. Please try again.');
+      Alert.alert('Success', 'Money record deleted successfully!');
+      fetchTotalBalance(); // Update balance after deleting money
+      fetchMoneyRecords(); // Fetch updated records after deleting money
     }
-  };
+  } catch (error) {
+    console.error('Error deleting money record:', error);
+    Alert.alert('Error', 'Failed to delete money record. Please try again.');
+  }
+};
 
   const handleCategoryChange = (value) => {
     setCategory(value);
