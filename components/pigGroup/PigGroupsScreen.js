@@ -9,7 +9,7 @@ import deleteIcon from '../../assets/images/buttons/deleteIcon.png';
 import styles from '../../frontend/pigGroupStyles/PigGroupsScreenStyles';
 
 const PigGroupsScreen = ({ navigation, route }) => {
-  const { selectedBranch } = route.params;
+ // const { selectedBranch } = route.params;
   const user = auth.currentUser;
   const [pigGroups, setPigGroups] = useState([]);
   const [filteredPigGroups, setFilteredPigGroups] = useState([]);
@@ -20,6 +20,8 @@ const PigGroupsScreen = ({ navigation, route }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPigGroupName, setCurrentPigGroupName] = useState('');
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
+  const { selectedBranch, farmName: initialFarmName } = route.params; // Destructure farmName as initialFarmName
+  const [farmName, setFarmName] = useState(initialFarmName); // Rename the
 
   useEffect(() => {
     if (user) {
@@ -39,31 +41,34 @@ const PigGroupsScreen = ({ navigation, route }) => {
   // Function to check if the selected branch exists before allowing pig group operations
   const branchExists = async () => {
     try {
-      const branchRef = selectedBranch === 'main' 
-        ? doc(firestore, `users/${user.uid}/farmBranches/Main Farm`) 
-        : doc(firestore, `users/${user.uid}/farmBranches/${selectedBranch}`);
-      
-      const branchSnapshot = await getDoc(branchRef);
-      return branchSnapshot.exists();  // Returns true if the branch exists
+        const branchRef = selectedBranch === 'Main Farm' 
+            ? doc(firestore, `users/${user.uid}/farmBranches/Main Farm`) 
+            : doc(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}`); // Adjusted for nested structure
+
+        const branchSnapshot = await getDoc(branchRef);
+        return branchSnapshot.exists();  // Returns true if the branch exists
     } catch (error) {
-      console.error('Error checking branch existence:', error);
-      return false;
+        console.error('Error checking branch existence:', error);
+        return false;
     }
-  };
+};
+
+  
   
   const fetchPigGroups = async () => {
     try {
       if (!user) return;
   
-      if (selectedBranch !== 'Main Farm' && !(await branchExists())) {
+      // Check if the selected branch exists
+      if (!(await branchExists())) {
         console.log(`Branch ${selectedBranch} does not exist.`);
         return;
       }
   
-      // Corrected pigGroupsCollection logic
+      // Define pigGroupsCollection logic based on selected branch
       const pigGroupsCollection = selectedBranch === 'Main Farm'
-        ? collection(firestore, `users/${user.uid}/farmBranches/Main Farm/pigGroups`) // Access pig groups under "Main Farm" document
-        : collection(firestore, `users/${user.uid}/farmBranches/${selectedBranch}/pigGroups`);
+        ? collection(firestore, `users/${user.uid}/farmBranches/Main Farm/pigGroups`)
+        : collection(firestore, `users/${user.uid}/farmBranches/${farmName}/pigGroups`); // Use farmName here
   
       const q = query(pigGroupsCollection, orderBy('name'));
       const querySnapshot = await getDocs(q);
@@ -78,6 +83,7 @@ const PigGroupsScreen = ({ navigation, route }) => {
       console.error('Error fetching pig groups:', error);
     }
   };
+  
   
 
   const isPigGroupNameDuplicate = async (name) => {
@@ -204,11 +210,34 @@ const PigGroupsScreen = ({ navigation, route }) => {
       </View>
     );
   };
+  
+  useEffect(() => {
+    const fetchFarmName = async () => {
+        try {
+            const branchRef = doc(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}`);
+            const branchSnapshot = await getDoc(branchRef);
+            if (branchSnapshot.exists()) {
+                const data = branchSnapshot.data();
+                // Assuming your document has a field named 'farmName'
+                setFarmName(data.farmName); // Adjust based on your Firestore document structure
+            } else {
+                console.log('Branch document does not exist');
+            }
+        } catch (error) {
+            console.error('Error fetching farm name:', error);
+        }
+    };
+
+    if (selectedBranch) {
+        fetchFarmName();
+    }
+}, [selectedBranch, user.uid]); // Fetch when selectedBranch or user ID changes
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Pig Groups for {selectedBranch} branch</Text>
-
+        <Text style={styles.title}>
+            Pig Groups for {farmName || 'Loading...'} branch
+        </Text>
       <View style={styles.searchAndAddContainer}>
         <Button title="Add Pig Group" onPress={openAddPigGroupModal} color="#4CAF50" />
         <TextInput

@@ -37,6 +37,7 @@ export default function DashboardScreen({ firstName, lastName, farmName, onLogou
   const [selectedBranch, setSelectedBranch] = useState(farmName);
   const sidebarTranslateX = useState(new Animated.Value(Dimensions.get('window').width))[0];
   const navigation = useNavigation();
+  
   const user = auth.currentUser;
   
  // const userId = user ? user.uid : null; // Ensure that userId is defined
@@ -50,36 +51,49 @@ export default function DashboardScreen({ firstName, lastName, farmName, onLogou
     }
 }, []);
 
+
 useEffect(() => {
   if (user) {
-      const userId = user.uid; 
-      const userDocRef = doc(firestore, `users/${userId}/farmBranches/Main Farm`);
-      const unsubscribeUserDoc = onSnapshot(userDocRef, (doc) => {
-          const userData = doc.data();
-          const farmName = userData?.farmName || ''; 
-          setCurrentFarmName(`${farmName}`); 
-          setSelectedBranch(`Main Farm: ${farmName}`); 
+    const userId = user.uid; 
+    const userDocRef = doc(firestore, `users/${userId}/farmBranches/Main Farm`);
 
-          const q = query(collection(firestore, `users/${userId}/farmBranches`));
-          const unsubscribeFarmBranches = onSnapshot(q, (snapshot) => {
-              const branchList = [];
-              snapshot.forEach((doc) => {
-                  branchList.push({ id: doc.id, ...doc.data() });
-              });
+    const unsubscribeUserDoc = onSnapshot(userDocRef, (doc) => {
+      const userData = doc.data();
+      const farmName = userData?.farmName || ''; 
+      setCurrentFarmName(`${farmName}`); 
+      // Setting the selected branch to reflect the Main Farm's name
+      setSelectedBranch(`Main Farm: ${farmName}`); 
 
-              const updatedBranchList = branchList.map(branch => ({
-                  id: branch.id,
-                  name: branch.id === 'Main Farm' ? `Main Farm: ${farmName}` : `Farm Branch: ${branch.name}`
-              }));
+      const q = query(collection(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches`));
+      const unsubscribeFarmBranches = onSnapshot(q, (snapshot) => {
+        const branchList = [];
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          branchList.push({ id: doc.id, ...data });
+        });
 
-              setBranches(updatedBranchList);
+        console.log("Fetched branches:", branchList); // Debug log
+        const updatedBranchList = branchList.map(branch => ({
+          id: branch.id,
+          name: branch.id === 'Main Farm' ? `Main Farm: ${farmName}` : `Farm Branch: ${branch.farmName || 'Unnamed Branch'}`,
+        }));
+        
+        // Adding the Main Farm explicitly to the list if it's not already included
+        if (!branchList.some(branch => branch.id === 'Main Farm')) {
+          updatedBranchList.unshift({
+            id: 'Main Farm',
+            name: `Main Farm: ${farmName}`,
           });
+        }
 
-          return () => {
-              unsubscribeFarmBranches();
-              unsubscribeUserDoc();
-          };
+        setBranches(updatedBranchList);
       });
+
+      return () => {
+        unsubscribeFarmBranches();
+        unsubscribeUserDoc();
+      };
+    });
   }
 }, [user]);
 
@@ -256,13 +270,15 @@ const handleAddBranch = async () => {
           <Text style={styles.title}>Pig Groups Summary</Text>
 
           <TouchableOpacity
-            style={[styles.seeAllButton, { zIndex: 10, elevation: 5 }]}
-            onPress={() => navigation.navigate('PigGroups', {
-              selectedBranch: selectedBranch === `Main Farm: ${farmName}` ? 'Main Farm' : selectedBranch,
-            })}
-          >
-            <Text style={styles.seeAllText}>See All</Text>
-          </TouchableOpacity>
+  style={[styles.seeAllButton, { zIndex: 10, elevation: 5 }]}
+  onPress={() => navigation.navigate('PigGroups', {
+    selectedBranch: selectedBranch === `Main Farm: ${farmName}` ? 'Main Farm' : selectedBranch,
+    farmName: farmName // Pass the farm name here
+  })}
+>
+  <Text style={styles.seeAllText}>See All</Text>
+</TouchableOpacity>
+
 
           <FlatList
                     data={pigGroups}
@@ -313,19 +329,17 @@ const handleAddBranch = async () => {
 
           {/* Branch Picker */}
           <Picker
-  selectedValue={selectedBranch}
-  onValueChange={handleBranchSwitch}
-  style={styles.picker}
+    selectedValue={selectedBranch}
+    onValueChange={handleBranchSwitch}
+    style={styles.picker}
 >
-  <Picker.Item label="Select a Branch" value="" />
-  {branches
-    .filter((branch) => branch.name) // Ensure branch has a valid name
-    .map((branch) => (
-      <Picker.Item
-        key={branch.id}
-        label={branch.id === 'Main Farm' ? ` ${branch.name}` : ` ${branch.name}`}
-        value={branch.id}
-      />
+    <Picker.Item label="Select a Branch" value="" />
+    {branches.map((branch) => (
+        <Picker.Item
+            key={branch.id}
+            label={branch.name}
+            value={branch.id}
+        />
     ))}
 </Picker>
 
