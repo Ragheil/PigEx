@@ -49,7 +49,7 @@ export default function AddPigInfoScreen({ route }) {
   const fetchPigGroupName = async () => {
     const pigCollectionPath = selectedBranch === 'Main Farm'
       ? `users/${user.uid}/farmBranches/Main Farm/pigGroups/${pigGroupId}`
-      : `users/${user.uid}/farmBranches/${selectedBranch}/pigGroups/${pigGroupId}`;
+      : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}`;
       
     const docRef = doc(firestore, pigCollectionPath);
     const docSnapshot = await getDoc(docRef);
@@ -64,12 +64,11 @@ export default function AddPigInfoScreen({ route }) {
 
 
  
+
   useFocusEffect(
     React.useCallback(() => {
-      // Reset any necessary state or perform actions when the screen regains focus
-      // For example, you can reset any modals or form state here
-      setModalVisible(false); // Close any open modals
-      setDetailModalVisible(false); // Close any open detail modals
+      setModalVisible(false);
+      setDetailModalVisible(false);
       return () => {
         // Cleanup if necessary when losing focus
       };
@@ -82,7 +81,7 @@ export default function AddPigInfoScreen({ route }) {
     const fetchPigs = async () => {
       const pigsCollectionPath = selectedBranch === 'Main Farm'
         ? `users/${user.uid}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs`
-        : `users/${user.uid}/farmBranches/${selectedBranch}/pigGroups/${pigGroupId}/pigs`;
+        : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs`;
       
       const q = query(collection(firestore, pigsCollectionPath));
       const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -116,7 +115,9 @@ export default function AddPigInfoScreen({ route }) {
       return;
     }
   
-    const pigCollectionPath = `users/${user.uid}/farmBranches/${selectedBranch}/pigGroups/${pigGroupId}/pigs`;
+    const pigCollectionPath = selectedBranch === 'Main Farm'
+      ? `users/${user.uid}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs`
+      : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs`;
     
     try {
       await addDoc(collection(firestore, pigCollectionPath), {
@@ -125,8 +126,8 @@ export default function AddPigInfoScreen({ route }) {
         gender,
         race,
         dateOfBirth,
-        vitality: isDeceased ? 'deceased' : 'alive', // Set vitality based on toggle
-        ...(isDeceased && { causeOfDeath, dateOfDeath }), // Add cause and date of death if deceased
+        vitality: isDeceased ? 'deceased' : 'alive',
+        ...(isDeceased && { causeOfDeath, dateOfDeath }),
         createdAt: new Date(),
       });
   
@@ -138,45 +139,33 @@ export default function AddPigInfoScreen({ route }) {
       Alert.alert('Error', 'There was a problem adding the pig.');
     }
   };
-  
-  
-
-  const resetFields = () => {
-    setPigName('');
-    setTagNumber('');
-    setGender('male');
-    setRace('');
-    setDateOfBirth(new Date());
-    setVitality('alive');
-    setIsDeceased(false);
-    setCauseOfDeath('');
-    setDateOfDeath(new Date());
-  };
 
   // Edit Pig
  // Edit Pig
-const handleEditPig = async () => {
+ const handleEditPig = async () => {
   if (!pigName.trim() || !tagNumber.trim() || !gender || !race.trim()) {
     Alert.alert('Validation Error', 'All fields are required.');
     return;
   }
+  
+  const pigCollectionPath = selectedBranch === 'Main Farm'
+    ? `users/${user.uid}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${currentPigId}`
+    : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${currentPigId}`;
+  
   try {
-    const pigCollectionPath = `users/${user.uid}/farmBranches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${currentPigId}`;
     const updatedData = {
       pigName,
       tagNumber,
       gender,
       race,
-      dateOfBirth,  // Update date of birth
-      vitality: isDeceased ? 'deceased' : 'alive',  // Update vitality
+      dateOfBirth,
+      vitality: isDeceased ? 'deceased' : 'alive',
     };
 
-    // Conditionally add causeOfDeath and dateOfDeath if the pig is deceased
     if (isDeceased) {
       updatedData.causeOfDeath = causeOfDeath;
       updatedData.dateOfDeath = dateOfDeath;
     } else {
-      // Remove causeOfDeath and dateOfDeath if the pig is alive
       updatedData.causeOfDeath = null;
       updatedData.dateOfDeath = null;
     }
@@ -193,9 +182,8 @@ const handleEditPig = async () => {
   }
 };
 
-  
-  // Delete Pig
-  const handleDeletePig = (pigId) => {
+   // Delete Pig
+   const handleDeletePig = (pigId) => {
     Alert.alert(
       'Confirm Deletion',
       'Are you sure you want to delete this pig?',
@@ -203,7 +191,9 @@ const handleEditPig = async () => {
         { text: 'Cancel', style: 'cancel' },
         { text: 'Delete', style: 'destructive', onPress: async () => {
             try {
-              const pigCollectionPath = `users/${user.uid}/farmBranches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${pigId}`;
+              const pigCollectionPath = selectedBranch === 'Main Farm'
+                ? `users/${user.uid}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${pigId}`
+                : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${pigId}`;
               await deleteDoc(doc(firestore, pigCollectionPath));
               Alert.alert('Success', 'Pig deleted successfully!');
             } catch (error) {
@@ -215,6 +205,17 @@ const handleEditPig = async () => {
       ],
       { cancelable: true }
     );
+  };
+
+  const resetFields = () => {
+    setPigName('');
+    setTagNumber('');
+    setGender('male');
+    setRace('');
+    setDateOfBirth(new Date());
+    setIsDeceased(false);
+    setCauseOfDeath('');
+    setDateOfDeath(new Date());
   };
 
   // Filter Pigs

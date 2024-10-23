@@ -55,34 +55,40 @@ const PigGroupsScreen = ({ navigation, route }) => {
 
   
   
-  const fetchPigGroups = async () => {
-    try {
-      if (!user) return;
-  
-      // Check if the selected branch exists
-      if (!(await branchExists())) {
-        console.log(`Branch ${selectedBranch} does not exist.`);
-        return;
-      }
-  
-      // Define pigGroupsCollection logic based on selected branch
-      const pigGroupsCollection = selectedBranch === 'Main Farm'
-        ? collection(firestore, `users/${user.uid}/farmBranches/Main Farm/pigGroups`)
-        : collection(firestore, `users/${user.uid}/farmBranches/${farmName}/pigGroups`); // Use farmName here
-  
-      const q = query(pigGroupsCollection, orderBy('name'));
-      const querySnapshot = await getDocs(q);
-  
-      const pigGroupsList = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-  
-      setPigGroups(pigGroupsList);
-    } catch (error) {
-      console.error('Error fetching pig groups:', error);
+const fetchPigGroups = async () => {
+  try {
+    if (!user) return;
+
+    // Ensure farmName is set before fetching pig groups
+    if (!farmName) {
+      console.log('Farm name is not set. Cannot fetch pig groups.');
+      return;
     }
-  };
+
+    // Check if the selected branch exists
+    if (!(await branchExists())) {
+      console.log(`Branch ${selectedBranch} does not exist.`);
+      return;
+    }
+
+    const pigGroupsCollection = selectedBranch === 'Main Farm'
+      ? collection(firestore, `users/${user.uid}/farmBranches/Main Farm/pigGroups`)
+      : collection(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups`);
+
+    const q = query(pigGroupsCollection, orderBy('name'));
+    const querySnapshot = await getDocs(q);
+
+    const pigGroupsList = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    setPigGroups(pigGroupsList);
+  } catch (error) {
+    console.error('Error fetching pig groups:', error);
+  }
+};
+
   
   
 
@@ -90,7 +96,7 @@ const PigGroupsScreen = ({ navigation, route }) => {
     if (!user) return false;
 
     try {
-      const pigGroupsCollection = collection(firestore, `users/${user.uid}/farmBranches/${selectedBranch}/pigGroups`);
+      const pigGroupsCollection = collection(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups`);
       const q = query(pigGroupsCollection, where('name', '==', name));
       const querySnapshot = await getDocs(q);
       return !querySnapshot.empty;
@@ -122,7 +128,7 @@ const PigGroupsScreen = ({ navigation, route }) => {
 
       const pigGroupsCollection = selectedBranch === 'Main Farm'
         ? collection(firestore, `users/${user.uid}/farmBranches/Main Farm/pigGroups`)
-        : collection(firestore, `users/${user.uid}/farmBranches/${selectedBranch}/pigGroups`);
+        : collection(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups`);
 
       if (editPigGroupId) {
         // Update existing pig group
@@ -157,7 +163,7 @@ const PigGroupsScreen = ({ navigation, route }) => {
     try {
       if (!user) return;
 
-      await deleteDoc(doc(firestore, `users/${user.uid}/farmBranches/${selectedBranch}/pigGroups`, editPigGroupId));
+      await deleteDoc(doc(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups`, editPigGroupId));
       console.log('Pig group deleted:', currentPigGroupName);
       setIsDeleteModalVisible(false);
       setDeleteConfirmation('');
