@@ -19,10 +19,10 @@ import {
   onSnapshot,
   deleteDoc,
 } from 'firebase/firestore';
-import styles from '../../frontend/medicalStyles/MedicalRecordScreenStyles'; // Import the styles
+import styles from '../../frontend/medicalStyles/MedicalRecordScreenStyles';
 
 const MedicalRecordScreen = ({ route, navigation }) => {
-  const { userId, selectedBranch, pigGroupId, pigName, selectedPigId } = route.params; // Access passed params
+  const { userId, selectedBranch, pigGroupId, pigName, selectedPigId } = route.params;
   const [records, setRecords] = useState([]);
   const [filteredRecords, setFilteredRecords] = useState([]);
   const [medicalId, setMedicalId] = useState('');
@@ -37,7 +37,10 @@ const MedicalRecordScreen = ({ route, navigation }) => {
   // Fetch Medical Records
   useEffect(() => {
     const fetchRecords = async () => {
-      const recordsPath = `users/${userId}/farmBranches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${selectedPigId}/medicalRecords`;
+      const recordsPath = selectedBranch === 'Main Farm'
+        ? `users/${userId}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${selectedPigId}/medicalRecords`
+        : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${selectedPigId}/medicalRecords`;
+        
       const q = query(collection(firestore, recordsPath));
 
       const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -68,7 +71,9 @@ const MedicalRecordScreen = ({ route, navigation }) => {
       return;
     }
 
-    const recordsPath = `users/${userId}/farmBranches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${selectedPigId}/medicalRecords`;
+    const recordsPath = selectedBranch === 'Main Farm'
+      ? `users/${userId}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${selectedPigId}/medicalRecords`
+      : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${selectedPigId}/medicalRecords`;
 
     try {
       await addDoc(collection(firestore, recordsPath), {
@@ -94,7 +99,9 @@ const MedicalRecordScreen = ({ route, navigation }) => {
       return;
     }
 
-    const recordsPath = `users/${userId}/farmBranches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${selectedPigId}/medicalRecords/${recordId}`;
+    const recordsPath = selectedBranch === 'Main Farm'
+      ? `users/${userId}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${selectedPigId}/medicalRecords/${recordId}`
+      : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${selectedPigId}/medicalRecords/${recordId}`;
 
     try {
       await updateDoc(doc(firestore, recordsPath), {
@@ -126,7 +133,9 @@ const MedicalRecordScreen = ({ route, navigation }) => {
         {
           text: "OK",
           onPress: async () => {
-            const recordsPath = `users/${userId}/farmBranches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${selectedPigId}/medicalRecords/${recordId}`;
+            const recordsPath = selectedBranch === 'Main Farm'
+              ? `users/${userId}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${selectedPigId}/medicalRecords/${recordId}`
+              : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${selectedPigId}/medicalRecords/${recordId}`;
             try {
               await deleteDoc(doc(firestore, recordsPath));
               Alert.alert('Success', 'Medical record deleted successfully!');
@@ -184,7 +193,7 @@ const MedicalRecordScreen = ({ route, navigation }) => {
               onPress={() => {
                 setMedicalId(item.medicalId);
                 setName(item.name);
-                setDate(item.date ? item.date.toDate() : new Date()); // Handle date if available
+                setDate(item.date ? item.date.toDate() : new Date());
                 setRemarks(item.remarks);
                 setEditRecordId(item.id);
                 setModalVisible(true);
