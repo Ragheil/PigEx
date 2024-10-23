@@ -66,7 +66,7 @@ const TransactionScreen = ({ route }) => {
     try {
       const moneyInPath = selectedBranch === 'Main Farm'
         ? `users/${userId}/farmBranches/Main Farm/moneyInRecords`
-        : `users/${userId}/farmBranches/${selectedBranch}/moneyInRecords`;
+        : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyInRecords`;
   
       const moneyInRecordsRef = collection(firestore, moneyInPath);
       const inRecordsSnapshot = await getDocs(moneyInRecordsRef);
@@ -79,7 +79,7 @@ const TransactionScreen = ({ route }) => {
   
       const moneyOutPath = selectedBranch === 'Main Farm'
         ? `users/${userId}/farmBranches/Main Farm/moneyOutRecords`
-        : `users/${userId}/farmBranches/${selectedBranch}/moneyOutRecords`;
+        : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyOutRecords`;
   
       const moneyOutRecordsRef = collection(firestore, moneyOutPath);
       const outRecordsSnapshot = await getDocs(moneyOutRecordsRef);
