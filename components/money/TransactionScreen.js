@@ -267,6 +267,9 @@ const [error, setError] = useState(null);
     // Get the actual start and end dates from the picker
     const dateRange = formatDateRange(startDate, endDate);
   
+    // Determine the branch name
+    const branchFarmName = selectedBranch === 'Main Farm' ? 'Main Farm' : farmBranchName; // Fetch the branch name
+  
     // Start building the HTML content for the PDF
     let htmlContent = `
       <div style="margin: 20px;">
