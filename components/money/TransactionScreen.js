@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, RefreshControl, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { collection, getDocs, doc, onSnapshot } from 'firebase/firestore';
+import { collection, getDocs, doc, onSnapshot, getDoc } from 'firebase/firestore';
 import { firestore } from '../../firebase/config2'; // Adjust the path to your Firebase config
 import RNHTMLtoPDF from 'react-native-html-to-pdf'; // Import the library
 import * as Print from 'expo-print';
@@ -36,7 +36,12 @@ const TransactionScreen = ({ route }) => {
       { label: 'Money Out', data: [] },
     ],
   });
+  const [farmName, setFarmName] = useState(''); // Use farmName to display dynamically
+  const [farmBranchName, setFarmBranchName] = useState('Unknown Branch'); // Store the fetched farm name
+  const [branchFarmName, setBranchFarmName] = useState('');
 
+const [loading, setLoading] = useState(true);
+const [error, setError] = useState(null);
   useEffect(() => {
     const unsubscribeUser = fetchUserDetails();
     fetchTransactionRecords();
@@ -53,15 +58,59 @@ const TransactionScreen = ({ route }) => {
     return onSnapshot(userRef, (doc) => {
       if (doc.exists()) {
         const data = doc.data();
-        setUserDetails({
-          firstName: data.firstName || 'N/A',
-          lastName: data.lastName || 'N/A',
-          farmName: data.farmName || 'N/A',
-        });
+        const branchFarmName = selectedBranch === 'Main Farm' ? data.farmName || 'N/A' : selectedBranch;
+        setFarmName(branchFarmName); // Dynamically set the farm name
       }
     });
   };
+ useEffect(() => {
+    const fetchFarmBranchName = async () => {
+      try {
+        if (selectedBranch === 'Main Farm') {
+          setFarmBranchName('Main Farm');
+        } else {
+          const branchDocRef = doc(firestore, `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}`);
+          const branchDoc = await getDoc(branchDocRef);
 
+          if (branchDoc.exists()) {
+            const branchData = branchDoc.data();
+            setFarmBranchName(branchData.farmName || 'Unknown Branch');
+          } else {
+            console.error('No such branch found.');
+            setFarmBranchName('Unknown Branch');
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching branch name:', error);
+        Alert.alert('Error', 'Unable to fetch branch name.');
+      }
+    };
+
+    fetchFarmBranchName();
+  }, [selectedBranch, userId]);
+
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const branchDocRef = doc(firestore, `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}`);
+        const branchDoc = await getDoc(branchDocRef);
+        if (branchDoc.exists()) {
+          const branchData = branchDoc.data();
+          setBranchFarmName(branchData.farmName || 'Unknown Branch');
+        } else {
+          setBranchFarmName('Unknown Branch');
+        }
+      } catch (err) {
+        setError('Failed to fetch branch name');
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchData();
+  }, [selectedBranch, userId]);
+  
   const fetchTransactionRecords = async () => {
     try {
       const moneyInPath = selectedBranch === 'Main Farm'
@@ -91,13 +140,6 @@ const TransactionScreen = ({ route }) => {
       });
   
       const combinedTransactions = [...incoming, ...outgoing];
-  
-      // Sort transactions by date (newest first)
-      combinedTransactions.sort((a, b) => {
-        const dateA = a.date.toDate ? a.date.toDate() : new Date(a.date);
-        const dateB = b.date.toDate ? b.date.toDate() : new Date(b.date);
-        return dateB - dateA;
-      });
   
       setTransactions(combinedTransactions);
       setFilteredTransactions(combinedTransactions); // Set initial filtered transactions
@@ -232,7 +274,7 @@ const TransactionScreen = ({ route }) => {
       <div style="margin: 20px;">
         <h1 style="text-align: center;">PigEx Transaction Report</h1>
         <h3 style="text-align: left;">As of: ${dateRange}</h3>
-        <h2 style="text-align: left;">Branch Name: ${selectedBranch}</h2>
+        <h2 style="text-align: left;">Branch Name: ${branchFarmName}</h2>
         <h3 style="text-align: left;">Total Balance: ₱${totalBalance.toFixed(2)}</h3>
         <h3 style="text-align: left;">Total Income: ₱${totalIncome.toFixed(2)}</h3>
         <h3 style="text-align: left;">Total Expense: ₱${totalExpense.toFixed(2)}</h3>
@@ -504,9 +546,10 @@ const TransactionScreen = ({ route }) => {
     <View style={TransactionScreenStyles.container}>
       <Text style={TransactionScreenStyles.headerText}> Transaction </Text>
       <View style={TransactionScreenStyles.infoContainer}>
-        <Text style={TransactionScreenStyles.infoText}>
-          Farm Name: {selectedBranch}
-        </Text>
+      <Text style={TransactionScreenStyles.infoText}>
+  Farm Name: {farmBranchName}
+</Text>
+
         <Text style={TransactionScreenStyles.subHeaderText}>
           Total Balance: <Text style={TransactionScreenStyles.totalBalanceText}>₱{totalBalance.toFixed(2)}</Text>
         </Text>

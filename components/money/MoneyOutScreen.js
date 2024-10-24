@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, Modal, Pressable, FlatList } from 'react-native';
-import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
 import { firestore } from '../../firebase/config2'; 
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -19,6 +19,37 @@ const MoneyOutScreen = ({ route }) => {
   const [moneyRecords, setMoneyRecords] = useState([]);
   const [currentRecordId, setCurrentRecordId] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [farmBranchName, setFarmBranchName] = useState('Unknown Branch'); // Store the fetched farm name
+
+  useEffect(() => {
+    const fetchFarmBranchName = async () => {
+      try {
+        if (selectedBranch === 'Main Farm') {
+          setFarmBranchName('Main Farm');
+        } else {
+          const branchDocRef = doc(firestore, `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}`);
+          const branchDoc = await getDoc(branchDocRef);
+
+          if (branchDoc.exists()) {
+            const branchData = branchDoc.data();
+            setFarmBranchName(branchData.farmName || 'Unknown Branch'); // Set the farm name
+          } else {
+            console.error('No such branch found.');
+            setFarmBranchName('Unknown Branch');
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching branch name:', error);
+        Alert.alert('Error', 'Unable to fetch branch name.');
+      }
+    };
+
+    if (selectedBranch) {
+      fetchFarmBranchName(); // Fetch the farm name when selectedBranch is set
+    }
+  }, [selectedBranch, userId]); // Re-run the effect if selectedBranch or userId changes
+
+
 
   useEffect(() => {
     fetchTotalBalance();
@@ -198,7 +229,7 @@ const MoneyOutScreen = ({ route }) => {
       
       <Text style={styles.title}>Money Out Records</Text>
       <Text style={styles.balance}>Total Balance: PHP {totalBalance.toFixed(2)}</Text>
-      <Text style={styles.farmName}>Current Branch: {selectedBranch || 'No branch selected'}</Text>
+      <Text style={styles.farmName}>Current Branch: {farmBranchName || 'No branch selected'}</Text>
 
       <FlatList
         data={moneyRecords}
@@ -275,6 +306,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    marginTop: 60
   },
   balance: {
     fontSize: 18,

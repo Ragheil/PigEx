@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Modal, TouchableWithoutFeedback, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
+import { firestore } from '../../firebase/config2'; // Adjust path as needed
 
 export default function FooterScreen({ firstName, lastName, farmName, selectedBranch, toggleSidebar, userId }) { // Added userId as prop
   const navigation = useNavigation();
@@ -15,29 +17,121 @@ export default function FooterScreen({ firstName, lastName, farmName, selectedBr
     setModalVisible(false);
   };
 
-  const handleMoneyIn = () => {
-    console.log(`Navigating to MoneyInScreen with farmName: ${farmName}, selectedBranch: ${selectedBranch}, userId: ${userId}`);
-    
-    if (!farmName || !selectedBranch) {
-      console.error('Error: farmName or selectedBranch is undefined.');
-      Alert.alert('Error', 'Farm Name or Selected Branch is not set.');
-      return;
-    }
+  const handleMoneyIn = async () => {
+    try {
+      let branchType;
+      if (selectedBranch === 'Main Farm') {
+        branchType = 'Main Farm';
+      } else {
+        // Fetch the farm name from Firestore for the selectedBranch
+        const branchDocRef = doc(firestore, `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}`);
+        const branchDoc = await getDoc(branchDocRef);
+        
+        if (branchDoc.exists()) {
+          const branchData = branchDoc.data();
+          branchType = branchData.farmName || 'Unknown Branch'; // Get the farmName field from the document
+        } else {
+          console.error('Error: No such branch found.');
+          branchType = 'Unknown Branch';
+        }
+      }
   
-    navigation.navigate('MoneyInScreen', {
-      farmName: farmName,
-      selectedBranch: selectedBranch,
-      userId: userId,
-    });
+      console.log(`Navigating to MoneyInScreen with farm branch Name: ${branchType}, selectedBranch: ${selectedBranch}, userId: ${userId}`);
+  
+      if (!farmName || !selectedBranch) {
+        console.error('Error: farmName or selectedBranch is undefined.');
+        Alert.alert('Error', 'Farm Name or Selected Branch is not set.');
+        return;
+      }
+  
+      navigation.navigate('MoneyInScreen', {
+        farmName: branchType,  // Use the fetched farmName here
+        selectedBranch: selectedBranch,
+        userId: userId,
+      });
+    } catch (error) {
+      console.error('Error fetching branch name:', error);
+      Alert.alert('Error', 'Unable to fetch branch name.');
+    }
   };
   
   
   
 
-  const handleMoneyOut = () => {
-    console.log(`Current branch: ${farmName}`); // Log current branch when Money Out is pressed
-    console.log('Money Out pressed');
-    navigation.navigate('MoneyOutScreen', { farmName, selectedBranch, userId }); // Pass selectedBranch and userId
+  const handleMoneyOut = async () => {
+    try {
+      let branchType;
+      if (selectedBranch === 'Main Farm') {
+        branchType = 'Main Farm';
+      } else {
+        // Fetch the farm name from Firestore for the selectedBranch
+        const branchDocRef = doc(firestore, `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}`);
+        const branchDoc = await getDoc(branchDocRef);
+        
+        if (branchDoc.exists()) {
+          const branchData = branchDoc.data();
+          branchType = branchData.farmName || 'Unknown Branch'; // Get the farmName field from the document
+        } else {
+          console.error('Error: No such branch found.');
+          branchType = 'Unknown Branch';
+        }
+      }
+  
+      console.log(`Navigating to MoneyOutScreen with farm branch Name: ${branchType}, selectedBranch: ${selectedBranch}, userId: ${userId}`);
+  
+      if (!farmName || !selectedBranch) {
+        console.error('Error: farmName or selectedBranch is undefined.');
+        Alert.alert('Error', 'Farm Name or Selected Branch is not set.');
+        return;
+      }
+  
+      navigation.navigate('MoneyOutScreen', {
+        farmName: branchType,  // Use the fetched farmName here
+        selectedBranch: selectedBranch,
+        userId: userId,
+      });
+    } catch (error) {
+      console.error('Error fetching branch name:', error);
+      Alert.alert('Error', 'Unable to fetch branch name.');
+    }
+  };
+  
+  const handleTransactions = async () => {
+    try {
+      let branchType;
+      if (selectedBranch === 'Main Farm') {
+        branchType = 'Main Farm';
+      } else {
+        // Fetch the farm name from Firestore for the selectedBranch
+        const branchDocRef = doc(firestore, `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}`);
+        const branchDoc = await getDoc(branchDocRef);
+        
+        if (branchDoc.exists()) {
+          const branchData = branchDoc.data();
+          branchType = branchData.farmName || 'Unknown Branch'; // Get the farmName field from the document
+        } else {
+          console.error('Error: No such branch found.');
+          branchType = 'Unknown Branch';
+        }
+      }
+  
+      console.log(`Navigating to TransactionScreen with farm branch Name: ${branchType}, selectedBranch: ${selectedBranch}, userId: ${userId}`);
+  
+      if (!farmName || !selectedBranch) {
+        console.error('Error: farmName or selectedBranch is undefined.');
+        Alert.alert('Error', 'Farm Name or Selected Branch is not set.');
+        return;
+      }
+  
+      navigation.navigate('TransactionScreen', {
+        farmName: branchType,  // Use the fetched farmName here
+        selectedBranch: selectedBranch,
+        userId: userId,
+      });
+    } catch (error) {
+      console.error('Error fetching branch name:', error);
+      Alert.alert('Error', 'Unable to fetch branch name.');
+    }
   };
   
 
