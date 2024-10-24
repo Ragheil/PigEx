@@ -264,9 +264,7 @@ const [error, setError] = useState(null);
       return `${formatDateToWords(start)} - ${formatDateToWords(end)}`;
     };
   
-    // Define your date range (make sure startDate and endDate are properly defined)
-    const startDate = '2024-10-01'; // Replace with your actual start date
-    const endDate = '2024-10-11'; // Replace with your actual end date
+    // Get the actual start and end dates from the picker
     const dateRange = formatDateRange(startDate, endDate);
   
     // Start building the HTML content for the PDF
@@ -369,6 +367,7 @@ const [error, setError] = useState(null);
       Alert.alert('Error', 'Could not create PDF file.');
     }
   };
+  
 
 
   
