@@ -261,16 +261,20 @@ const [error, setError] = useState(null);
       if (isNaN(d.getTime())) {
         return 'Invalid Time'; // Handle invalid times
       }
-      
+  
       // Define options for toLocaleTimeString
       const options = { hour: '2-digit', minute: '2-digit' };
       return d.toLocaleTimeString(undefined, options); // Format the time to words
     };
   
+    // Get the current date and time for the report request
+    const currentDate = new Date();
+    const formattedRequestDate = `${formatDateToWords(currentDate)} at ${formatTimeToWords(currentDate)}`;
+  
     // Format the date range in words
     const formatDateRange = (start, end) => {
       if (start === end) {
-        return `As of ${formatDateToWords(end)}`;
+        return `${formatDateToWords(end)}`;
       }
       return `${formatDateToWords(start)} - ${formatDateToWords(end)}`;
     };
@@ -285,7 +289,7 @@ const [error, setError] = useState(null);
     let htmlContent = `
       <div style="margin: 20px;">
         <h1 style="text-align: center;">PigEx Transaction Report</h1>
-        <h3 style="text-align: left;">As of: ${dateRange}</h3>
+        <h3 style="text-align: left;">Report Date: ${formattedRequestDate}</h3>
         <h2 style="text-align: left;">Branch Name: ${branchFarmName}</h2>
         <h3 style="text-align: left;">Total Balance: ₱${totalBalance.toFixed(2)}</h3>
         <h3 style="text-align: left;">Total Income: ₱${totalIncome.toFixed(2)}</h3>
@@ -382,6 +386,7 @@ const [error, setError] = useState(null);
       Alert.alert('Error', 'Could not create PDF file.');
     }
   };
+  
   
   
 

@@ -98,7 +98,7 @@ const MoneyInScreen = ({ route }) => {
         amount: parseFloat(amount),
         remarks,
         date: date.toISOString(), // Date in ISO format
-        time: time.toLocaleTimeString(), // Time in localized format
+        time: time.toISOString(), // Use toISOString for time
         category: selectedCategory,
       };
   
@@ -112,18 +112,13 @@ const MoneyInScreen = ({ route }) => {
       Alert.alert('Success', 'Money added successfully!');
       fetchTotalBalance();
       fetchMoneyRecords();
-      setAmount('');
-      setRemarks('');
-      setCategory('salary');
-      setOtherCategory('');
-      setModalVisible(false);
+      resetForm();
     } catch (error) {
       console.error('Error adding money record:', error);
       Alert.alert('Error', 'Failed to add money. Please try again.');
     }
   };
   
-
   const handleEditMoney = async () => {
     if (!amount) {
       Alert.alert('Error', 'Please enter an amount.');
@@ -137,7 +132,7 @@ const MoneyInScreen = ({ route }) => {
         amount: parseFloat(amount),
         remarks,
         date: date.toISOString(), // Date in ISO format
-        time: time.toLocaleTimeString(), // Time in localized format
+        time: time.toISOString(), // Use toISOString for time
         category: selectedCategory,
       };
   
@@ -151,18 +146,23 @@ const MoneyInScreen = ({ route }) => {
       Alert.alert('Success', 'Money record updated successfully!');
       fetchTotalBalance();
       fetchMoneyRecords();
-      setAmount('');
-      setRemarks('');
-      setCategory('salary');
-      setOtherCategory('');
-      setModalVisible(false);
-      setIsEditing(false);
-      setCurrentRecordId(null);
+      resetForm();
     } catch (error) {
       console.error('Error updating money record:', error);
       Alert.alert('Error', 'Failed to update money record. Please try again.');
     }
   };
+  
+  const resetForm = () => {
+    setAmount('');
+    setRemarks('');
+    setCategory('salary');
+    setOtherCategory('');
+    setModalVisible(false);
+    setIsEditing(false);
+    setCurrentRecordId(null);
+  };
+  
 
 const handleDeleteMoney = async (id) => {
   try {
@@ -284,7 +284,7 @@ const handleDeleteMoney = async (id) => {
               }}
             />
           )}
-           {/* Time Picker */}
+      {/* Time Picker */}
       <Text>Time:</Text>
       <Pressable onPress={() => setShowTimePicker(true)}>
         <Text>{time.toLocaleTimeString()}</Text>

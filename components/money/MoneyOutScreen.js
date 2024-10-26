@@ -22,9 +22,6 @@ const MoneyOutScreen = ({ route }) => {
   const [farmBranchName, setFarmBranchName] = useState('Unknown Branch'); // Store the fetched farm name
   const [dateTime, setDateTime] = useState(new Date());
   const [showTimePicker, setShowTimePicker] = useState(false);
-
-
-  
   useEffect(() => {
     const fetchFarmBranchName = async () => {
       try {
@@ -51,9 +48,7 @@ const MoneyOutScreen = ({ route }) => {
     if (selectedBranch) {
       fetchFarmBranchName(); // Fetch the farm name when selectedBranch is set
     }
-  }, [selectedBranch, userId]); // Re-run the effect if selectedBranch or userId changes
-
-
+  }, [selectedBranch, userId]);
 
   useEffect(() => {
     fetchTotalBalance();
@@ -97,95 +92,97 @@ const MoneyOutScreen = ({ route }) => {
       console.error('Error fetching money records:', error);
     }
   };
-  const handleTimeChange = (event, selectedTime) => {
-    setShowTimePicker(false);
-    if (selectedTime) {
-      const updatedDateTime = new Date(
-        dateTime.getFullYear(),
-        dateTime.getMonth(),
-        dateTime.getDate(),
-        selectedTime.getHours(),
-        selectedTime.getMinutes()
-      );
-      setDateTime(updatedDateTime);
-    }
-  };
 
   const handleDateChange = (event, selectedDate) => {
     setShowDatePicker(false);
     if (selectedDate) {
-      const updatedDateTime = new Date(
+      // Update both date and time in one step
+      const updatedDate = new Date(
         selectedDate.getFullYear(),
         selectedDate.getMonth(),
         selectedDate.getDate(),
-        dateTime.getHours(),
-        dateTime.getMinutes()
+        date.getHours(),
+        date.getMinutes()
       );
-      setDateTime(updatedDateTime);
+      setDate(updatedDate);
     }
   };
 
   const handleAddMoney = async () => {
     if (!amount) {
-      Alert.alert('Error', 'Please enter an amount.');
-      return;
+        Alert.alert('Error', 'Please enter an amount.');
+        return;
     }
 
     const selectedCategory = category === 'other' ? otherCategory : category;
 
     try {
-      const moneyRecord = {
-        amount: parseFloat(amount),
-        remarks,
-        date: dateTime.toISOString(),
-        category: selectedCategory,
-      };
+        const moneyRecord = {
+            amount: parseFloat(amount),
+            remarks,
+            date: date.toISOString(), // Ensure you are using the updated date
+            category: selectedCategory,
+        };
 
-      const path = selectedBranch === 'Main Farm'
-        ? `users/${userId}/farmBranches/Main Farm/moneyOutRecords`
-        : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyOutRecords`;
+        const path = selectedBranch === 'Main Farm'
+            ? `users/${userId}/farmBranches/Main Farm/moneyOutRecords`
+            : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyOutRecords`;
 
-      await addDoc(collection(firestore, path), moneyRecord);
-      Alert.alert('Success', 'Money out added successfully!');
-      resetModalState();
-      fetchTotalBalance();
-      fetchMoneyRecords();
+        await addDoc(collection(firestore, path), moneyRecord);
+        Alert.alert('Success', 'Money out added successfully!');
+        resetModalState();
+        fetchTotalBalance();
+        fetchMoneyRecords();
     } catch (error) {
-      Alert.alert('Error', 'Failed to add money. Please try again.');
-      console.error('Error adding money out record:', error);
+        Alert.alert('Error', 'Failed to add money. Please try again.');
+        console.error('Error adding money out record:', error);
     }
-  };
+};
+  const handleTimeChange = (event, selectedTime) => {
+    setShowTimePicker(false);
+    if (selectedTime) {
+        // Update the date state to reflect the new time
+        const updatedDate = new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            date.getDate(),
+            selectedTime.getHours(),
+            selectedTime.getMinutes()
+        );
+        setDate(updatedDate);
+    }
+};
 
-  const handleEditMoney = async () => {
-    if (!amount) {
+const handleEditMoney = async () => {
+  if (!amount) {
       Alert.alert('Error', 'Please enter an amount.');
       return;
-    }
+  }
 
-    const selectedCategory = category === 'other' ? otherCategory : category;
+  const selectedCategory = category === 'other' ? otherCategory : category;
 
-    try {
+  try {
       const moneyRecord = {
-        amount: parseFloat(amount),
-        remarks,
-        date: dateTime.toISOString(),
-        category: selectedCategory,
+          amount: parseFloat(amount),
+          remarks,
+          date: date.toISOString(), // Ensure you are using the updated date
+          category: selectedCategory,
       };
 
       const path = selectedBranch === 'Main Farm'
-        ? `users/${userId}/farmBranches/Main Farm/moneyOutRecords/${currentRecordId}`
-        : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyOutRecords/${currentRecordId}`;
+          ? `users/${userId}/farmBranches/Main Farm/moneyOutRecords/${currentRecordId}`
+          : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyOutRecords/${currentRecordId}`;
 
       await updateDoc(doc(firestore, path), moneyRecord);
       Alert.alert('Success', 'Money out record updated successfully!');
       resetModalState();
       fetchTotalBalance();
       fetchMoneyRecords();
-    } catch (error) {
+  } catch (error) {
       Alert.alert('Error', 'Failed to update money record. Please try again.');
       console.error('Error updating money out record:', error);
-    }
-  };
+  }
+};
 
   const handleDeleteMoney = async (id) => {
     const confirmation = await new Promise(resolve => {
@@ -235,22 +232,20 @@ const MoneyOutScreen = ({ route }) => {
   const renderMoneyRecord = ({ item }) => (
     <View style={styles.record}>
       <Text style={styles.recordText}>Amount PHP: {item.amount.toFixed(2)}</Text>
-      <Text style={styles.recordText}>Category: {item.category}</Text>
+      <Text style={styles.recordText}>Date: {new Date(item.date).toLocaleString()}</Text>
       <Text style={styles.recordText}>Remarks: {item.remarks}</Text>
-      <View style={styles.recordButtons}>
-        <Pressable style={styles.editButton} onPress={() => {
+      <Text style={styles.recordText}>Category: {item.category}</Text>
+      <View style={styles.recordActions}>
+        <Button title="Edit" onPress={() => {
+          setIsEditing(true);
+          setCurrentRecordId(item.id);
           setAmount(item.amount.toString());
           setRemarks(item.remarks);
           setCategory(item.category);
-          setCurrentRecordId(item.id);
+          setDate(new Date(item.date)); // Set the date from the selected record
           setModalVisible(true);
-          setIsEditing(true);
-        }}>
-          <Text style={styles.buttonText}>Edit</Text>
-        </Pressable>
-        <Pressable style={styles.deleteButton} onPress={() => handleDeleteMoney(item.id)}>
-          <Text style={styles.buttonText}>Delete</Text>
-        </Pressable>
+        }} />
+        <Button title="Delete" onPress={() => handleDeleteMoney(item.id)} />
       </View>
     </View>
   );
@@ -339,6 +334,7 @@ const MoneyOutScreen = ({ route }) => {
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
