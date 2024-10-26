@@ -20,7 +20,11 @@ const MoneyOutScreen = ({ route }) => {
   const [currentRecordId, setCurrentRecordId] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [farmBranchName, setFarmBranchName] = useState('Unknown Branch'); // Store the fetched farm name
+  const [dateTime, setDateTime] = useState(new Date());
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
+
+  
   useEffect(() => {
     const fetchFarmBranchName = async () => {
       try {
@@ -93,6 +97,33 @@ const MoneyOutScreen = ({ route }) => {
       console.error('Error fetching money records:', error);
     }
   };
+  const handleTimeChange = (event, selectedTime) => {
+    setShowTimePicker(false);
+    if (selectedTime) {
+      const updatedDateTime = new Date(
+        dateTime.getFullYear(),
+        dateTime.getMonth(),
+        dateTime.getDate(),
+        selectedTime.getHours(),
+        selectedTime.getMinutes()
+      );
+      setDateTime(updatedDateTime);
+    }
+  };
+
+  const handleDateChange = (event, selectedDate) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      const updatedDateTime = new Date(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate(),
+        dateTime.getHours(),
+        dateTime.getMinutes()
+      );
+      setDateTime(updatedDateTime);
+    }
+  };
 
   const handleAddMoney = async () => {
     if (!amount) {
@@ -106,7 +137,7 @@ const MoneyOutScreen = ({ route }) => {
       const moneyRecord = {
         amount: parseFloat(amount),
         remarks,
-        date: date.toISOString(),
+        date: dateTime.toISOString(),
         category: selectedCategory,
       };
 
@@ -137,7 +168,7 @@ const MoneyOutScreen = ({ route }) => {
       const moneyRecord = {
         amount: parseFloat(amount),
         remarks,
-        date: date.toISOString(),
+        date: dateTime.toISOString(),
         category: selectedCategory,
       };
 
@@ -286,6 +317,17 @@ const MoneyOutScreen = ({ route }) => {
               }}
             />
           )}
+           <Pressable style={styles.button} onPress={() => setShowTimePicker(true)}>
+            <Text style={styles.buttonText}>Select Time</Text>
+          </Pressable>
+          {showTimePicker && (
+            <DateTimePicker
+              value={dateTime}
+              mode="time"
+              display="default"
+              onChange={handleTimeChange}
+            />
+          )}
           <Pressable style={styles.saveButton} onPress={isEditing ? handleEditMoney : handleAddMoney}>
             <Text style={styles.buttonText}>{isEditing ? 'Update' : 'Save'}</Text>
           </Pressable>
@@ -370,6 +412,51 @@ const styles = StyleSheet.create({
     padding: 15,
     alignItems: 'center',
     marginTop: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    margin: 20,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 15,
+  },
+  button: {
+    backgroundColor: '#007BFF',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  buttonText: {
+    color: 'white',
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  cancelButton: {
+    flex: 1,
+    marginRight: 5,
+  },
+  confirmButton: {
+    flex: 1,
+    marginLeft: 5,
   },
 });
 

@@ -19,6 +19,8 @@ const MoneyInScreen = ({ route }) => {
   const [moneyRecords, setMoneyRecords] = useState([]); // State to hold money records
   const [currentRecordId, setCurrentRecordId] = useState(null); // ID of the record being edited
   const [isEditing, setIsEditing] = useState(false); // State to track if we're in edit mode
+  const [time, setTime] = useState(new Date()); // State for time
+  const [showTimePicker, setShowTimePicker] = useState(false); // State for time picker visibility
 
   useEffect(() => {
     fetchTotalBalance(); // Fetch total balance when the component mounts
@@ -95,7 +97,8 @@ const MoneyInScreen = ({ route }) => {
       const moneyRecord = {
         amount: parseFloat(amount),
         remarks,
-        date: date.toISOString(),
+        date: date.toISOString(), // Date in ISO format
+        time: time.toLocaleTimeString(), // Time in localized format
         category: selectedCategory,
       };
   
@@ -107,13 +110,13 @@ const MoneyInScreen = ({ route }) => {
       await addDoc(moneyInRecordsRef, moneyRecord);
   
       Alert.alert('Success', 'Money added successfully!');
-      fetchTotalBalance(); // Update balance after adding money
-      fetchMoneyRecords(); // Fetch updated records after adding money
+      fetchTotalBalance();
+      fetchMoneyRecords();
       setAmount('');
       setRemarks('');
       setCategory('salary');
       setOtherCategory('');
-      setModalVisible(false); // Close modal after success
+      setModalVisible(false);
     } catch (error) {
       console.error('Error adding money record:', error);
       Alert.alert('Error', 'Failed to add money. Please try again.');
@@ -126,39 +129,40 @@ const MoneyInScreen = ({ route }) => {
       Alert.alert('Error', 'Please enter an amount.');
       return;
     }
-
+  
     const selectedCategory = category === 'other' ? otherCategory : category;
-
+  
     try {
       const moneyRecord = {
         amount: parseFloat(amount),
         remarks,
-        date: date.toISOString(),
+        date: date.toISOString(), // Date in ISO format
+        time: time.toLocaleTimeString(), // Time in localized format
         category: selectedCategory,
       };
-
+  
       const path = selectedBranch === 'Main Farm'
         ? `users/${userId}/farmBranches/Main Farm/moneyInRecords/${currentRecordId}`
-        : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyInRecords/${currentRecordId}`; // Use userId here
-
+        : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyInRecords/${currentRecordId}`;
+  
       const moneyRecordRef = doc(firestore, path);
       await updateDoc(moneyRecordRef, moneyRecord);
-
+  
       Alert.alert('Success', 'Money record updated successfully!');
-      fetchTotalBalance(); // Update balance after editing money
-      fetchMoneyRecords(); // Fetch updated records after editing money
+      fetchTotalBalance();
+      fetchMoneyRecords();
       setAmount('');
       setRemarks('');
       setCategory('salary');
       setOtherCategory('');
-      setModalVisible(false); // Close modal after success
-      setIsEditing(false); // Reset edit state
-      setCurrentRecordId(null); // Clear current record ID
+      setModalVisible(false);
+      setIsEditing(false);
+      setCurrentRecordId(null);
     } catch (error) {
       console.error('Error updating money record:', error);
       Alert.alert('Error', 'Failed to update money record. Please try again.');
     }
-};
+  };
 
 const handleDeleteMoney = async (id) => {
   try {
@@ -280,6 +284,23 @@ const handleDeleteMoney = async (id) => {
               }}
             />
           )}
+           {/* Time Picker */}
+      <Text>Time:</Text>
+      <Pressable onPress={() => setShowTimePicker(true)}>
+        <Text>{time.toLocaleTimeString()}</Text>
+      </Pressable>
+      {showTimePicker && (
+        <DateTimePicker
+          value={time}
+          mode="time"
+          display="default"
+          onChange={(event, selectedTime) => {
+            const currentTime = selectedTime || time;
+            setShowTimePicker(false);
+            setTime(currentTime);
+          }}
+        />
+      )}
           <Pressable style={styles.modalButton} onPress={isEditing ? handleEditMoney : handleAddMoney}>
             <Text style={styles.buttonText}>{isEditing ? 'Update' : 'Add'}</Text>
           </Pressable>

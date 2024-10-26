@@ -256,6 +256,17 @@ const [error, setError] = useState(null);
       return d.toLocaleDateString(undefined, options); // Format the date to words
     };
   
+    const formatTimeToWords = (date) => {
+      const d = new Date(date);
+      if (isNaN(d.getTime())) {
+        return 'Invalid Time'; // Handle invalid times
+      }
+      
+      // Define options for toLocaleTimeString
+      const options = { hour: '2-digit', minute: '2-digit' };
+      return d.toLocaleTimeString(undefined, options); // Format the time to words
+    };
+  
     // Format the date range in words
     const formatDateRange = (start, end) => {
       if (start === end) {
@@ -282,7 +293,7 @@ const [error, setError] = useState(null);
         <table border="1" width="100%" style="border-collapse: collapse; table-layout: fixed;">
           <thead>
             <tr>
-              <th style="width: 27%; text-align: center;">Date</th>
+              <th style="width: 27%; text-align: center;">Time</th>
               <th style="width: 30%; text-align: center;">Description</th>
               <th style="width: 25%; text-align: center;">Type of Money</th>
               <th style="width: 23%; text-align: center;">Amount</th>
@@ -322,10 +333,11 @@ const [error, setError] = useState(null);
         const amountColor = transaction.type === 'in' ? 'green' : 'red';
         const amountSign = transaction.type === 'in' ? '+' : '-';
         const formattedAmount = `${amountSign} ₱${parseFloat(transaction.amount).toFixed(2)}`;
+        const formattedTime = formatTimeToWords(transaction.date); // Get formatted time
   
         htmlContent += `
           <tr>
-            <td style="padding: 8px; text-align: center;">${formatDateToWords(transaction.date)}</td>
+            <td style="padding: 8px; text-align: center;">${formattedTime}</td>
             <td style="padding: 8px; text-align: center;">${transaction.category || 'N/A'}</td>
             <td style="padding: 8px; text-align: center;">${transaction.type}</td>
             <td style="color: ${amountColor}; text-align: center; padding: 8px;">${formattedAmount}</td>
@@ -342,7 +354,7 @@ const [error, setError] = useState(null);
           <p>--- End of Report ---</p>
         </div>
       </div>
-      `;
+    `;
   
     try {
       const { uri } = await Print.printToFileAsync({
@@ -370,6 +382,7 @@ const [error, setError] = useState(null);
       Alert.alert('Error', 'Could not create PDF file.');
     }
   };
+  
   
 
 
