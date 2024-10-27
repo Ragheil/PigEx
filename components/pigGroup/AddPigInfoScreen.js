@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, FlatList, Modal, TouchableOpacity, Image, Switch  } from 'react-native';
-import { addDoc, collection, query, onSnapshot, doc, getDoc, updateDoc, deleteDoc, getDocs } from 'firebase/firestore';
+import { addDoc, collection, query, onSnapshot, doc, getDoc, updateDoc, deleteDoc, getDocs, where } from 'firebase/firestore';
 import { auth, firestore } from '../../firebase/config2';
 import { Picker } from '@react-native-picker/picker';
 import DatePicker from 'react-native-date-picker';
@@ -39,8 +39,11 @@ export default function AddPigInfoScreen({ route }) {
   const [causeOfDeath, setCauseOfDeath] = useState('');  // Cause of death state
   const [openDeathDatePicker, setOpenDeathDatePicker] = useState(false); // Control for death date picker
   const [dateOfDeath, setDateOfDeath] = useState(new Date());  // Date of death state
-
+  const [femalePigs, setFemalePigs] = useState([]); // Add state for female pigs
+  const [selectedFemalePigId, setSelectedFemalePigId] = useState(null); // Track selected female pig
+  const [selectedFemalePig, setSelectedFemalePig] = useState(null);
   const user = auth.currentUser;
+  const [loading, setLoading] = useState(true);
 
   const handleOpenDatePicker = () => {
     setOpenDatePicker(true);
@@ -61,9 +64,38 @@ export default function AddPigInfoScreen({ route }) {
   useEffect(() => {
     fetchPigGroupName();
   }, [pigGroupId, user.uid]);
+  const fetchFemalePigs = async () => {
+    setLoading(true);
+    try {
+      const branchPath = `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups`;
+      const groupsSnapshot = await getDocs(collection(firestore, branchPath));
+  
+      const femalePigsPromises = groupsSnapshot.docs.map(async (groupDoc) => {
+        const pigsPath = `${branchPath}/${groupDoc.id}/pigs`; // Path to pigs in each group
+        const pigsSnapshot = await getDocs(collection(firestore, pigsPath));
+        const femalePigs = pigsSnapshot.docs
+          .map(doc => ({ id: doc.id, ...doc.data(), groupName: groupDoc.data().name })) // Include the group name
+          .filter(pig => pig.gender === 'female'); // Filter female pigs
+        console.log(`Fetched female pigs from group ${groupDoc.id}:`, femalePigs); // Log fetched female pigs
+        return femalePigs; // Return the filtered array
+      });
+  
+      const femalePigsArrays = await Promise.all(femalePigsPromises);
+      const allFemalePigs = femalePigsArrays.flat(); // Flatten the array to get a single array of female pigs
+      console.log("All Female Pigs:", allFemalePigs); // Log all female pigs
+      setFemalePigs(allFemalePigs);
+    } catch (error) {
+      console.error("Error fetching female pigs: ", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Effect to fetch female pigs whenever the selected branch changes
+  useEffect(() => {
+    fetchFemalePigs();
+  }, [selectedBranch, user.uid]);
 
-
- 
 
   useFocusEffect(
     React.useCallback(() => {
@@ -85,8 +117,9 @@ export default function AddPigInfoScreen({ route }) {
       
       const q = query(collection(firestore, pigsCollectionPath));
       const unsubscribe = onSnapshot(q, (snapshot) => {
-        const pigsList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setPigs(pigsList);
+        const allPigs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setPigs(allPigs);
+        setFemalePigs(allPigs.filter(pig => pig.gender === 'female')); // Filter female pigs
       });
 
       return () => unsubscribe();
@@ -336,6 +369,28 @@ export default function AddPigInfoScreen({ route }) {
               value={race}
               onChangeText={setRace}
             />
+   <Text>Select Female Pig:</Text>
+{loading ? (
+  <Text>Loading...</Text> // Display loading text
+) : (
+  <Picker
+    selectedValue={selectedFemalePig}
+    onValueChange={(itemValue) => {
+      setSelectedFemalePig(itemValue);
+      console.log("Selected Female Pig ID:", itemValue); // Log the selected pig ID
+    }}
+    style={styles.picker}
+  >
+    <Picker.Item label="Select a female pig" value={null} />
+    {femalePigs.map((pig) => (
+      <Picker.Item 
+        key={pig.id} 
+        label={`PG: ${pig.groupName} - ${pig.pigName}`} // Show group name and pig name
+        value={pig.id} 
+      />
+    ))}
+  </Picker>
+)}
 
 {isEditing && (
   <View style={styles.switchContainer}>
