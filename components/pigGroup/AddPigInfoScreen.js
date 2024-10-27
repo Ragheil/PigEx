@@ -44,7 +44,7 @@ export default function AddPigInfoScreen({ route }) {
   const [selectedFemalePig, setSelectedFemalePig] = useState(null);
   const user = auth.currentUser;
   const [loading, setLoading] = useState(true);
-
+  const [motherName, setMotherName] = useState("");
   const handleOpenDatePicker = () => {
     setOpenDatePicker(true);
   };
@@ -158,7 +158,7 @@ export default function AddPigInfoScreen({ route }) {
     const pigCollectionPath = selectedBranch === 'Main Farm'
       ? `users/${user.uid}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs`
       : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs`;
-    
+  
     try {
       await addDoc(collection(firestore, pigCollectionPath), {
         pigName,
@@ -169,6 +169,8 @@ export default function AddPigInfoScreen({ route }) {
         vitality: isDeceased ? 'deceased' : 'alive',
         ...(isDeceased && { causeOfDeath, dateOfDeath }),
         createdAt: new Date(),
+        motherId: selectedFemalePigId || null,       // Store mother pig's ID
+        motherName: motherName || ""                 // Store mother pig's name
       });
   
       Alert.alert('Success', 'Pig added successfully!');
@@ -179,6 +181,7 @@ export default function AddPigInfoScreen({ route }) {
       Alert.alert('Error', 'There was a problem adding the pig.');
     }
   };
+  
 
   // Edit Pig
  // Edit Pig
@@ -187,11 +190,9 @@ export default function AddPigInfoScreen({ route }) {
     Alert.alert('Validation Error', 'All fields are required.');
     return;
   }
-  
   const pigCollectionPath = selectedBranch === 'Main Farm'
     ? `users/${user.uid}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${currentPigId}`
     : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${currentPigId}`;
-  
   try {
     const updatedData = {
       pigName,
@@ -200,6 +201,7 @@ export default function AddPigInfoScreen({ route }) {
       race,
       dateOfBirth,
       vitality: isDeceased ? 'deceased' : 'alive',
+      motherId: selectedFemalePigId || null, // Update mother pig ID
     };
 
     if (isDeceased) {
@@ -221,6 +223,8 @@ export default function AddPigInfoScreen({ route }) {
     Alert.alert('Error', 'There was a problem updating the pig.');
   }
 };
+
+
 
    // Delete Pig
    const handleDeletePig = (pigId) => {
@@ -256,6 +260,8 @@ export default function AddPigInfoScreen({ route }) {
     setIsDeceased(false);
     setCauseOfDeath('');
     setDateOfDeath(new Date());
+    setSelectedFemalePig(null); // Clear selected mother
+    setSelectedFemalePigId(null); // Clear mother ID
   };
 
   // Filter Pigs
@@ -376,28 +382,25 @@ export default function AddPigInfoScreen({ route }) {
               value={race}
               onChangeText={setRace}
             />
-  <Text>Select Female Pig:</Text>
-{loading ? (
-  <Text>Loading...</Text> // Display loading text
-) : (
-  <Picker
-    selectedValue={selectedFemalePig}
-    onValueChange={(itemValue) => {
-      setSelectedFemalePig(itemValue);
-      console.log("Selected Female Pig ID:", itemValue); // Log the selected pig ID
-    }}
-    style={styles.picker}
-  >
-    <Picker.Item label="Select a female pig" value={null} />
-    {femalePigs.map((pig) => (
-      <Picker.Item 
-        key={pig.id} 
-        label={`Pig Group: ${pig.groupName} - ${pig.pigName}`} // Show group name and pig name
-        value={pig.id} 
-      />
-    ))}
-  </Picker>
-)}
+ <Picker
+  selectedValue={selectedFemalePig}
+  onValueChange={(itemValue) => {
+    setSelectedFemalePig(itemValue);
+    setSelectedFemalePigId(itemValue); // Store the ID of the selected female pig
+    console.log("Selected Female Pig ID:", itemValue); // Log selected pig ID
+  }}
+  style={styles.picker}
+>
+  <Picker.Item label="Select a female pig" value={null} />
+  {femalePigs.map((pig) => (
+    <Picker.Item 
+      key={pig.id} 
+      label={`Pig Group: ${pig.groupName} - ${pig.pigName}`} 
+      value={pig.id} 
+    />
+  ))}
+</Picker>
+
 
 {isEditing && (
   <View style={styles.switchContainer}>
