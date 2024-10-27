@@ -64,10 +64,17 @@ export default function AddPigInfoScreen({ route }) {
   useEffect(() => {
     fetchPigGroupName();
   }, [pigGroupId, user.uid]);
+
   const fetchFemalePigs = async () => {
     setLoading(true);
     try {
-      const branchPath = `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups`;
+      // Determine the branch path based on selectedBranch
+      const isMainFarm = selectedBranch === 'Main Farm';
+      const branchPath = isMainFarm
+        ? `users/${user.uid}/farmBranches/Main Farm/pigGroups`
+        : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups`;
+  
+      // Fetch the groups from the selected branch (or Main Farm)
       const groupsSnapshot = await getDocs(collection(firestore, branchPath));
   
       const femalePigsPromises = groupsSnapshot.docs.map(async (groupDoc) => {
@@ -369,7 +376,7 @@ export default function AddPigInfoScreen({ route }) {
               value={race}
               onChangeText={setRace}
             />
-   <Text>Select Female Pig:</Text>
+  <Text>Select Female Pig:</Text>
 {loading ? (
   <Text>Loading...</Text> // Display loading text
 ) : (
@@ -385,7 +392,7 @@ export default function AddPigInfoScreen({ route }) {
     {femalePigs.map((pig) => (
       <Picker.Item 
         key={pig.id} 
-        label={`PG: ${pig.groupName} - ${pig.pigName}`} // Show group name and pig name
+        label={`Pig Group: ${pig.groupName} - ${pig.pigName}`} // Show group name and pig name
         value={pig.id} 
       />
     ))}
