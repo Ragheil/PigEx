@@ -101,6 +101,13 @@ export default StyleSheet.create({
       cancelButton: {
         width: '100%',
       },
+      pigCountText: {
+        fontSize: 14,
+        color: '#666', // Adjust color as needed
+        marginTop: 4,
+        fontSize: 18,
+        fontWeight: 'bold'
+      },
 
 
 });

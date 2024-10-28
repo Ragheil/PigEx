@@ -471,7 +471,14 @@ export default function AddPigInfoScreen({ route }) {
                 <Text style={styles.detailText}>Race: {selectedPig.race}</Text>
                 <Text style={styles.detailText}>Date of Birth: {selectedPig.dateOfBirth.toDate().toDateString()}</Text>
                 <Text style={styles.detailText}>Vitality: {selectedPig.vitality}</Text>
-       
+                <Text style={styles.detailText}>
+  Mother Name: {
+    selectedFemalePigId
+      ? femalePigs.find(pig => pig.id === selectedFemalePigId)?.pigName || 'N/A'
+      : 'N/A'
+  }
+</Text>
+
           {/* View Medical Records Button */}
           <Button
   title="View Medical Records"

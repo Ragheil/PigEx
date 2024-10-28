@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, TouchableOpacity, Alert, ScrollView, Image } from 'react-native';
-import { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc, where, getDoc } from 'firebase/firestore';
+import { View, Text, TextInput, Button, TouchableOpacity, Alert, ScrollView, Image, RefreshControl  } from 'react-native';
+import { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc, where, getDoc,onSnapshot } from 'firebase/firestore';
 import { auth, firestore } from '../../firebase/config2';
 import Modal from 'react-native-modal';
 import { useRoute } from '@react-navigation/native';
@@ -22,14 +22,15 @@ const PigGroupsScreen = ({ navigation, route }) => {
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
   const { selectedBranch, farmName: initialFarmName } = route.params; // Destructure farmName as initialFarmName
   const [farmName, setFarmName] = useState(initialFarmName); // Rename the
+  const [refreshing, setRefreshing] = useState(false); // New state for refreshing
 
   useEffect(() => {
     if (user) {
-      fetchPigGroups();
-      const interval = setInterval(fetchPigGroups, 1000);
-      return () => clearInterval(interval);
+      const unsubscribe = fetchPigGroups();
+      return () => unsubscribe();
     }
   }, [user, selectedBranch]);
+  
 
   useEffect(() => {
     const results = pigGroups.filter(group =>
@@ -53,41 +54,49 @@ const PigGroupsScreen = ({ navigation, route }) => {
     }
 };
 
-  
-  
-const fetchPigGroups = async () => {
-  try {
-    if (!user) return;
-
-    // Ensure farmName is set before fetching pig groups
-    if (!farmName) {
-      console.log('Farm name is not set. Cannot fetch pig groups.');
-      return;
-    }
-
-    // Check if the selected branch exists
-    if (!(await branchExists())) {
-      console.log(`Branch ${selectedBranch} does not exist.`);
-      return;
-    }
-
-    const pigGroupsCollection = selectedBranch === 'Main Farm'
-      ? collection(firestore, `users/${user.uid}/farmBranches/Main Farm/pigGroups`)
-      : collection(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups`);
-
-    const q = query(pigGroupsCollection, orderBy('name'));
-    const querySnapshot = await getDocs(q);
-
-    const pigGroupsList = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    setPigGroups(pigGroupsList);
-  } catch (error) {
-    console.error('Error fetching pig groups:', error);
-  }
+const onRefresh = () => {
+  setRefreshing(true);
+  fetchPigGroups();
 };
+
+  
+  const fetchPigGroups = () => {
+    if (!user || !farmName) return () => {}; 
+  
+    const pigGroupsCollectionPath = selectedBranch === 'Main Farm'
+      ? `users/${user.uid}/farmBranches/Main Farm/pigGroups`
+      : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups`;
+  
+    const pigGroupsCollection = collection(firestore, pigGroupsCollectionPath);
+    const q = query(pigGroupsCollection, orderBy('name'));
+  
+    return onSnapshot(q, (snapshot) => {
+      const pigGroupPromises = snapshot.docs.map(async (doc) => {
+        const pigGroupId = doc.id;
+  
+        const pigsCollectionPath = `${pigGroupsCollectionPath}/${pigGroupId}/pigs`;
+        const pigsCollection = collection(firestore, pigsCollectionPath);
+  
+        return new Promise((resolve) => {
+          onSnapshot(pigsCollection, (pigsSnapshot) => {
+            resolve({
+              id: pigGroupId,
+              ...doc.data(),
+              pigCount: pigsSnapshot.size,
+            });
+          });
+        });
+      });
+  
+      Promise.all(pigGroupPromises).then((pigGroupsList) => {
+        setPigGroups(pigGroupsList);
+        setRefreshing(false); // Stop refreshing after fetching data
+      });
+    });
+  };
+  
+  
+
 
   
   
@@ -203,6 +212,8 @@ const fetchPigGroups = async () => {
             style={styles.pigGroupItem}
           >
             <Text style={styles.pigGroupText}>{pigGroup.name}</Text>
+              {/* Display Pig Count Below the Name */}
+          <Text style={styles.pigCountText}>Pigs: {pigGroup.pigCount}</Text>
             <View style={styles.actions}>
               <TouchableOpacity onPress={() => startEditPigGroup(pigGroup)}>
                 <Image source={editIcon} style={styles.icon} />
@@ -255,8 +266,13 @@ const fetchPigGroups = async () => {
       </View>
 
       <Text style={styles.tableHeader}>Pig Groups</Text>
-      <ScrollView>{renderPigGroups()}</ScrollView>
-
+<ScrollView
+  refreshControl={
+    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+  }
+>
+  {renderPigGroups()}
+</ScrollView>
       {/* Modal for adding or editing pig group */}
       <Modal isVisible={isAddEditModalVisible} onBackdropPress={closeModal}>
         <View style={styles.modalContent}>
