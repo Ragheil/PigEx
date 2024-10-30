@@ -135,17 +135,63 @@ const getUserDetailsFromFirestore = async (uid) => {
 
   const fetchUserDetails = async (uid) => {
     try {
-      const userDetails = await getUserDetailsFromFirestore(uid);
-      if (userDetails) {
-        setUpdatedFirstName(userDetails.firstName);
-        setUpdatedLastName(userDetails.lastName);
-        setUpdatedFarmName(userDetails.farmName);
+      const userDocRef = doc(firestore, `users/${uid}`);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        console.log("Farm data fetched from Firestore:", userDoc.data()); // Log fetched farm data
+        return userDoc.data();
+      } else {
+        console.log('No such document!');
+        return null;
       }
     } catch (error) {
       console.error('Error fetching user details:', error);
+      throw error; // re-throw the error to handle it later if needed
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      const userId = user.uid;
+      const userDocRef = doc(firestore, `users/${userId}/farmBranches/Main Farm`);
   
+      const unsubscribeUserDoc = onSnapshot(userDocRef, (doc) => {
+        const userData = doc.data();
+        const farmName = userData?.farmName || '';
+        setCurrentFarmName(`${farmName}`);
+        setSelectedBranch(`Main Farm: ${farmName}`);
+  
+        const q = query(collection(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches`));
+        const unsubscribeFarmBranches = onSnapshot(q, (snapshot) => {
+          const branchList = [];
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            branchList.push({ id: doc.id, ...data });
+          });
+  
+          console.log("Fetched branches:", branchList); // Log fetched branch data
+          const updatedBranchList = branchList.map(branch => ({
+            id: branch.id,
+            name: branch.id === 'Main Farm' ? `Main Farm: ${farmName}` : `Farm Branch: ${branch.farmName || 'Unnamed Branch'}`,
+          }));
+  
+          if (!branchList.some(branch => branch.id === 'Main Farm')) {
+            updatedBranchList.unshift({
+              id: 'Main Farm',
+              name: `Main Farm: ${farmName}`,
+            });
+          }
+  
+          setBranches(updatedBranchList);
+        });
+  
+        return () => {
+          unsubscribeFarmBranches();
+          unsubscribeUserDoc();
+        };
+      });
+    }
+  }, [user]);
 
 
   const closeSidebar = () => {
