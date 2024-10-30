@@ -398,7 +398,7 @@ const handleAddBranch = async () => {
             style={[styles.seeAllButton, { zIndex: 10, elevation: 5 }]}
             onPress={handleSeeAllBranches} // New button functionality
           >
-            <Text style={styles.seeAllText}>See All Farm Branches</Text>
+            <Text style={styles.seeAllText}>Manage Farm Branches</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.logoutButton} onPress={confirmLogout}>
             <Text style={styles.logoutButtonText}>Logout</Text>
