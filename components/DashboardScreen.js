@@ -400,6 +400,21 @@ const handleAddBranch = async () => {
           >
             <Text style={styles.seeAllText}>Manage Farm Branches</Text>
           </TouchableOpacity>
+
+
+          <TouchableOpacity
+  style={[styles.seeAllButton, { zIndex: 10, elevation: 5 }]}
+  onPress={() => {
+    console.log("Navigating to PregnancyRecords with:", { selectedBranch, user });
+    navigation.navigate('PregnancyRecords', { selectedBranch, user });
+  }}
+>
+  <Text style={styles.seeAllText}>Pregnancy Records</Text>
+</TouchableOpacity>
+
+
+
+
           <TouchableOpacity style={styles.logoutButton} onPress={confirmLogout}>
             <Text style={styles.logoutButtonText}>Logout</Text>
           </TouchableOpacity>
