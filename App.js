@@ -27,7 +27,8 @@ import MoneyInScreen from './components/money/MoneyInScreen'; // Import MoneyInS
 import MoneyOutScreen from './components/money/MoneyOutScreen'; // Import MoneyOutScreen
 import TransactionScreen from './components/money/TransactionScreen'; // Add this import
 import SeeAllBranchesScreen from './components/Branches/SeeAllBranchesScreen'; // Import SeeAllBranchesScreen
-import PregnancyRecords from './components/pigGroup/PregnancyRecords';
+import PregnancyRecords from './components/pregnancy/PregnancyRecords';
+import PigDetailsScreen from './components/pregnancy/PigDetailsScreen'; // Import PigDetailsScreen
 
 import { auth, firestore } from './firebase/config2';
 
@@ -254,6 +255,11 @@ export default function App() {
     options={{ headerShown: false }}
     component={PregnancyRecords} // Use component prop here
   />
+  <Stack.Screen
+  name="PigDetailsScreen"
+  component={PigDetailsScreen}
+  options={{ headerShown: false }}
+/>
 
 
 

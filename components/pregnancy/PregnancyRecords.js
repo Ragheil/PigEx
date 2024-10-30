@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
 import { firestore } from '../../firebase/config2';
 import { collection, getDocs } from 'firebase/firestore';
 
-const PregnancyRecords = ({ route }) => {
-  // Destructure the parameters passed from the previous screen
-  const { selectedBranch, user } = route.params || {};
+const PregnancyRecords = ({ route, navigation }) => {
+  const { selectedBranch, user } = route.params || {}; // Destructure the parameters passed from the previous screen
 
   // Check if required parameters are missing
   if (!selectedBranch || !user) {
@@ -19,7 +18,6 @@ const PregnancyRecords = ({ route }) => {
   const fetchFemalePigs = async () => {
     setLoading(true); // Show loading indicator
     try {
-      // Determine the branch path based on whether it's the main farm
       const isMainFarm = selectedBranch === 'Main Farm';
       const branchPath = isMainFarm
         ? `users/${user.uid}/farmBranches/Main Farm/pigGroups`
@@ -72,6 +70,18 @@ const PregnancyRecords = ({ route }) => {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
+// Handle pig selection
+const handlePigPress = (pig) => {
+    console.log('Navigating to PigDetailsScreen with pigId:', pig.id); // Debug log
+    navigation.navigate('PigDetailsScreen', { 
+        pigId: pig.id,
+        pigName: pig.pigName,  // Pass pig name
+        selectedBranch,  // Pass the selected branch as well
+        user  // Pass user information
+    });
+};
+
+
   // Render the list of female pigs grouped by their group names
   return (
     <View style={styles.container}>
@@ -82,9 +92,11 @@ const PregnancyRecords = ({ route }) => {
         femalePigs.sortedGroups.map(group => (
           <View key={group}>
             <Text style={styles.groupName}>{group}</Text>
-            {femalePigs.groupedPigs[group].map(pig => ( // Ensure groupedPigs[group] exists
-              <Text key={pig.id} style={styles.pigName}>{pig.pigName}</Text> // Display each pig's name
-            ))}
+            {femalePigs.groupedPigs[group].map(pig => ( 
+              <TouchableOpacity key={pig.id} onPress={() => handlePigPress(pig)}> 
+                <Text style={styles.pigName}>{pig.pigName}</Text> 
+              </TouchableOpacity>
+            ))} 
           </View>
         ))
       )}
