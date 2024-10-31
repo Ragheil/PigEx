@@ -28,18 +28,21 @@ const PigDetailsScreen = ({ route }) => {
         const pigsPath = `${branchPath}/${groupDoc.id}/pigs`;
         const pigsSnapshot = await getDocs(collection(firestore, pigsPath));
 
+        // Log pig data for debugging
         pigsSnapshot.docs.forEach(doc => {
-          console.log(doc.data()); // Log pig data for debugging
+          console.log(doc.data());
         });
 
         const groupPigs = pigsSnapshot.docs.map(doc => ({
           id: doc.id,
-          pigName: doc.data().name, // Retrieve the pig's name
-          gender: doc.data().gender, // Retrieve the pig's gender
+          pigName: doc.data().pigName, // Ensure this matches the Firestore field name
+          gender: doc.data().gender,
           groupName, // Include the pig's group name
         }));
+        
         pigsList = [...pigsList, ...groupPigs]; // Append each pig to the list
       }
+      console.log('Pigs List:', pigsList); // Log the pigs list before setting state
       setAllPigs(pigsList); // Update state with all pigs
     } catch (error) {
       console.error("Error fetching pigs: ", error);
