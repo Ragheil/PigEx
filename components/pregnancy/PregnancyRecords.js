@@ -31,7 +31,12 @@ const PregnancyRecords = ({ route, navigation }) => {
         const pigsPath = `${branchPath}/${groupDoc.id}/pigs`;
         const pigsSnapshot = await getDocs(collection(firestore, pigsPath));
         const femalePigs = pigsSnapshot.docs
-          .map(doc => ({ id: doc.id, ...doc.data(), groupName: groupDoc.data().name }))
+          .map(doc => ({ 
+            id: doc.id, 
+            ...doc.data(), 
+            groupName: groupDoc.data().name,
+            motherId: doc.data().motherId // Get motherId from each pig's document
+          }))
           .filter(pig => pig.gender === 'female');
         return femalePigs; // Return the array of female pigs
       });
@@ -70,17 +75,17 @@ const PregnancyRecords = ({ route, navigation }) => {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
-// Handle pig selection
-const handlePigPress = (pig) => {
+  // Handle pig selection
+  const handlePigPress = (pig) => {
     console.log('Navigating to PigDetailsScreen with pigId:', pig.id); // Debug log
     navigation.navigate('PigDetailsScreen', { 
-        pigId: pig.id,
-        pigName: pig.pigName,  // Pass pig name
-        selectedBranch,  // Pass the selected branch as well
-        user  // Pass user information
+      pigId: pig.id,
+      pigName: pig.pigName,  // Pass pig name
+      selectedBranch,  // Pass the selected branch as well
+      user,  // Pass user information
+      motherId: pig.motherId // Pass motherId to the next screen
     });
-};
-
+  };
 
   // Render the list of female pigs grouped by their group names
   return (
