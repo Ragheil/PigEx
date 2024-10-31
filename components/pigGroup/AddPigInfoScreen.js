@@ -45,6 +45,8 @@ export default function AddPigInfoScreen({ route }) {
   const user = auth.currentUser;
   const [loading, setLoading] = useState(true);
   const [motherName, setMotherName] = useState("");
+  const [selectedPiglets, setSelectedPiglets] = useState([]); // Add this line to your state initialization
+
   const handleOpenDatePicker = () => {
     setOpenDatePicker(true);
   };
@@ -186,43 +188,70 @@ export default function AddPigInfoScreen({ route }) {
   // Edit Pig
  // Edit Pig
  const handleEditPig = async () => {
+  // Validate inputs
   if (!pigName.trim() || !tagNumber.trim() || !gender || !race.trim()) {
     Alert.alert('Validation Error', 'All fields are required.');
     return;
   }
+
+  // Determine pig collection path based on branch
   const pigCollectionPath = selectedBranch === 'Main Farm'
     ? `users/${user.uid}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${currentPigId}`
     : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${currentPigId}`;
+
   try {
-    const updatedData = {
+    // Update pig document
+    await updateDoc(doc(firestore, pigCollectionPath), {
       pigName,
       tagNumber,
       gender,
       race,
       dateOfBirth,
       vitality: isDeceased ? 'deceased' : 'alive',
-      motherId: selectedFemalePigId || null, // Update mother pig ID
-    };
+      ...(isDeceased && { causeOfDeath, dateOfDeath }),
+      motherId: selectedFemalePigId || null,
+      motherName: motherName || ""
+    });
 
-    if (isDeceased) {
-      updatedData.causeOfDeath = causeOfDeath;
-      updatedData.dateOfDeath = dateOfDeath;
-    } else {
-      updatedData.causeOfDeath = null;
-      updatedData.dateOfDeath = null;
+    // Pregnancy record path
+    const pregnancyRecordPath = selectedBranch === 'Main Farm'
+      ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${currentPigId}`
+      : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${currentPigId}`;
+    
+    // Fetch existing pregnancy record
+    const pregnancyDocRef = doc(firestore, pregnancyRecordPath);
+    const pregnancyRecordSnapshot = await getDoc(pregnancyDocRef);
+    
+    if (!pregnancyRecordSnapshot.exists()) {
+      Alert.alert('Error', 'Pregnancy record not found.');
+      return;
     }
 
-    await updateDoc(doc(firestore, pigCollectionPath), updatedData);
-    Alert.alert('Success', 'Pig updated successfully!');
+    const existingPregnancyRecord = pregnancyRecordSnapshot.data();
+    
+    // Update pregnancy record
+    const updatedPregnancyRecordDoc = {
+      pigName: pigName || 'Unnamed Pig', // Ensure the pig name is updated
+      id: currentPigId,
+      date: new Date().toISOString(),
+      piglets: existingPregnancyRecord.piglets || [] // Keep existing piglets
+    };
+
+    await updateDoc(pregnancyDocRef, updatedPregnancyRecordDoc);
+
+    // Show success message
+    Alert.alert('Success', 'Pig and pregnancy records updated successfully!');
     setIsEditing(false);
     resetFields();
-    setModalVisible(false);
-    setCurrentPigId(null);
   } catch (error) {
-    console.error('Error updating pig:', error);
-    Alert.alert('Error', 'There was a problem updating the pig.');
+    console.error('Error updating pig and pregnancy records:', error);
+    Alert.alert('Error', 'There was a problem updating the pig and pregnancy records.');
   }
 };
+
+
+
+
 
 
 

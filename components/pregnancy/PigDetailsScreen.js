@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, FlatList, Button, TouchableOpacity, Alert } from 'react-native';
 import { firestore } from '../../firebase/config2';
-import { collection, getDocs, doc, setDoc, writeBatch } from 'firebase/firestore';
+import { collection, getDocs, doc, setDoc, writeBatch, getDoc } from 'firebase/firestore';
 
 const PigDetailsScreen = ({ route }) => {
   const { selectedBranch, user, pigId, pigName } = route.params; // Retrieve pigId and pigName from navigation params
@@ -73,7 +73,6 @@ const PigDetailsScreen = ({ route }) => {
     }
   };
   
-
   useEffect(() => {
     fetchAllPigs();
     fetchAssignedPiglets();
@@ -87,23 +86,33 @@ const PigDetailsScreen = ({ route }) => {
         ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${pigId}`
         : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${pigId}`;
 
-      if (selectedPiglets.length === 0) {
-        Alert.alert('Error', 'No valid piglets selected. Please select at least one piglet.');
+      // Fetch existing pregnancy record to preserve piglets
+      const pregnancyDocRef = doc(firestore, pregnancyRecordPath);
+      const existingRecordSnapshot = await getDoc(pregnancyDocRef);
+      const existingRecord = existingRecordSnapshot.exists() ? existingRecordSnapshot.data() : null;
+
+      // If no existing record, alert and exit
+      if (!existingRecord) {
+        Alert.alert('Error', 'No existing pregnancy record found for this pig.');
         return;
       }
 
-      const pregnancyDocRef = doc(firestore, pregnancyRecordPath);
-      const pregnancyRecordDoc = {
+      // Update the pregnancy record while keeping the existing piglets
+      const updatedPregnancyRecordDoc = {
         pigName: pigName || 'Unnamed Pig',
         id: pigId,
         date: new Date().toISOString(),
-        piglets: selectedPiglets.map(id => ({
-          id,
-          name: allPigs.find(p => p.id === id).pigName,
-        }))
+        piglets: existingRecord.piglets || [] // Keep existing piglets
       };
 
-      await setDoc(pregnancyDocRef, pregnancyRecordDoc, { merge: true });
+      // Add the selected piglets if they are not already included
+      selectedPiglets.forEach(id => {
+        if (!updatedPregnancyRecordDoc.piglets.find(p => p.id === id)) {
+          updatedPregnancyRecordDoc.piglets.push({ id, name: allPigs.find(p => p.id === id).pigName });
+        }
+      });
+
+      await setDoc(pregnancyDocRef, updatedPregnancyRecordDoc, { merge: true });
       Alert.alert('Success', 'Pregnancy record and selected piglets saved successfully.');
     } catch (error) {
       console.error('Error saving pregnancy record and piglets:', error);
@@ -134,10 +143,11 @@ const PigDetailsScreen = ({ route }) => {
         data={allPigs}
         keyExtractor={item => item.id}
         renderItem={({ item }) => {
-          const assignedMotherName = assignedPiglets[item.id]; // Retrieve the mother name instead of ID
-          const isAssigned = assignedMotherName && assignedMotherName !== pigName;
-          const buttonDisabled = isAssigned;
-        
+          // Retrieve the mother name instead of ID
+          const assignedMotherName = assignedPiglets[item.id] || null; // Default to null if not assigned
+          const isAssigned = assignedMotherName && assignedMotherName !== item.pigName; // Check if it’s assigned and not to itself
+          const buttonDisabled = isAssigned; // Disable the button if already assigned
+          
           return (
             <View style={styles.pigContainer}>
               <Text style={styles.detail}>Name: {item.pigName}</Text>
@@ -148,11 +158,7 @@ const PigDetailsScreen = ({ route }) => {
                 <Text style={styles.assignedText}>Assigned to mother: {assignedMotherName}</Text>
               )}
               <TouchableOpacity
-                style={[
-                  styles.selectButton,
-                  selectedPiglets.includes(item.id) && styles.selectedButton,
-                  buttonDisabled && styles.disabledButton,
-                ]}
+                style={[styles.selectButton, selectedPiglets.includes(item.id) && styles.selectedButton, buttonDisabled && styles.disabledButton]}
                 onPress={() => togglePigletSelection(item.id)}
                 disabled={buttonDisabled}
               >
@@ -167,8 +173,6 @@ const PigDetailsScreen = ({ route }) => {
             </View>
           );
         }}
-        
-
       />
       <Button
         title="Save Selected Pigs"
@@ -189,8 +193,8 @@ const styles = StyleSheet.create({
   selectButton: { padding: 10, borderRadius: 5, backgroundColor: '#ddd', alignItems: 'center', marginTop: 10 },
   selectedButton: { backgroundColor: '#4CAF50' },
   disabledButton: { backgroundColor: '#999' },
-  assignedText: { fontSize: 14, color: 'red', marginTop: 5 },
-  buttonText: { color: '#fff', fontSize: 16 },
+  assignedText: { fontSize: 14, color: 'red' },
+  buttonText: { color: '#fff' },
 });
 
 export default PigDetailsScreen;
