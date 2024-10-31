@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, FlatList, Button, TouchableOpacity, Alert } from 'react-native';
 import { firestore } from '../../firebase/config2';
-import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, setDoc, writeBatch  } from 'firebase/firestore';
 
 const PigDetailsScreen = ({ route }) => {
   const { selectedBranch, user, pigId, pigName } = route.params; // Retrieve pigId and pigName from navigation params
@@ -59,14 +59,14 @@ const PigDetailsScreen = ({ route }) => {
   const saveSelectedPigs = async () => {
     try {
       if (!user) return;
-
+  
       // Log the selected piglets for debugging
       console.log('Selected Piglets:', selectedPiglets);
   
       // Determine the correct path based on the selected branch
-      const path = selectedBranch === 'Main Farm'
-        ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords`
-        : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords`;
+      const pregnancyRecordPath = selectedBranch === 'Main Farm'
+        ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${pigId}`
+        : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${pigId}`;
   
       // Ensure there's data to save
       if (selectedPiglets.length === 0) {
@@ -74,40 +74,52 @@ const PigDetailsScreen = ({ route }) => {
         return;
       }
   
-      // Create a unique document for the selected female pig using its ID
-      const docRef = doc(firestore, path, pigId); // Use the female pig's ID for the document ID
+      // Create a unique document for the female pig using its ID
+      const pregnancyDocRef = doc(firestore, pregnancyRecordPath); // Reference to the pregnancy record document
   
-      // Prepare an array of selected piglet details
-      const pigletDetails = selectedPiglets.map(pigId => {
-        const pig = allPigs.find(p => p.id === pigId); // Find the piglet details using the pig ID
-        return {
-          name: pig?.pigName || 'Unnamed Pig', // Provide a default value if pigName is undefined
-          groupName: pig?.groupName || 'Unknown Group', // Provide a default if groupName is undefined
-          gender: pig?.gender || 'Unknown', // Provide a default if gender is undefined
-        };
-      });
-  
-      // Prepare the document data
+      // Prepare the pregnancy record document data
       const pregnancyRecordDoc = {
         name: pigName || 'Unnamed Pig',
         id: pigId,
-        selectedPiglets: pigletDetails, // Save selected piglet details as an array of objects
         date: new Date().toISOString(), // Optionally save the current date
       };
   
-      // Log the document data before saving
-      console.log('Document Data:', pregnancyRecordDoc);
+      // Save the pregnancy record document (optional)
+      await setDoc(pregnancyDocRef, pregnancyRecordDoc, { merge: true });
   
-      // Save the document
-      await setDoc(docRef, pregnancyRecordDoc, { merge: true }); // Merge with existing document or create a new one
+      // Prepare the piglets document path
+      const pigletsPath = `${pregnancyRecordPath}/piglets`; // Correct path for the piglets collection
   
-      console.log('Selected pigs saved successfully');
-      Alert.alert('Success', 'Selected pigs saved successfully.'); // Inform the user of success
+      // Prepare the piglet documents
+      const pigletDocs = selectedPiglets.map((pigId) => {
+        const pig = allPigs.find(p => p.id === pigId); // Find the piglet details using the pig ID
+        return {
+          id: pigId,
+          name: pig.pigName || 'Unnamed Pig', // Piglet name
+          group: pig.groupName || 'Unknown Group', // Piglet group
+          gender: pig.gender || 'Unknown', // Piglet gender
+        };
+      });
+  
+      // Save each piglet as a new document in the piglets collection
+      const batch = writeBatch(firestore); // Use a batch for multiple writes
+      pigletDocs.forEach((piglet) => {
+        const pigletDocRef = doc(firestore, pigletsPath, piglet.id); // Document reference for each piglet
+        batch.set(pigletDocRef, piglet); // Set the piglet document
+      });
+  
+      // Commit the batch
+      await batch.commit();
+  
+      console.log('Pregnancy record and piglets saved successfully');
+      Alert.alert('Success', 'Pregnancy record and selected piglets saved successfully.'); // Inform the user of success
     } catch (error) {
-      console.error('Error saving selected pigs:', error);
-      Alert.alert('Error', 'Failed to save selected pigs. Please try again.');
+      console.error('Error saving pregnancy record and piglets:', error);
+      Alert.alert('Error', 'Failed to save pregnancy record and piglets. Please try again.');
     }
   };
+  
+  
   
 
   // Toggle piglet selection
