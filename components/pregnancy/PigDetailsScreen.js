@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, FlatList, Button, TouchableOpacity, Alert } from 'react-native';
 import { firestore } from '../../firebase/config2';
-import { collection, getDocs, doc, setDoc, writeBatch  } from 'firebase/firestore';
+import { collection, getDocs, doc, setDoc, writeBatch } from 'firebase/firestore';
 
 const PigDetailsScreen = ({ route }) => {
   const { selectedBranch, user, pigId, pigName } = route.params; // Retrieve pigId and pigName from navigation params
   const [allPigs, setAllPigs] = useState([]); // State to store all pigs in the selected branch
   const [loading, setLoading] = useState(true); // Loading indicator
   const [selectedPiglets, setSelectedPiglets] = useState([]); // State to store selected piglets
+  const [assignedPiglets, setAssignedPiglets] = useState({}); // Store piglets assigned to a mother
 
-  // Function to fetch all pigs in the selected branch
+  // Fetch all pigs in the selected branch
   const fetchAllPigs = async () => {
     setLoading(true);
     try {
@@ -18,124 +19,104 @@ const PigDetailsScreen = ({ route }) => {
         ? `users/${user.uid}/farmBranches/Main Farm/pigGroups`
         : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups`;
 
-      // Fetch pig groups
       const groupsSnapshot = await getDocs(collection(firestore, branchPath));
       let pigsList = [];
 
-      // Retrieve all pigs from each group
       for (const groupDoc of groupsSnapshot.docs) {
-        const groupName = groupDoc.data().name; // Get the group name
+        const groupName = groupDoc.data().name;
         const pigsPath = `${branchPath}/${groupDoc.id}/pigs`;
         const pigsSnapshot = await getDocs(collection(firestore, pigsPath));
 
-        // Log pig data for debugging
-        pigsSnapshot.docs.forEach(doc => {
-          console.log(doc.data());
-        });
-
         const groupPigs = pigsSnapshot.docs.map(doc => ({
           id: doc.id,
-          pigName: doc.data().pigName, // Ensure this matches the Firestore field name
+          pigName: doc.data().pigName,
           gender: doc.data().gender,
-          groupName, // Include the pig's group name
+          groupName,
         }));
         
-        pigsList = [...pigsList, ...groupPigs]; // Append each pig to the list
+        pigsList = [...pigsList, ...groupPigs];
       }
-      console.log('Pigs List:', pigsList); // Log the pigs list before setting state
-      setAllPigs(pigsList); // Update state with all pigs
+
+      setAllPigs(pigsList);
     } catch (error) {
       console.error("Error fetching pigs: ", error);
     } finally {
-      setLoading(false); // Hide loading indicator
+      setLoading(false);
     }
   };
 
+  // Fetch assigned piglets to check if they’re already associated with another mother
+  const fetchAssignedPiglets = async () => {
+    try {
+      const isMainFarm = selectedBranch === 'Main Farm';
+      const pregnancyRecordsPath = isMainFarm
+        ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords`
+        : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords`;
+  
+      const recordsSnapshot = await getDocs(collection(firestore, pregnancyRecordsPath));
+      const pigletsAssignments = {};
+  
+      for (const record of recordsSnapshot.docs) {
+        const motherId = record.id;
+        const motherData = record.data();
+        const motherName = motherData.pigName || 'Unnamed Mother'; // Use a default name if not provided
+        const piglets = motherData.piglets || [];
+        
+        piglets.forEach(piglet => {
+          pigletsAssignments[piglet.id] = motherName; // Store mother's name instead of ID
+        });
+      }
+  
+      setAssignedPiglets(pigletsAssignments);
+    } catch (error) {
+      console.error("Error fetching assigned piglets: ", error);
+    }
+  };
+  
+
   useEffect(() => {
     fetchAllPigs();
+    fetchAssignedPiglets();
   }, [selectedBranch, user]);
 
-  // Save selected pigs in a Firestore document for each selected piglet
   const saveSelectedPigs = async () => {
     try {
       if (!user) return;
-  
-      // Log the selected piglets for debugging
-      console.log('Selected Piglets:', selectedPiglets);
-  
-      // Determine the correct path based on the selected branch
+
       const pregnancyRecordPath = selectedBranch === 'Main Farm'
         ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${pigId}`
         : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${pigId}`;
-  
-      // Ensure there's data to save
+
       if (selectedPiglets.length === 0) {
         Alert.alert('Error', 'No valid piglets selected. Please select at least one piglet.');
         return;
       }
-  
-      // Create a unique document for the female pig using its ID
-      const pregnancyDocRef = doc(firestore, pregnancyRecordPath); // Reference to the pregnancy record document
-  
-      // Prepare the pregnancy record document data
+
+      const pregnancyDocRef = doc(firestore, pregnancyRecordPath);
       const pregnancyRecordDoc = {
-        name: pigName || 'Unnamed Pig',
+        pigName: pigName || 'Unnamed Pig',
         id: pigId,
-        date: new Date().toISOString(), // Optionally save the current date
+        date: new Date().toISOString(),
+        piglets: selectedPiglets.map(id => ({
+          id,
+          name: allPigs.find(p => p.id === id).pigName,
+        }))
       };
-  
-      // Save the pregnancy record document (optional)
+
       await setDoc(pregnancyDocRef, pregnancyRecordDoc, { merge: true });
-  
-      // Prepare the piglets document path
-      const pigletsPath = `${pregnancyRecordPath}/piglets`; // Correct path for the piglets collection
-  
-      // Prepare the piglet documents
-      const pigletDocs = selectedPiglets.map((pigId) => {
-        const pig = allPigs.find(p => p.id === pigId); // Find the piglet details using the pig ID
-        return {
-          id: pigId,
-          name: pig.pigName || 'Unnamed Pig', // Piglet name
-          group: pig.groupName || 'Unknown Group', // Piglet group
-          gender: pig.gender || 'Unknown', // Piglet gender
-        };
-      });
-  
-      // Save each piglet as a new document in the piglets collection
-      const batch = writeBatch(firestore); // Use a batch for multiple writes
-      pigletDocs.forEach((piglet) => {
-        const pigletDocRef = doc(firestore, pigletsPath, piglet.id); // Document reference for each piglet
-        batch.set(pigletDocRef, piglet); // Set the piglet document
-      });
-  
-      // Commit the batch
-      await batch.commit();
-  
-      console.log('Pregnancy record and piglets saved successfully');
-      Alert.alert('Success', 'Pregnancy record and selected piglets saved successfully.'); // Inform the user of success
+      Alert.alert('Success', 'Pregnancy record and selected piglets saved successfully.');
     } catch (error) {
       console.error('Error saving pregnancy record and piglets:', error);
       Alert.alert('Error', 'Failed to save pregnancy record and piglets. Please try again.');
     }
   };
-  
-  
-  
 
-  // Toggle piglet selection
   const togglePigletSelection = (pigId) => {
-    setSelectedPiglets(prevSelected => {
-      if (prevSelected.includes(pigId)) {
-        return prevSelected.filter(id => id !== pigId);
-      } else {
-        return [...prevSelected, pigId];
-      }
-    });
-  };
-
-  // Handle save selected piglets
-  const handleSavePiglets = () => {
-    saveSelectedPigs(); // Call the function to save selected piglets
+    setSelectedPiglets(prevSelected =>
+      prevSelected.includes(pigId)
+        ? prevSelected.filter(id => id !== pigId)
+        : [...prevSelected, pigId]
+    );
   };
 
   if (loading) {
@@ -144,7 +125,6 @@ const PigDetailsScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      {/* Display the selected pig's name and ID */}
       <Text style={styles.title}>Pig Details</Text>
       <Text style={styles.pigInfo}>Pig Name: {pigName}</Text>
       <Text style={styles.pigInfo}>Pig ID: {pigId}</Text>
@@ -153,30 +133,46 @@ const PigDetailsScreen = ({ route }) => {
       <FlatList
         data={allPigs}
         keyExtractor={item => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.pigContainer}>
-            <Text style={styles.detail}>Name: {item.pigName}</Text>
-            <Text style={styles.detail}>Group: {item.groupName}</Text>
-            <Text style={styles.detail}>ID: {item.id}</Text>
-            <Text style={styles.detail}>Gender: {item.gender}</Text>
+        renderItem={({ item }) => {
+          const assignedMotherName = assignedPiglets[item.id]; // Retrieve the mother name instead of ID
+          const isAssigned = assignedMotherName && assignedMotherName !== pigName;
+          const buttonDisabled = isAssigned;
+        
+          return (
+            <View style={styles.pigContainer}>
+              <Text style={styles.detail}>Name: {item.pigName}</Text>
+              <Text style={styles.detail}>Group: {item.groupName}</Text>
+              <Text style={styles.detail}>ID: {item.id}</Text>
+              <Text style={styles.detail}>Gender: {item.gender}</Text>
+              {isAssigned && (
+                <Text style={styles.assignedText}>Assigned to mother: {assignedMotherName}</Text>
+              )}
+              <TouchableOpacity
+                style={[
+                  styles.selectButton,
+                  selectedPiglets.includes(item.id) && styles.selectedButton,
+                  buttonDisabled && styles.disabledButton,
+                ]}
+                onPress={() => togglePigletSelection(item.id)}
+                disabled={buttonDisabled}
+              >
+                <Text style={styles.buttonText}>
+                  {buttonDisabled
+                    ? "Already Assigned"
+                    : selectedPiglets.includes(item.id)
+                    ? "Deselect Piglet"
+                    : "Select as Piglet"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          );
+        }}
+        
 
-            <TouchableOpacity
-              style={[
-                styles.selectButton,
-                selectedPiglets.includes(item.id) && styles.selectedButton,
-              ]}
-              onPress={() => togglePigletSelection(item.id)}
-            >
-              <Text style={styles.buttonText}>
-                {selectedPiglets.includes(item.id) ? "Deselect Piglet" : "Select as Piglet"}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        )}
       />
       <Button
         title="Save Selected Pigs"
-        onPress={handleSavePiglets} // Call the function to save selected piglets
+        onPress={saveSelectedPigs}
         color="#4CAF50"
       />
     </View>
@@ -192,6 +188,8 @@ const styles = StyleSheet.create({
   detail: { fontSize: 16, marginBottom: 5 },
   selectButton: { padding: 10, borderRadius: 5, backgroundColor: '#ddd', alignItems: 'center', marginTop: 10 },
   selectedButton: { backgroundColor: '#4CAF50' },
+  disabledButton: { backgroundColor: '#999' },
+  assignedText: { fontSize: 14, color: 'red', marginTop: 5 },
   buttonText: { color: '#fff', fontSize: 16 },
 });
 
