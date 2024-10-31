@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, FlatList, Button, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, FlatList, Button, TouchableOpacity, Alert, TextInput } from 'react-native';
 import { firestore } from '../../firebase/config2';
 import { collection, getDocs, doc, setDoc, writeBatch, getDoc } from 'firebase/firestore';
 
 const PigDetailsScreen = ({ route }) => {
-  const { selectedBranch, user, pigId, pigName } = route.params; // Retrieve pigId and pigName from navigation params
-  const [allPigs, setAllPigs] = useState([]); // State to store all pigs in the selected branch
-  const [loading, setLoading] = useState(true); // Loading indicator
-  const [selectedPiglets, setSelectedPiglets] = useState([]); // State to store selected piglets
-  const [assignedPiglets, setAssignedPiglets] = useState({}); // Store piglets assigned to a mother
+  const { selectedBranch, user, pigId, pigName } = route.params;
+  const [allPigs, setAllPigs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedPiglets, setSelectedPiglets] = useState([]);
+  const [assignedPiglets, setAssignedPiglets] = useState({});
+  const [searchQuery, setSearchQuery] = useState(''); // State for search query
 
-  // Fetch all pigs in the selected branch
   const fetchAllPigs = async () => {
     setLoading(true);
     try {
@@ -45,7 +45,6 @@ const PigDetailsScreen = ({ route }) => {
     }
   };
 
-  // Fetch assigned piglets to check if they’re already associated with another mother
   const fetchAssignedPiglets = async () => {
     try {
       const isMainFarm = selectedBranch === 'Main Farm';
@@ -59,11 +58,11 @@ const PigDetailsScreen = ({ route }) => {
       for (const record of recordsSnapshot.docs) {
         const motherId = record.id;
         const motherData = record.data();
-        const motherName = motherData.pigName || 'Unnamed Mother'; // Use a default name if not provided
+        const motherName = motherData.pigName || 'Unnamed Mother';
         const piglets = motherData.piglets || [];
         
         piglets.forEach(piglet => {
-          pigletsAssignments[piglet.id] = motherName; // Store mother's name instead of ID
+          pigletsAssignments[piglet.id] = motherName;
         });
       }
   
@@ -86,26 +85,22 @@ const PigDetailsScreen = ({ route }) => {
         ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${pigId}`
         : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${pigId}`;
 
-      // Fetch existing pregnancy record to preserve piglets
       const pregnancyDocRef = doc(firestore, pregnancyRecordPath);
       const existingRecordSnapshot = await getDoc(pregnancyDocRef);
       const existingRecord = existingRecordSnapshot.exists() ? existingRecordSnapshot.data() : null;
 
-      // If no existing record, alert and exit
       if (!existingRecord) {
         Alert.alert('Error', 'No existing pregnancy record found for this pig.');
         return;
       }
 
-      // Update the pregnancy record while keeping the existing piglets
       const updatedPregnancyRecordDoc = {
         pigName: pigName || 'Unnamed Pig',
         id: pigId,
         date: new Date().toISOString(),
-        piglets: existingRecord.piglets || [] // Keep existing piglets
+        piglets: existingRecord.piglets || []
       };
 
-      // Add the selected piglets if they are not already included
       selectedPiglets.forEach(id => {
         if (!updatedPregnancyRecordDoc.piglets.find(p => p.id === id)) {
           updatedPregnancyRecordDoc.piglets.push({ id, name: allPigs.find(p => p.id === id).pigName });
@@ -128,6 +123,11 @@ const PigDetailsScreen = ({ route }) => {
     );
   };
 
+  // Filter pigs based on the search query
+  const filteredPigs = allPigs.filter(pig =>
+    pig.pigName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
@@ -138,15 +138,23 @@ const PigDetailsScreen = ({ route }) => {
       <Text style={styles.pigInfo}>Pig Name: {pigName}</Text>
       <Text style={styles.pigInfo}>Pig ID: {pigId}</Text>
 
-      <Text style={styles.header}>All Pigs</Text>
+      <View style={styles.headerContainer}>
+        <Text style={styles.header}>All Pigs</Text>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search by name"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+      </View>
+
       <FlatList
-        data={allPigs}
+        data={filteredPigs}
         keyExtractor={item => item.id}
         renderItem={({ item }) => {
-          // Retrieve the mother name instead of ID
-          const assignedMotherName = assignedPiglets[item.id] || null; // Default to null if not assigned
-          const isAssigned = assignedMotherName && assignedMotherName !== item.pigName; // Check if it’s assigned and not to itself
-          const buttonDisabled = isAssigned; // Disable the button if already assigned
+          const assignedMotherName = assignedPiglets[item.id] || null;
+          const isAssigned = assignedMotherName && assignedMotherName !== item.pigName;
+          const buttonDisabled = isAssigned;
           
           return (
             <View style={styles.pigContainer}>
@@ -187,13 +195,22 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 8 },
   pigInfo: { fontSize: 18, marginBottom: 8 },
+  headerContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   header: { fontSize: 20, fontWeight: 'bold', marginBottom: 16 },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 8,
+    width: '60%',
+    marginLeft: 10,
+  },
   pigContainer: { marginBottom: 20, padding: 10, borderWidth: 1, borderColor: '#ccc', borderRadius: 8 },
   detail: { fontSize: 16, marginBottom: 5 },
   selectButton: { padding: 10, borderRadius: 5, backgroundColor: '#ddd', alignItems: 'center', marginTop: 10 },
   selectedButton: { backgroundColor: '#4CAF50' },
   disabledButton: { backgroundColor: '#999' },
-  assignedText: { fontSize: 14, color: 'red' },
+  assignedText: { fontSize: 14, color: 'red', marginTop: 5 },
   buttonText: { color: '#fff' },
 });
 
