@@ -1,51 +1,49 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, Modal, Image } from 'react-native';
 import { firestore } from '../../firebase/config2';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import viewIcon from '../../assets/images/buttons/viewIcon.png';
+import PregnancyRecordsStyles from '../../frontend/Pregnancy/PregnancyRecordsStyles'; // Import the styles
 
 const PregnancyRecords = ({ route, navigation }) => {
-  const { selectedBranch, user } = route.params || {}; // Destructure the parameters passed from the previous screen
+  const { selectedBranch, user } = route.params || {}; 
 
-  // Check if required parameters are missing
   if (!selectedBranch || !user) {
-    return <Text>Error: Missing branch or user information.</Text>; // Show error message
+    return <Text>Error: Missing branch or user information.</Text>;
   }
 
-  const [femalePigs, setFemalePigs] = useState({ sortedGroups: [], groupedPigs: {} }); // State to store female pigs
-  const [loading, setLoading] = useState(true); // State to manage loading indicator
+  const [femalePigs, setFemalePigs] = useState({ sortedGroups: [], groupedPigs: {} });
+  const [loading, setLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedPiglets, setSelectedPiglets] = useState([]);
+  const [selectedPigName, setSelectedPigName] = useState('');
 
-  // Function to fetch female pigs from Firestore
   const fetchFemalePigs = async () => {
-    setLoading(true); // Show loading indicator
+    setLoading(true);
     try {
       const isMainFarm = selectedBranch === 'Main Farm';
       const branchPath = isMainFarm
         ? `users/${user.uid}/farmBranches/Main Farm/pigGroups`
         : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups`;
 
-      // Fetch pig groups from Firestore
       const groupsSnapshot = await getDocs(collection(firestore, branchPath));
-
-      // Fetch female pigs for each group
       const femalePigsPromises = groupsSnapshot.docs.map(async (groupDoc) => {
         const pigsPath = `${branchPath}/${groupDoc.id}/pigs`;
         const pigsSnapshot = await getDocs(collection(firestore, pigsPath));
         const femalePigs = pigsSnapshot.docs
-          .map(doc => ({ 
-            id: doc.id, 
-            ...doc.data(), 
+          .map(doc => ({
+            id: doc.id,
+            ...doc.data(),
             groupName: groupDoc.data().name,
-            motherId: doc.data().motherId // Get motherId from each pig's document
+            motherId: doc.data().motherId,
           }))
           .filter(pig => pig.gender === 'female');
-        return femalePigs; // Return the array of female pigs
+        return femalePigs;
       });
 
-      // Await all promises and flatten the results
       const femalePigsArrays = await Promise.all(femalePigsPromises);
-      const allFemalePigs = femalePigsArrays.flat(); // Update state with all female pigs
+      const allFemalePigs = femalePigsArrays.flat();
 
-      // Group and sort female pigs by their group names
       const groupedPigs = {};
       allFemalePigs.forEach(pig => {
         if (!groupedPigs[pig.groupName]) {
@@ -54,67 +52,107 @@ const PregnancyRecords = ({ route, navigation }) => {
         groupedPigs[pig.groupName].push(pig);
       });
 
-      // Sort the groups
       const sortedGroups = Object.keys(groupedPigs).sort();
 
-      setFemalePigs({ sortedGroups, groupedPigs }); // Update state with grouped and sorted pigs
+      setFemalePigs({ sortedGroups, groupedPigs });
     } catch (error) {
-      console.error("Error fetching female pigs: ", error); // Log any errors
+      console.error("Error fetching female pigs: ", error);
     } finally {
-      setLoading(false); // Hide loading indicator
+      setLoading(false);
     }
   };
 
-  // Effect to fetch female pigs whenever the selected branch changes
+  const fetchPiglets = async (motherId, pigName) => {
+    setSelectedPiglets([]);
+    setSelectedPigName(pigName);
+    setModalVisible(true);
+    try {
+      const pigletsQuery = query(
+        collection(firestore, `users/${user.uid}/farmBranches/${selectedBranch}/pigGroups`),
+        where('motherId', '==', motherId)
+      );
+      const pigletsSnapshot = await getDocs(pigletsQuery);
+      const piglets = pigletsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setSelectedPiglets(piglets);
+    } catch (error) {
+      console.error("Error fetching piglets: ", error);
+    }
+  };
+
   useEffect(() => {
     fetchFemalePigs();
   }, [selectedBranch, user]);
 
-  // Show loading indicator while fetching data
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
-  // Handle pig selection
-  const handlePigPress = (pig) => {
-    console.log('Navigating to PigDetailsScreen with pigId:', pig.id); // Debug log
-    navigation.navigate('PigDetailsScreen', { 
-      pigId: pig.id,
-      pigName: pig.pigName,  // Pass pig name
-      selectedBranch,  // Pass the selected branch as well
-      user,  // Pass user information
-      motherId: pig.motherId // Pass motherId to the next screen
-    });
-  };
-
-  // Render the list of female pigs grouped by their group names
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Pregnancy Records</Text>
-      {femalePigs.sortedGroups.length === 0 ? ( // Check if there are no groups
+    <View style={PregnancyRecordsStyles.container}>
+      <Text style={PregnancyRecordsStyles.header}>List of Female Pigs </Text>
+      {femalePigs.sortedGroups.length === 0 ? (
         <Text>No female pigs found.</Text>
       ) : (
         femalePigs.sortedGroups.map(group => (
           <View key={group}>
-            <Text style={styles.groupName}>{group}</Text>
-            {femalePigs.groupedPigs[group].map(pig => ( 
-              <TouchableOpacity key={pig.id} onPress={() => handlePigPress(pig)}> 
-                <Text style={styles.pigName}>{pig.pigName}</Text> 
-              </TouchableOpacity>
+            <Text style={PregnancyRecordsStyles.groupName}>{group}</Text>
+            {femalePigs.groupedPigs[group].map(pig => (
+              <View key={pig.id} style={PregnancyRecordsStyles.pigContainer}>
+                <TouchableOpacity onPress={() => navigation.navigate('PigDetailsScreen', { 
+                  pigId: pig.id,
+                  pigName: pig.pigName,
+                  selectedBranch,
+                  user,
+                  motherId: pig.motherId 
+                })}>
+                  <Text style={PregnancyRecordsStyles.pigName}>{pig.pigName}</Text>
+                </TouchableOpacity>
+                
+                <View style={PregnancyRecordsStyles.iconContainer}>
+                  <TouchableOpacity onPress={() => fetchPiglets(pig.motherId, pig.pigName)}>
+                    <Image source={viewIcon} style={PregnancyRecordsStyles.viewIcon} />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={PregnancyRecordsStyles.addButton}
+                    onPress={() => navigation.navigate('PigDetailsScreen', {
+                      pigId: pig.id,
+                      pigName: pig.pigName,
+                      selectedBranch,
+                      user,
+                      motherId: pig.motherId
+                    })}>
+                    <Text style={PregnancyRecordsStyles.addButtonText}>Add Piglets</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             ))} 
           </View>
         ))
       )}
+      
+      <Modal visible={modalVisible} transparent={true} animationType="slide">
+        <View style={PregnancyRecordsStyles.modalBackground}>
+          <View style={PregnancyRecordsStyles.modalContainer}>
+            <Text style={PregnancyRecordsStyles.modalTitle}>Piglets of {selectedPigName}</Text>
+            {selectedPiglets.length > 0 ? (
+              <FlatList
+                data={selectedPiglets}
+                keyExtractor={item => item.id}
+                renderItem={({ item }) => (
+                  <Text style={PregnancyRecordsStyles.pigletName}>{item.pigName}</Text>
+                )}
+              />
+            ) : (
+              <Text style={PregnancyRecordsStyles.noPigletsText}>No piglets found for this pig.</Text>
+            )}
+            <TouchableOpacity onPress={() => setModalVisible(false)}>
+              <Text style={PregnancyRecordsStyles.closeButton}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
 
-// Styles for the component
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  header: { fontSize: 24, fontWeight: 'bold', marginBottom: 16 },
-  groupName: { fontSize: 20, fontWeight: 'bold', marginVertical: 10 },
-  pigName: { paddingLeft: 10, fontSize: 16, marginBottom: 5 },
-});
-
-export default PregnancyRecords; // Export the component
+export default PregnancyRecords; // Ensure this matches the component name
