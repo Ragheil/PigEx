@@ -80,33 +80,30 @@ const PigDetailsScreen = ({ route }) => {
   const saveSelectedPigs = async () => {
     try {
       if (!user) return;
-
+  
       const pregnancyRecordPath = selectedBranch === 'Main Farm'
         ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${pigId}`
         : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${pigId}`;
-
+  
       const pregnancyDocRef = doc(firestore, pregnancyRecordPath);
       const existingRecordSnapshot = await getDoc(pregnancyDocRef);
       const existingRecord = existingRecordSnapshot.exists() ? existingRecordSnapshot.data() : null;
-
-      if (!existingRecord) {
-        Alert.alert('Error', 'No existing pregnancy record found for this pig.');
-        return;
-      }
-
+  
+      // Create a new record if none exists
       const updatedPregnancyRecordDoc = {
         pigName: pigName || 'Unnamed Pig',
         id: pigId,
         date: new Date().toISOString(),
-        piglets: existingRecord.piglets || []
+        piglets: existingRecord ? existingRecord.piglets || [] : []
       };
-
+  
+      // Add selected piglets
       selectedPiglets.forEach(id => {
         if (!updatedPregnancyRecordDoc.piglets.find(p => p.id === id)) {
           updatedPregnancyRecordDoc.piglets.push({ id, name: allPigs.find(p => p.id === id).pigName });
         }
       });
-
+  
       await setDoc(pregnancyDocRef, updatedPregnancyRecordDoc, { merge: true });
       Alert.alert('Success', 'Pregnancy record and selected piglets saved successfully.');
     } catch (error) {
@@ -114,7 +111,7 @@ const PigDetailsScreen = ({ route }) => {
       Alert.alert('Error', 'Failed to save pregnancy record and piglets. Please try again.');
     }
   };
-
+  
   const togglePigletSelection = (pigId) => {
     setSelectedPiglets(prevSelected =>
       prevSelected.includes(pigId)
