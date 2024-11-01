@@ -9,7 +9,7 @@ const PigDetailsScreen = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [selectedPiglets, setSelectedPiglets] = useState([]);
   const [assignedPiglets, setAssignedPiglets] = useState({});
-  const [searchQuery, setSearchQuery] = useState(''); // State for search query
+  const [searchQuery, setSearchQuery] = useState('');
 
   const fetchAllPigs = async () => {
     setLoading(true);
@@ -33,7 +33,7 @@ const PigDetailsScreen = ({ route }) => {
           gender: doc.data().gender,
           groupName,
         }));
-        
+
         pigsList = [...pigsList, ...groupPigs];
       }
 
@@ -51,27 +51,27 @@ const PigDetailsScreen = ({ route }) => {
       const pregnancyRecordsPath = isMainFarm
         ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords`
         : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords`;
-  
+
       const recordsSnapshot = await getDocs(collection(firestore, pregnancyRecordsPath));
       const pigletsAssignments = {};
-  
+
       for (const record of recordsSnapshot.docs) {
         const motherId = record.id;
         const motherData = record.data();
         const motherName = motherData.pigName || 'Unnamed Mother';
         const piglets = motherData.piglets || [];
-        
+
         piglets.forEach(piglet => {
           pigletsAssignments[piglet.id] = motherName;
         });
       }
-  
+
       setAssignedPiglets(pigletsAssignments);
     } catch (error) {
       console.error("Error fetching assigned piglets: ", error);
     }
   };
-  
+
   useEffect(() => {
     fetchAllPigs();
     fetchAssignedPiglets();
@@ -79,39 +79,65 @@ const PigDetailsScreen = ({ route }) => {
 
   const saveSelectedPigs = async () => {
     try {
-      if (!user) return;
-  
-      const pregnancyRecordPath = selectedBranch === 'Main Farm'
-        ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${pigId}`
-        : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${pigId}`;
-  
-      const pregnancyDocRef = doc(firestore, pregnancyRecordPath);
-      const existingRecordSnapshot = await getDoc(pregnancyDocRef);
-      const existingRecord = existingRecordSnapshot.exists() ? existingRecordSnapshot.data() : null;
-  
-      // Create a new record if none exists
-      const updatedPregnancyRecordDoc = {
-        pigName: pigName || 'Unnamed Pig',
-        id: pigId,
-        date: new Date().toISOString(),
-        piglets: existingRecord ? existingRecord.piglets || [] : []
-      };
-  
-      // Add selected piglets
-      selectedPiglets.forEach(id => {
-        if (!updatedPregnancyRecordDoc.piglets.find(p => p.id === id)) {
-          updatedPregnancyRecordDoc.piglets.push({ id, name: allPigs.find(p => p.id === id).pigName });
-        }
-      });
-  
-      await setDoc(pregnancyDocRef, updatedPregnancyRecordDoc, { merge: true });
-      Alert.alert('Success', 'Pregnancy record and selected piglets saved successfully.');
+        if (!user) return;
+
+        // Path for the pregnancy record document
+        const pregnancyRecordPath = selectedBranch === 'Main Farm'
+            ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${pigId}`
+            : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${pigId}`;
+
+        const pregnancyDocRef = doc(firestore, pregnancyRecordPath);
+        const existingRecordSnapshot = await getDoc(pregnancyDocRef);
+        const existingRecord = existingRecordSnapshot.exists() ? existingRecordSnapshot.data() : null;
+
+        // Create a new pregnancy record document if none exists
+        const updatedPregnancyRecordDoc = {
+            pigName: pigName || 'Unnamed Pig',
+            id: pigId,
+            date: new Date().toISOString(),
+            piglets: existingRecord ? existingRecord.piglets || [] : []
+        };
+
+        // Prepare the path for motherRecords as a sub-collection of the pregnancy record
+        const motherRecordsPath = selectedBranch === 'Main Farm'
+            ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${pigId}/motherRecords`
+            : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${pigId}/motherRecords`;
+
+        const batch = writeBatch(firestore);
+        
+        // Loop through selected piglets to add to both pregnancy record and motherRecords
+        selectedPiglets.forEach(id => {
+            const piglet = allPigs.find(p => p.id === id);
+            if (piglet) {
+                // Add piglet to the pregnancy record
+                if (!updatedPregnancyRecordDoc.piglets.find(p => p.id === id)) {
+                    updatedPregnancyRecordDoc.piglets.push({ id, pigName: piglet.pigName });
+                }
+
+                // Prepare motherRecords data
+                const pigletData = {
+                  pigName: piglet.pigName,
+                    pigId: piglet.id,
+                    group: piglet.groupName
+                };
+                const pigletRecordRef = doc(collection(firestore, motherRecordsPath));
+
+                // Set the piglet record in motherRecords
+                batch.set(pigletRecordRef, pigletData);
+            }
+        });
+
+        // Save the pregnancy record and commit the batch
+        await setDoc(pregnancyDocRef, updatedPregnancyRecordDoc, { merge: true });
+        await batch.commit();
+        Alert.alert('Success', 'Pregnancy record and selected piglets saved successfully.');
     } catch (error) {
-      console.error('Error saving pregnancy record and piglets:', error);
-      Alert.alert('Error', 'Failed to save pregnancy record and piglets. Please try again.');
+        console.error('Error saving pregnancy record and piglets:', error);
+        Alert.alert('Error', 'Failed to save pregnancy record and piglets. Please try again.');
     }
-  };
-  
+};
+
+
   const togglePigletSelection = (pigId) => {
     setSelectedPiglets(prevSelected =>
       prevSelected.includes(pigId)
@@ -152,7 +178,7 @@ const PigDetailsScreen = ({ route }) => {
           const assignedMotherName = assignedPiglets[item.id] || null;
           const isAssigned = assignedMotherName && assignedMotherName !== item.pigName;
           const buttonDisabled = isAssigned;
-          
+
           return (
             <View style={styles.pigContainer}>
               <Text style={styles.detail}>Name: {item.pigName}</Text>
@@ -202,13 +228,23 @@ const styles = StyleSheet.create({
     width: '60%',
     marginLeft: 10,
   },
-  pigContainer: { marginBottom: 20, padding: 10, borderWidth: 1, borderColor: '#ccc', borderRadius: 8 },
-  detail: { fontSize: 16, marginBottom: 5 },
-  selectButton: { padding: 10, borderRadius: 5, backgroundColor: '#ddd', alignItems: 'center', marginTop: 10 },
-  selectedButton: { backgroundColor: '#4CAF50' },
-  disabledButton: { backgroundColor: '#999' },
-  assignedText: { fontSize: 14, color: 'red', marginTop: 5 },
-  buttonText: { color: '#fff' },
+  pigContainer: { marginBottom: 10, padding: 10, borderWidth: 1, borderColor: '#ccc', borderRadius: 5 },
+  detail: { fontSize: 16 },
+  assignedText: { fontSize: 14, color: 'red' },
+  selectButton: {
+    backgroundColor: '#007BFF',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  selectedButton: {
+    backgroundColor: '#28A745',
+  },
+  disabledButton: {
+    backgroundColor: '#ccc',
+  },
+  buttonText: { color: '#fff', fontSize: 16 },
 });
 
 export default PigDetailsScreen;

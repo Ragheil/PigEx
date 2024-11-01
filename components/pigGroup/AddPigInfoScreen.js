@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, FlatList, Modal, TouchableOpacity, Image, Switch  } from 'react-native';
-import { addDoc, collection, query, onSnapshot, doc, getDoc, updateDoc, deleteDoc, getDocs, where } from 'firebase/firestore';
+import { addDoc, collection, query, onSnapshot, doc, getDoc, updateDoc, deleteDoc, getDocs, where, writeBatch } from 'firebase/firestore';
 import { auth, firestore } from '../../firebase/config2';
 import { Picker } from '@react-native-picker/picker';
 import DatePicker from 'react-native-date-picker';
@@ -239,6 +239,30 @@ export default function AddPigInfoScreen({ route }) {
 
     await updateDoc(pregnancyDocRef, updatedPregnancyRecordDoc);
 
+    // Update motherRecords for piglets
+    const motherRecordsPath = selectedBranch === 'Main Farm'
+      ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${currentPigId}/motherRecords`
+      : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${currentPigId}/motherRecords`;
+
+    // Fetch existing mother records
+    const motherRecordsSnapshot = await getDocs(collection(firestore, motherRecordsPath));
+    
+    // Update each mother record's pigName
+    const batch = writeBatch(firestore);
+    motherRecordsSnapshot.forEach(doc => {
+      const motherRecordData = doc.data();
+      // Prepare the updated mother record
+      const updatedMotherRecord = {
+        ...motherRecordData,
+        pigName: pigName // Update the pigName to the new pig name
+      };
+      // Update the document in the batch
+      batch.set(doc.ref, updatedMotherRecord);
+    });
+
+    // Commit the batch update
+    await batch.commit();
+
     // Show success message
     Alert.alert('Success', 'Pig and pregnancy records updated successfully!');
     setIsEditing(false);
@@ -248,6 +272,7 @@ export default function AddPigInfoScreen({ route }) {
     Alert.alert('Error', 'There was a problem updating the pig and pregnancy records.');
   }
 };
+
 
 
 

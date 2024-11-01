@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, Modal, Image } from 'react-native';
 import { firestore } from '../../firebase/config2';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import viewIcon from '../../assets/images/buttons/viewIcon.png';
 import PregnancyRecordsStyles from '../../frontend/Pregnancy/PregnancyRecordsStyles'; // Import the styles
 
 const PregnancyRecords = ({ route, navigation }) => {
-  const { selectedBranch, user } = route.params || {}; 
+  const { selectedBranch, user } = route.params || {};
 
   if (!selectedBranch || !user) {
     return <Text>Error: Missing branch or user information.</Text>;
@@ -62,20 +62,26 @@ const PregnancyRecords = ({ route, navigation }) => {
     }
   };
 
-  const fetchPiglets = async (motherId, pigName) => {
-    setSelectedPiglets([]);
-    setSelectedPigName(pigName);
-    setModalVisible(true);
+  const fetchPiglets = async (pigId, pigName) => {
+    setSelectedPiglets([]); // Reset piglets state
+    setSelectedPigName(pigName); // Set selected pig name
+    setModalVisible(true); // Open modal
+
     try {
-      const pigletsQuery = query(
-        collection(firestore, `users/${user.uid}/farmBranches/${selectedBranch}/pigGroups`),
-        where('motherId', '==', motherId)
-      );
-      const pigletsSnapshot = await getDocs(pigletsQuery);
+      // Determine the path to the mother records
+      const motherRecordsPath = selectedBranch === 'Main Farm'
+        ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${pigId}/motherRecords`
+        : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${pigId}/motherRecords`;
+
+      // Fetch piglets from the mother records collection
+      const pigletsSnapshot = await getDocs(collection(firestore, motherRecordsPath));
       const piglets = pigletsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setSelectedPiglets(piglets);
+      
+      console.log(`Fetched piglets for ${pigName}:`, piglets); // Log the fetched piglets
+
+      setSelectedPiglets(piglets); // Set the fetched piglets
     } catch (error) {
-      console.error("Error fetching piglets: ", error);
+      console.error("Error fetching piglets: ", error); // Log any errors
     }
   };
 
@@ -89,7 +95,7 @@ const PregnancyRecords = ({ route, navigation }) => {
 
   return (
     <View style={PregnancyRecordsStyles.container}>
-      <Text style={PregnancyRecordsStyles.header}>List of Female Pigs </Text>
+      <Text style={PregnancyRecordsStyles.header}>List of Femadssaddsaale Pigs </Text>
       {femalePigs.sortedGroups.length === 0 ? (
         <Text>No female pigs found.</Text>
       ) : (
@@ -98,7 +104,7 @@ const PregnancyRecords = ({ route, navigation }) => {
             <Text style={PregnancyRecordsStyles.groupName}>{group}</Text>
             {femalePigs.groupedPigs[group].map(pig => (
               <View key={pig.id} style={PregnancyRecordsStyles.pigContainer}>
-                <TouchableOpacity onPress={() => navigation.navigate('PigDetailsScreen', { 
+                <TouchableOpacity onPress={() => navigation.navigate('PigDetailsScreen', {
                   pigId: pig.id,
                   pigName: pig.pigName,
                   selectedBranch,
@@ -109,7 +115,7 @@ const PregnancyRecords = ({ route, navigation }) => {
                 </TouchableOpacity>
                 
                 <View style={PregnancyRecordsStyles.iconContainer}>
-                  <TouchableOpacity onPress={() => fetchPiglets(pig.motherId, pig.pigName)}>
+                  <TouchableOpacity onPress={() => fetchPiglets(pig.id, pig.pigName)}>
                     <Image source={viewIcon} style={PregnancyRecordsStyles.viewIcon} />
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -125,7 +131,7 @@ const PregnancyRecords = ({ route, navigation }) => {
                   </TouchableOpacity>
                 </View>
               </View>
-            ))} 
+            ))}
           </View>
         ))
       )}
