@@ -554,18 +554,20 @@ export default function AddPigInfoScreen({ route }) {
  
           {/* Conditionally render Pregnancy Records button if the pig is female */}
                     {selectedPig.gender === 'female' && (
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('PregnancyRecordsScreen', {
-                  pigId: selectedPig.id,
-                  pigName: selectedPig.pigName,  // Pass pigName along with pigId
-                });
-              }}
-              style={styles.pregnancyButton}
-            >
-              {/* Ensure text is wrapped inside <Text> component */}
-              <Text style={styles.buttonText}>Pregnancy Records</Text>
-            </TouchableOpacity>
+                      <TouchableOpacity
+  onPress={() => {
+    navigation.navigate('PregnancyRecordsScreen', {
+      pigId: selectedPig.id,
+      pigName: selectedPig.pigName,  // Pass pigName along with pigId
+      selectedBranch: selectedBranch,  // Pass the selected branch
+      user: user,                      // Pass the user object
+    });
+  }}
+  style={styles.pregnancyButton}
+>
+  <Text style={styles.buttonText}>Pregnancy Records</Text>
+</TouchableOpacity>
+
           )}
 
 
