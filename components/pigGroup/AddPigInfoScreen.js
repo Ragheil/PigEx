@@ -436,24 +436,8 @@ export default function AddPigInfoScreen({ route }) {
               value={race}
               onChangeText={setRace}
             />
- <Picker
-  selectedValue={selectedFemalePig}
-  onValueChange={(itemValue) => {
-    setSelectedFemalePig(itemValue);
-    setSelectedFemalePigId(itemValue); // Store the ID of the selected female pig
-    console.log("Selected Female Pig ID:", itemValue); // Log selected pig ID
-  }}
-  style={styles.picker}
->
-  <Picker.Item label="Select a female pig" value={null} />
-  {femalePigs.map((pig) => (
-    <Picker.Item 
-      key={pig.id} 
-      label={`Pig Group: ${pig.groupName} - ${pig.pigName}`} 
-      value={pig.id} 
-    />
-  ))}
-</Picker>
+
+
 
 
 {isEditing && (
@@ -552,23 +536,7 @@ export default function AddPigInfoScreen({ route }) {
   color="#000000FF"
 />
  
-          {/* Conditionally render Pregnancy Records button if the pig is female */}
-                    {selectedPig.gender === 'female' && (
-                      <TouchableOpacity
-  onPress={() => {
-    navigation.navigate('PregnancyRecordsScreen', {
-      pigId: selectedPig.id,
-      pigName: selectedPig.pigName,  // Pass pigName along with pigId
-      selectedBranch: selectedBranch,  // Pass the selected branch
-      user: user,                      // Pass the user object
-    });
-  }}
-  style={styles.pregnancyButton}
->
-  <Text style={styles.buttonText}>Pregnancy Records</Text>
-</TouchableOpacity>
 
-          )}
 
 
               </>
