@@ -212,7 +212,7 @@ export default function AddPigInfoScreen({ route }) {
       motherName: motherName || ""
     });
 
-    // Update pigName in all motherRecords documents with the same pigId for Main Farm and Farm Branches
+    // Update pigName in all motherRecords documents with matching pigId for Main Farm and Farm Branches
     await updateMotherRecordsInMainFarm(firestore, user.uid, currentPigId, pigName);
     await updateMotherRecordsInAllFarmBranches(firestore, user.uid, currentPigId, pigName);
 
@@ -225,7 +225,7 @@ export default function AddPigInfoScreen({ route }) {
   }
 };
 
-// Function to update pigName in all motherRecords documents with the same pigId for Main Farm
+// Function to update pigName in all motherRecords documents in Main Farm with matching pigId or document ID
 const updateMotherRecordsInMainFarm = async (db, userId, pigId, newPigName) => {
   try {
     const mainFarmPath = `users/${userId}/farmBranches/Main Farm/pregnancyRecords`;
@@ -236,6 +236,12 @@ const updateMotherRecordsInMainFarm = async (db, userId, pigId, newPigName) => {
     for (const pregnancyDoc of pregnancyRecordsSnapshot.docs) {
       const motherRecordsCollectionPath = `${mainFarmPath}/${pregnancyDoc.id}/motherRecords`;
 
+      // Update documents where the document ID matches pigId
+      if (pregnancyDoc.id === pigId) {
+        batch.update(pregnancyDoc.ref, { pigName: newPigName });
+      }
+
+      // Query for documents in motherRecords where pigId matches
       const motherRecordsSnapshot = await getDocs(query(
         collection(db, motherRecordsCollectionPath),
         where("pigId", "==", pigId)
@@ -252,7 +258,7 @@ const updateMotherRecordsInMainFarm = async (db, userId, pigId, newPigName) => {
   }
 };
 
-// Function to update pigName in all motherRecords documents with the same pigId across all Farm Branches
+// Function to update pigName in all motherRecords documents in Farm Branches with matching pigId or document ID
 const updateMotherRecordsInAllFarmBranches = async (db, userId, pigId, newPigName) => {
   try {
     const branchesPath = `users/${userId}/farmBranches/Farm Branch/Branches`;
@@ -267,6 +273,12 @@ const updateMotherRecordsInAllFarmBranches = async (db, userId, pigId, newPigNam
       for (const pregnancyDoc of pregnancyRecordsSnapshot.docs) {
         const motherRecordsCollectionPath = `${branchPregnancyRecordsPath}/${pregnancyDoc.id}/motherRecords`;
 
+        // Update documents where the document ID matches pigId
+        if (pregnancyDoc.id === pigId) {
+          batch.update(pregnancyDoc.ref, { pigName: newPigName });
+        }
+
+        // Query for documents in motherRecords where pigId matches
         const motherRecordsSnapshot = await getDocs(query(
           collection(db, motherRecordsCollectionPath),
           where("pigId", "==", pigId)
@@ -283,8 +295,6 @@ const updateMotherRecordsInAllFarmBranches = async (db, userId, pigId, newPigNam
     console.error('Error updating motherRecords in Farm Branches with pigId:', error);
   }
 };
-
-
 
 
 
