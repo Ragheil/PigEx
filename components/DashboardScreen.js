@@ -463,10 +463,10 @@ const handleAddBranch = async () => {
                 placeholder="Branch Name"
                 style={styles.input}
               />
-              <TouchableOpacity style={styles.addButton} onPress={handleAddBranch}>
+              <TouchableOpacity style={styles.modalButton} onPress={handleAddBranch}>
                 <Text style={styles.addButtonText}>Add Branch</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.closeModalButton} onPress={() => setBranchModalVisible(false)}>
+              <TouchableOpacity style={styles.modalButton} onPress={() => setBranchModalVisible(false)}>
                 <Text style={styles.closeModalText}>Close</Text>
               </TouchableOpacity>
             </View>

@@ -97,7 +97,7 @@ const PregnancyRecords = ({ route, navigation }) => {
 
   return (
     <View style={PregnancyRecordsStyles.container}>
-      <Text style={PregnancyRecordsStyles.header}>List of Female Pigs</Text>
+      <Text style={PregnancyRecordsStyles.header}>List of all Female Pigs</Text>
       {femalePigs.sortedGroups.length === 0 ? (
         <Text>No female pigs found.</Text>
       ) : (

@@ -187,7 +187,6 @@ export default function AddPigInfoScreen({ route }) {
 
   // Edit Pig
  // Edit Pig
-
  const handleEditPig = async () => {
   if (!pigName.trim() || !tagNumber.trim() || !gender || !race.trim()) {
     Alert.alert('Validation Error', 'All fields are required.');
@@ -213,10 +212,11 @@ export default function AddPigInfoScreen({ route }) {
       motherName: motherName || ""
     });
 
-    // Update pigName in all motherRecords documents with the same pigId
-    await updateMotherRecordsWithPigId(firestore, user.uid, currentPigId, pigName);
+    // Update pigName in all motherRecords documents with the same pigId for Main Farm and Farm Branches
+    await updateMotherRecordsInMainFarm(firestore, user.uid, currentPigId, pigName);
+    await updateMotherRecordsInAllFarmBranches(firestore, user.uid, currentPigId, pigName);
 
-    Alert.alert('Success', 'Pig name updated!');
+    Alert.alert('Success', 'Pig name updated across all relevant records!');
     setIsEditing(false);
     resetFields();
   } catch (error) {
@@ -225,35 +225,62 @@ export default function AddPigInfoScreen({ route }) {
   }
 };
 
-// Function to update pigName in all motherRecords documents with the same pigId
-const updateMotherRecordsWithPigId = async (db, userId, pigId, newPigName) => {
+// Function to update pigName in all motherRecords documents with the same pigId for Main Farm
+const updateMotherRecordsInMainFarm = async (db, userId, pigId, newPigName) => {
   try {
-    const motherRecordsPath = `users/${userId}/farmBranches/Main Farm/pregnancyRecords`;
+    const mainFarmPath = `users/${userId}/farmBranches/Main Farm/pregnancyRecords`;
 
-    // Get all pregnancy records under Main Farm
-    const pregnancyRecordsSnapshot = await getDocs(collection(db, motherRecordsPath));
-
+    const pregnancyRecordsSnapshot = await getDocs(collection(db, mainFarmPath));
     const batch = writeBatch(db);
 
     for (const pregnancyDoc of pregnancyRecordsSnapshot.docs) {
-      const motherRecordsCollectionPath = `${motherRecordsPath}/${pregnancyDoc.id}/motherRecords`;
+      const motherRecordsCollectionPath = `${mainFarmPath}/${pregnancyDoc.id}/motherRecords`;
 
-      // Query for documents in motherRecords with matching pigId
       const motherRecordsSnapshot = await getDocs(query(
         collection(db, motherRecordsCollectionPath),
         where("pigId", "==", pigId)
       ));
 
       motherRecordsSnapshot.forEach((motherRecordDoc) => {
-        // Update the pigName if pigId matches
         batch.update(motherRecordDoc.ref, { pigName: newPigName });
       });
     }
 
-    // Commit the batch update
     await batch.commit();
   } catch (error) {
-    console.error('Error updating motherRecords documents with pigId:', error);
+    console.error('Error updating motherRecords in Main Farm with pigId:', error);
+  }
+};
+
+// Function to update pigName in all motherRecords documents with the same pigId across all Farm Branches
+const updateMotherRecordsInAllFarmBranches = async (db, userId, pigId, newPigName) => {
+  try {
+    const branchesPath = `users/${userId}/farmBranches/Farm Branch/Branches`;
+    const branchesSnapshot = await getDocs(collection(db, branchesPath));
+
+    const batch = writeBatch(db);
+
+    for (const branchDoc of branchesSnapshot.docs) {
+      const branchPregnancyRecordsPath = `${branchesPath}/${branchDoc.id}/pregnancyRecords`;
+      const pregnancyRecordsSnapshot = await getDocs(collection(db, branchPregnancyRecordsPath));
+
+      for (const pregnancyDoc of pregnancyRecordsSnapshot.docs) {
+        const motherRecordsCollectionPath = `${branchPregnancyRecordsPath}/${pregnancyDoc.id}/motherRecords`;
+
+        const motherRecordsSnapshot = await getDocs(query(
+          collection(db, motherRecordsCollectionPath),
+          where("pigId", "==", pigId)
+        ));
+
+        motherRecordsSnapshot.forEach((motherRecordDoc) => {
+          batch.update(motherRecordDoc.ref, { pigName: newPigName });
+        });
+      }
+    }
+
+    await batch.commit();
+  } catch (error) {
+    console.error('Error updating motherRecords in Farm Branches with pigId:', error);
   }
 };
 
