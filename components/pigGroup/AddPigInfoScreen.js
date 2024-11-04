@@ -187,21 +187,21 @@ export default function AddPigInfoScreen({ route }) {
 
   // Edit Pig
  // Edit Pig
+
  const handleEditPig = async () => {
-  // Validate inputs
   if (!pigName.trim() || !tagNumber.trim() || !gender || !race.trim()) {
     Alert.alert('Validation Error', 'All fields are required.');
     return;
   }
 
-  // Determine pig collection path based on branch
   const pigCollectionPath = selectedBranch === 'Main Farm'
     ? `users/${user.uid}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${currentPigId}`
     : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${currentPigId}`;
 
   try {
-    // Update pig document
+    // Update the main pig document
     await updateDoc(doc(firestore, pigCollectionPath), {
+      pigId: currentPigId,
       pigName,
       tagNumber,
       gender,
@@ -213,67 +213,49 @@ export default function AddPigInfoScreen({ route }) {
       motherName: motherName || ""
     });
 
-    // Pregnancy record path
-    const pregnancyRecordPath = selectedBranch === 'Main Farm'
-      ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${currentPigId}`
-      : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${currentPigId}`;
-    
-    // Fetch existing pregnancy record
-    const pregnancyDocRef = doc(firestore, pregnancyRecordPath);
-    const pregnancyRecordSnapshot = await getDoc(pregnancyDocRef);
-    
-    if (!pregnancyRecordSnapshot.exists()) {
-      Alert.alert('Error', 'Pregnancy record not found.');
-      return;
-    }
+    // Update pigName in all motherRecords documents with the same pigId
+    await updateMotherRecordsWithPigId(firestore, user.uid, currentPigId, pigName);
 
-    const existingPregnancyRecord = pregnancyRecordSnapshot.data();
-    
-    // Update pregnancy record
-    const updatedPregnancyRecordDoc = {
-      pigName: pigName || 'Unnamed Pig', // Ensure the pig name is updated
-      id: currentPigId,
-      date: new Date().toISOString(),
-      piglets: existingPregnancyRecord.piglets || [] // Keep existing piglets
-    };
-
-    await updateDoc(pregnancyDocRef, updatedPregnancyRecordDoc);
-
-    // Update motherRecords for piglets
-    const motherRecordsPath = selectedBranch === 'Main Farm'
-      ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${currentPigId}/motherRecords`
-      : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${currentPigId}/motherRecords`;
-
-    // Fetch existing mother records
-    const motherRecordsSnapshot = await getDocs(collection(firestore, motherRecordsPath));
-    
-    // Update each mother record's pigName
-    const batch = writeBatch(firestore);
-    motherRecordsSnapshot.forEach(doc => {
-      const motherRecordData = doc.data();
-      // Prepare the updated mother record
-      const updatedMotherRecord = {
-        ...motherRecordData,
-        pigName: pigName // Update the pigName to the new pig name
-      };
-      // Update the document in the batch
-      batch.set(doc.ref, updatedMotherRecord);
-    });
-
-    // Commit the batch update
-    await batch.commit();
-
-    // Show success message
-    Alert.alert('Success', 'Pig and pregnancy records updated successfully!');
+    Alert.alert('Success', 'Pig name updated across all relevant records!');
     setIsEditing(false);
     resetFields();
   } catch (error) {
-    console.error('Error updating pig and pregnancy records:', error);
-    Alert.alert('Error', 'There was a problem updating the pig and pregnancy records.');
+    console.error('Error updating pig records:', error);
+    Alert.alert('Error', 'There was a problem updating the pig records.');
   }
 };
 
+// Function to update pigName in all motherRecords documents with the same pigId
+const updateMotherRecordsWithPigId = async (db, userId, pigId, newPigName) => {
+  try {
+    const motherRecordsPath = `users/${userId}/farmBranches/Main Farm/pregnancyRecords`;
 
+    // Get all pregnancy records under Main Farm
+    const pregnancyRecordsSnapshot = await getDocs(collection(db, motherRecordsPath));
+
+    const batch = writeBatch(db);
+
+    for (const pregnancyDoc of pregnancyRecordsSnapshot.docs) {
+      const motherRecordsCollectionPath = `${motherRecordsPath}/${pregnancyDoc.id}/motherRecords`;
+
+      // Query for documents in motherRecords with matching pigId
+      const motherRecordsSnapshot = await getDocs(query(
+        collection(db, motherRecordsCollectionPath),
+        where("pigId", "==", pigId)
+      ));
+
+      motherRecordsSnapshot.forEach((motherRecordDoc) => {
+        // Update the pigName if pigId matches
+        batch.update(motherRecordDoc.ref, { pigName: newPigName });
+      });
+    }
+
+    // Commit the batch update
+    await batch.commit();
+  } catch (error) {
+    console.error('Error updating motherRecords documents with pigId:', error);
+  }
+};
 
 
 
