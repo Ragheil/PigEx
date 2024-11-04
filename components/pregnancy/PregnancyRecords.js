@@ -137,7 +137,7 @@ const PregnancyRecords = ({ route, navigation }) => {
           </View>
         ))
       )}
-      
+       
       <Modal visible={modalVisible} transparent={true} animationType="slide">
   <View style={PregnancyRecordsStyles.modalBackground}>
     <View style={PregnancyRecordsStyles.modalContainer}>
