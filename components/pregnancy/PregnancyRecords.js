@@ -148,7 +148,7 @@ const PregnancyRecords = ({ route, navigation }) => {
           keyExtractor={item => item.id}
           renderItem={({ item }) => (
             <Text style={PregnancyRecordsStyles.pigletName}>
-              {item.group} - {item.pigName}
+            {/* Modal for confirming deletion   {item.group} -*/} {item.pigName}
             </Text>
           )}
         />

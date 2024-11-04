@@ -216,7 +216,7 @@ export default function AddPigInfoScreen({ route }) {
     // Update pigName in all motherRecords documents with the same pigId
     await updateMotherRecordsWithPigId(firestore, user.uid, currentPigId, pigName);
 
-    Alert.alert('Success', 'Pig name updated across all relevant records!');
+    Alert.alert('Success', 'Pig name updated!');
     setIsEditing(false);
     resetFields();
   } catch (error) {
