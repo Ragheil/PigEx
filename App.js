@@ -9,7 +9,7 @@ import {
   sendEmailVerification,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { StyleSheet } from 'react-native';
+import { StyleSheet,Alert } from 'react-native';
 
 // Import screens
 import WelcomeScreen from './components/WelcomeScreen';
@@ -122,7 +122,8 @@ export default function App() {
         await fetchUserData(user.uid);
       }
     } catch (error) {
-      console.error('Authentication error:', error.message);
+      //console.error('Authentication error:', error.message);
+      Alert.alert('Authentication Error', 'Please Check your Email Address or password and try again');
     }
   };
 

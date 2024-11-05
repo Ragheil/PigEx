@@ -28,7 +28,7 @@ const RegisterScreen = ({ email, setEmail, password, setPassword, handleAuthenti
     }
 
     if (password.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters long');
+      Alert.alert('Error', 'You must put a password that is at least 6 characters long');
       return;
     }
 

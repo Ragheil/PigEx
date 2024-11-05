@@ -13,11 +13,13 @@ const LoginScreen = ({ email, setEmail, password, setPassword, handleAuthenticat
   const handleLogin = () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please enter both email and password');
+    } else if (password.length < 6) {
+      Alert.alert('Error', 'You must enter a password that is at least 6 characters long');
     } else {
       handleAuthentication();
     }
   };
-
+  
   const handleForgotPassword = async () => {
     if (!email) {
       Alert.alert('Error', 'Please enter your email address');
