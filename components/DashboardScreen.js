@@ -19,6 +19,8 @@ import { firestore, auth } from '../firebase/config2';
 import FooterScreen from './footer/FooterScreen';
 import { Picker } from '@react-native-picker/picker';
 import styles from '../frontend/componentsStyles/DashboardScreenStyles';
+import { updateEmail, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
+import { sendEmailVerification } from 'firebase/auth';
 
 export default function DashboardScreen({ firstName, lastName, farmName, onLogout }) {
   // State variables
@@ -37,7 +39,9 @@ export default function DashboardScreen({ firstName, lastName, farmName, onLogou
   const [selectedBranch, setSelectedBranch] = useState(farmName);
   const sidebarTranslateX = useState(new Animated.Value(Dimensions.get('window').width))[0];
   const navigation = useNavigation();
-  
+  const [updatedEmail, setUpdatedEmail] = useState(auth.currentUser?.email || ''); // New state for email address
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [emailModalVisible, setEmailModalVisible] = useState(false);
   const user = auth.currentUser;
   
  // const userId = user ? user.uid : null; // Ensure that userId is defined
@@ -216,29 +220,42 @@ const getUserDetailsFromFirestore = async (uid) => {
     );
   };
 
+
+  const updateUserEmail = async () => {
+    try {
+      // Email update logic here, including reauthentication if needed
+      await updateEmail(user, updatedEmail);
+      Alert.alert("Success", "Email updated successfully!");
+      setEmailModalVisible(false);
+    } catch (error) {
+      console.error('Error updating email:', error.message);
+      Alert.alert("Error updating email", error.message);
+    }
+  };
+
   const handleUpdate = async () => {
     if (user) {
-        const mainBranchDoc = doc(firestore, `users/${user.uid}/farmBranches/Main Farm`);
+      const mainBranchDoc = doc(firestore, `users/${user.uid}/farmBranches/Main Farm`);
 
-        try {
-            // Update user details
-            await updateDoc(doc(firestore, `users/${user.uid}`), {
-                firstName: updatedFirstName,
-                lastName: updatedLastName,
-            });
+      try {
+        // Update user details
+        await updateDoc(doc(firestore, `users/${user.uid}`), {
+          firstName: updatedFirstName,
+          lastName: updatedLastName,
+        });
 
-            // Update farm name if it's different from current
-            if (currentFarmName !== updatedFarmName) {
-                await updateDoc(mainBranchDoc, { farmName: updatedFarmName });
-                setCurrentFarmName(updatedFarmName);
-            }
-
-            setModalVisible(false);
-        } catch (error) {
-            console.error('Error updating account:', error);
+        // Update farm name if it's different from current
+        if (currentFarmName !== updatedFarmName) {
+          await updateDoc(mainBranchDoc, { farmName: updatedFarmName });
+          setCurrentFarmName(updatedFarmName);
         }
+
+        setModalVisible(false);
+      } catch (error) {
+        console.error('Error updating account:', error);
+      }
     }
-};
+  };
 
 
 const handleBranchSwitch = (branchName) => {
@@ -420,37 +437,85 @@ const handleAddBranch = async () => {
         </Animated.View>
 
         {/* Account Modal */}
-        <Modal visible={modalVisible} animationType="slide" transparent>
-          <View style={styles.modalContainer}>
+   {/* Account Update Modal */}
+   <Modal visible={modalVisible} animationType="slide" transparent>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Update Account</Text>
+            <TextInput
+              value={updatedFirstName}
+              onChangeText={setUpdatedFirstName}
+              placeholder="First Name"
+              style={styles.input}
+            />
+            <TextInput
+              value={updatedLastName}
+              onChangeText={setUpdatedLastName}
+              placeholder="Last Name"
+              style={styles.input}
+            />
+            <TextInput
+              value={updatedFarmName}
+              onChangeText={setUpdatedFarmName}
+              placeholder="Farm Name"
+              style={styles.input}
+            />
+            <TouchableOpacity style={styles.updateButton} onPress={handleUpdate}>
+              <Text style={styles.updateButtonText}>Update</Text>
+            </TouchableOpacity>
+
+            {/* Button to open the email update modal */}
+            <TouchableOpacity style={styles.updateButton} onPress={() => setEmailModalVisible(true)}>
+              <Text style={styles.updateButtonText}>Update Email</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.closeModalButton} onPress={() => setModalVisible(false)}>
+              <Text style={styles.closeModalText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Email Update Modal */}
+      <Modal
+        visible={emailModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setEmailModalVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setEmailModalVisible(false)}>
+          <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Update Account</Text>
+              <Text style={styles.modalTitle}>Update Email</Text>
               <TextInput
-                value={updatedFirstName}
-                onChangeText={setUpdatedFirstName}
-                placeholder="First Name"
                 style={styles.input}
-              /> 
-              <TextInput
-                value={updatedLastName}
-                onChangeText={setUpdatedLastName}
-                placeholder="Last Name"
-                style={styles.input}
+                placeholder="New Email"
+                value={updatedEmail}
+                onChangeText={setUpdatedEmail}
               />
               <TextInput
-                value={updatedFarmName}
-                onChangeText={setUpdatedFarmName}
-                placeholder="Farm Name"
                 style={styles.input}
+                placeholder="Current Password"
+                secureTextEntry
+                value={currentPassword}
+                onChangeText={setCurrentPassword}
               />
-              <TouchableOpacity style={styles.updateButton} onPress={handleUpdate}>
-                <Text style={styles.updateButtonText}>Update</Text>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={updateUserEmail}
+              >
+                <Text style={styles.buttonText}>Confirm</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.closeModalButton} onPress={() => setModalVisible(false)}>
-                <Text style={styles.closeModalText}>Close</Text>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => setEmailModalVisible(false)}
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
               </TouchableOpacity>
             </View>
           </View>
-        </Modal>
+        </TouchableWithoutFeedback>
+      </Modal>
 
         {/* Add Branch Modal */}
         <Modal visible={branchModalVisible} animationType="slide" transparent>
