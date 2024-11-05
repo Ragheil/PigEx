@@ -162,7 +162,7 @@ export default function FooterScreen({ firstName, lastName, farmName, selectedBr
         {/* Plus button to open modal */}
         <TouchableOpacity style={styles.footerItem} onPress={toggleModal}>
           <Image source={require('../../assets/images/navigation/plus.png')} style={styles.footerImage} />
-          <Text style={styles.footerText}>Plus</Text>
+          <Text style={styles.footerText}>Money</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
