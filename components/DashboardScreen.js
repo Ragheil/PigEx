@@ -223,15 +223,26 @@ const getUserDetailsFromFirestore = async (uid) => {
 
   const updateUserEmail = async () => {
     try {
-      // Email update logic here, including reauthentication if needed
+      // Attempt to update the email
       await updateEmail(user, updatedEmail);
-      Alert.alert("Success", "Email updated successfully!");
+      Alert.alert("Success", "Email updated successfully! Please login again to complete the changes.");
+
       setEmailModalVisible(false);
     } catch (error) {
-      console.error('Error updating email:', error.message);
-      Alert.alert("Error updating email", error.message);
+      if (error.code === 'auth/requires-recent-login') {
+        // Custom message for the 'requires-recent-login' error
+        Alert.alert(
+          "Login again",
+          "You need to log in with your current email and try this process again."
+        );
+      } else {
+        // General error handling for other errors
+        console.error('Error updating email:', error.message);
+        Alert.alert("Error updating email", error.message);
+      }
     }
   };
+  
 
   const handleUpdate = async () => {
     if (user) {
