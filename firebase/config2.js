@@ -4,12 +4,12 @@ import { getFirestore } from 'firebase/firestore'; // Import Firestore
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCt7AXSRS6fgBn-cLx5suZYpmy0NcRo6h4",
-  authDomain: "pigexx-98ec6.firebaseapp.com",
-  projectId: "pigexx-98ec6",
-  storageBucket: "pigexx-98ec6.appspot.com",
-  messagingSenderId: "1018037218375",
-  appId: "1:1018037218375:web:eb47d4ad08bc3019b35562"
+  apiKey: "AIzaSyDK_2Wwa4m2n69P63K6HFRlKni4J7jOnrk",
+  authDomain: "baboy-b3f36.firebaseapp.com",
+  projectId: "baboy-b3f36",
+  storageBucket: "baboy-b3f36.appspot.com",
+  messagingSenderId: "752217071135",
+  appId: "1:752217071135:web:846395362ecc7f0f793f2a"
 };
 const app = initializeApp(firebaseConfig);
 
@@ -31,6 +31,21 @@ const firebaseConfig = {
   storageBucket: "baboy-b3f36.appspot.com",
   messagingSenderId: "752217071135",
   appId: "1:752217071135:web:846395362ecc7f0f793f2a"
+
+  before the before
+const firebaseConfig = {
+  apiKey: "AIzaSyCt7AXSRS6fgBn-cLx5suZYpmy0NcRo6h4",
+  authDomain: "pigexx-98ec6.firebaseapp.com",
+  projectId: "pigexx-98ec6",
+  storageBucket: "pigexx-98ec6.firebasestorage.app",
+  messagingSenderId: "1018037218375",
+  appId: "1:1018037218375:web:eb47d4ad08bc3019b35562"
+};
+
+
+
+
+
 };
 
 
