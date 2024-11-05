@@ -3,6 +3,7 @@ import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore'; // Import Firestore
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+//back to old api version
 const firebaseConfig = {
   apiKey: "AIzaSyDK_2Wwa4m2n69P63K6HFRlKni4J7jOnrk",
   authDomain: "baboy-b3f36.firebaseapp.com",
