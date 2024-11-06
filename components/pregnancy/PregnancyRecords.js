@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, Modal, Image,TextInput } from 'react-native';
 import { firestore } from '../../firebase/config2';
-import { collection, getDocs, doc, getDoc,updateDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc,updateDoc,setDoc,addDoc } from 'firebase/firestore';
 import viewIcon from '../../assets/images/buttons/viewIcon.png';
 import PregnancyRecordsStyles from '../../frontend/Pregnancy/PregnancyRecordsStyles';
 
@@ -70,12 +70,35 @@ const PregnancyRecords = ({ route, navigation }) => {
       alert('Please enter a breeding date.');
       return;
     }
-
+  
     try {
-      const pigRef = doc(firestore, `users/${user.uid}/farmBranches/${selectedBranch}/pregnancyRecords/${selectedPigId}`);
-      await updateDoc(pigRef, {
+      // Determine the correct path based on whether it's the Main Farm or a Farm Branch
+      const pregnancyRecordPath = `users/${user.uid}/farmBranches/${selectedBranch === 'Main Farm' ? 'Main Farm' : `Farm Branch/Branches/${selectedBranch}`}/pregnancyRecords/${selectedPigId}`;
+  
+      const pregnancyRecordRef = doc(firestore, pregnancyRecordPath);
+  
+      // Check if the pregnancy record exists
+      const pregnancyRecordDoc = await getDoc(pregnancyRecordRef);
+  
+      if (!pregnancyRecordDoc.exists()) {
+        // If pregnancy record doesn't exist, create it first
+        await setDoc(pregnancyRecordRef, {
+          motherRecords: {
+            pigId: selectedPigId,
+            pigName: selectedPigName,
+          },
+        });
+      }
+  
+      // Create a subcollection for breeding dates
+      const breedingDatesRef = collection(firestore, `${pregnancyRecordPath}/breedingDates`);
+  
+      // Add a new breeding date document to the subcollection
+      await addDoc(breedingDatesRef, {
         breedingDate: breedingDate,
+        addedAt: new Date(),  // You can add additional metadata
       });
+  
       alert('Breeding date added successfully');
       setModalVisible(false); // Close modal
     } catch (error) {
@@ -83,6 +106,11 @@ const PregnancyRecords = ({ route, navigation }) => {
       alert('Failed to add breeding date');
     }
   };
+  
+  
+  
+  
+  
 
 
   const fetchPiglets = async (pigId, pigName) => {
@@ -142,7 +170,10 @@ const PregnancyRecords = ({ route, navigation }) => {
                 
                 <View style={PregnancyRecordsStyles.iconContainer}>
                   <TouchableOpacity onPress={() => fetchPiglets(pig.id, pig.pigName)}>
+                  
+
                     <Image source={viewIcon} style={PregnancyRecordsStyles.viewIcon} />
+                      {/* <Text >Add Piglets</Text> put the view piglets text here */}
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={PregnancyRecordsStyles.addButton}
@@ -163,7 +194,7 @@ const PregnancyRecords = ({ route, navigation }) => {
                       setSelectedPigName(pig.pigName);
                       setModalVisible(true);
                     }}>
-                    <Text style={PregnancyRecordsStyles.addBreedingDateText}>+</Text>
+                    <Text style={PregnancyRecordsStyles.addBreedingDateText}>Breed date</Text>
                   </TouchableOpacity>
 
                 </View>

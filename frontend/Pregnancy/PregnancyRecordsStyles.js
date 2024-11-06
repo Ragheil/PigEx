@@ -58,9 +58,9 @@ const PregnancyRecordsStyles = StyleSheet.create({
     alignItems: 'center',
   },
   addBreedingDateButton: {
-    backgroundColor: '#4CAF50', // green button
+    backgroundColor: '#9C8F1BFF', // green button
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 10,
     marginLeft: 10,
     justifyContent: 'center',
     alignItems: 'center',
