@@ -23,6 +23,9 @@ const PregnancyRecords = ({ route, navigation }) => {
   const [modalType, setModalType] = useState(''); // 'piglets' or 'breeding'
   const [remarks, setRemarks] = useState(''); // State for remarks
   const [showDatePicker, setShowDatePicker] = useState(false); // State to control DatePicker visibility
+  const [breedingHistoryVisible, setBreedingHistoryVisible] = useState(false); // For controlling breeding history modal visibility
+  const [breedingHistory, setBreedingHistory] = useState([]); // To store the fetched breeding history
+
   const onDateChange = (event, selectedDate) => {
     if (selectedDate) {
       setBreedingDate(selectedDate.toLocaleDateString()); // Format as required
@@ -107,6 +110,16 @@ const PregnancyRecords = ({ route, navigation }) => {
   };
   
   
+  const fetchBreedingHistory = async () => {
+    try {
+      const breedingDatesRef = collection(firestore, `users/${user.uid}/farmBranches/${selectedBranch === 'Main Farm' ? 'Main Farm' : `Farm Branch/Branches/${selectedBranch}`}/pregnancyRecords/${selectedPigId}/breedingDates`);
+      const breedingSnapshot = await getDocs(breedingDatesRef);
+      const history = breedingSnapshot.docs.map(doc => doc.data());
+      setBreedingHistory(history);
+    } catch (error) {
+      console.error("Error fetching breeding history: ", error);
+    }
+  };
   
   
 
@@ -252,6 +265,15 @@ const PregnancyRecords = ({ route, navigation }) => {
           <TouchableOpacity style={PregnancyRecordsStyles.addButton} onPress={addBreedingDate}>
             <Text style={PregnancyRecordsStyles.addButtonText}>Add Breeding Date</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+  style={PregnancyRecordsStyles.viewBreedingHistoryButton}
+  onPress={() => {
+    fetchBreedingHistory();
+    setBreedingHistoryVisible(true); // Show breeding history modal
+  }}>
+  <Text style={PregnancyRecordsStyles.viewBreedingHistoryText}>View Breeding History</Text>
+  
+</TouchableOpacity>
 
           <TouchableOpacity
             style={PregnancyRecordsStyles.closeButton}
@@ -264,6 +286,31 @@ const PregnancyRecords = ({ route, navigation }) => {
     </View>
   </View>
 </Modal>
+<Modal visible={breedingHistoryVisible} transparent={true} animationType="slide">
+  <View style={PregnancyRecordsStyles.modalBackground}>
+    <View style={PregnancyRecordsStyles.breedingHistoryModalContainer}>
+      <Text style={PregnancyRecordsStyles.modalHeader}>Breeding History of {selectedPigName}</Text>
+      <FlatList
+        data={breedingHistory}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
+          <View style={PregnancyRecordsStyles.breedingHistoryItem}>
+            <View style={PregnancyRecordsStyles.breedingHistoryTextContainer}>
+              <Text style={PregnancyRecordsStyles.breedingHistoryLabel}>Breeding Date: {item.breedingDate}</Text>
+              <Text style={PregnancyRecordsStyles.breedingHistoryLabel}>Remarks: {item.remarks}</Text>
+            </View>
+          </View>
+        )}
+      />
+      <TouchableOpacity style={PregnancyRecordsStyles.closeButton} onPress={() => setBreedingHistoryVisible(false)}>
+        <Text style={PregnancyRecordsStyles.closeButtonText}>Close</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
+
+
+
 
     </View>
   );

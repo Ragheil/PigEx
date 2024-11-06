@@ -150,6 +150,45 @@ const PregnancyRecordsStyles = StyleSheet.create({
     marginBottom: 5,
     color: '#555',
   },
+  breedingHistoryModalContainer: {
+    width: '90%', // Increase modal width to make it larger
+    height: '70%', // Adjust the height to make it larger
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 20,
+  },
+  modalHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  closeButton: {
+    marginTop: 15,
+    backgroundColor: '#007bff',
+    padding: 10,
+    alignItems: 'center',
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  breedingHistoryItem: {
+    marginBottom: 15, // Space between each history entry
+  },
+  // Container to place Breeding Date and Remarks side by side
+  breedingHistoryTextContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 5, // Space between each entry
+  },
+  breedingHistoryLabel: {
+    fontWeight: 'bold',
+    width: '45%', // Adjust width to make them fit on the same line
+    marginRight: 10, // Space between the two labels
+  },
+
 });
 
 export default PregnancyRecordsStyles;
