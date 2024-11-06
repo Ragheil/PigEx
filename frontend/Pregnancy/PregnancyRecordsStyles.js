@@ -45,6 +45,11 @@ const PregnancyRecordsStyles = StyleSheet.create({
     alignItems: 'center', 
     backgroundColor: 'rgba(0, 0, 0, 0.5)' 
   },
+  addIcon: {
+    width: 20,   // Adjust width as needed
+    height: 20,  // Adjust height as needed
+    resizeMode: 'contain', // Ensures the aspect ratio is maintained
+  },
   modalContainer: { 
     width: 300, 
     padding: 20, 
@@ -52,6 +57,63 @@ const PregnancyRecordsStyles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
   },
+  addBreedingDateButton: {
+    backgroundColor: '#4CAF50', // green button
+    padding: 10,
+    borderRadius: 5,
+    marginLeft: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  addBreedingDateText: {
+    color: 'white',
+    fontSize: 20,
+  },
+  inputField: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    marginBottom: 20,
+    width: '80%',
+    borderRadius: 5,
+  },
+  saveButton: {
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    borderRadius: 5,
+  },
+  saveButtonText: {
+    color: 'white',
+    textAlign: 'center',
+  },
+  closeButton: {
+    color: 'red',
+    textAlign: 'center',
+    marginTop: 10,
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  noPigletsText: {
+    fontSize: 16,
+    color: 'gray',
+  },
+  
   modalTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
   pigletName: { fontSize: 16, marginBottom: 5 },
   noPigletsText: { fontSize: 16, fontStyle: 'italic', color: 'gray' },

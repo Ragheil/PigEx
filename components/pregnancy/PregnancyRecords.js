@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, Modal, Image } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, Modal, Image,TextInput } from 'react-native';
 import { firestore } from '../../firebase/config2';
-import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc,updateDoc } from 'firebase/firestore';
 import viewIcon from '../../assets/images/buttons/viewIcon.png';
 import PregnancyRecordsStyles from '../../frontend/Pregnancy/PregnancyRecordsStyles';
 
@@ -17,6 +17,8 @@ const PregnancyRecords = ({ route, navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedPiglets, setSelectedPiglets] = useState([]);
   const [selectedPigName, setSelectedPigName] = useState('');
+  const [breedingDate, setBreedingDate] = useState('');
+  const [selectedPigId, setSelectedPigId] = useState('');
 
   const fetchFemalePigs = async () => {
     setLoading(true);
@@ -62,6 +64,27 @@ const PregnancyRecords = ({ route, navigation }) => {
     }
   };
 
+
+  const addBreedingDate = async () => {
+    if (breedingDate === '') {
+      alert('Please enter a breeding date.');
+      return;
+    }
+
+    try {
+      const pigRef = doc(firestore, `users/${user.uid}/farmBranches/${selectedBranch}/pregnancyRecords/${selectedPigId}`);
+      await updateDoc(pigRef, {
+        breedingDate: breedingDate,
+      });
+      alert('Breeding date added successfully');
+      setModalVisible(false); // Close modal
+    } catch (error) {
+      console.error('Error adding breeding date: ', error);
+      alert('Failed to add breeding date');
+    }
+  };
+
+
   const fetchPiglets = async (pigId, pigName) => {
     setSelectedPiglets([]);
     setSelectedPigName(pigName);
@@ -106,6 +129,7 @@ const PregnancyRecords = ({ route, navigation }) => {
             <Text style={PregnancyRecordsStyles.groupName}>{group}</Text>
             {femalePigs.groupedPigs[group].map(pig => (
               <View key={pig.id} style={PregnancyRecordsStyles.pigContainer}>
+                
                 <TouchableOpacity onPress={() => navigation.navigate('PigDetailsScreen', {
                   pigId: pig.id,
                   pigName: pig.pigName,
@@ -131,6 +155,17 @@ const PregnancyRecords = ({ route, navigation }) => {
                     })}>
                     <Text style={PregnancyRecordsStyles.addButtonText}>Add Piglets</Text>
                   </TouchableOpacity>
+                     {/* "+" Button for Adding Breeding Date */}
+                     <TouchableOpacity
+                    style={PregnancyRecordsStyles.addBreedingDateButton}
+                    onPress={() => {
+                      setSelectedPigId(pig.id);
+                      setSelectedPigName(pig.pigName);
+                      setModalVisible(true);
+                    }}>
+                    <Text style={PregnancyRecordsStyles.addBreedingDateText}>+</Text>
+                  </TouchableOpacity>
+
                 </View>
               </View>
             ))}
@@ -161,6 +196,27 @@ const PregnancyRecords = ({ route, navigation }) => {
     </View>
   </View>
 </Modal>
+
+
+<Modal visible={modalVisible} transparent={true} animationType="slide">
+        <View style={PregnancyRecordsStyles.modalBackground}>
+          <View style={PregnancyRecordsStyles.modalContainer}>
+            <Text style={PregnancyRecordsStyles.modalTitle}>Add Breeding Date for {selectedPigName}</Text>
+            <TextInput
+              style={PregnancyRecordsStyles.inputField}
+              placeholder="Enter Breeding Date"
+              value={breedingDate}
+              onChangeText={setBreedingDate}
+            />
+            <TouchableOpacity onPress={addBreedingDate} style={PregnancyRecordsStyles.saveButton}>
+              <Text style={PregnancyRecordsStyles.saveButtonText}>Save</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setModalVisible(false)}>
+              <Text style={PregnancyRecordsStyles.closeButton}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
     </View>
   );
