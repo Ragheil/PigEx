@@ -172,39 +172,47 @@ const PigDetailsScreen = ({ route }) => {
       </View>
 
       <FlatList
-        data={filteredPigs}
-        keyExtractor={item => item.id}
-        renderItem={({ item }) => {
-          const assignedMotherName = assignedPiglets[item.id] || null;
-          const isAssigned = assignedMotherName && assignedMotherName !== item.pigName;
-          const buttonDisabled = isAssigned;
+  data={filteredPigs}
+  key={2}  // Add this line
+  keyExtractor={item => item.id}
+  numColumns={2}
+  renderItem={({ item }) => {
+    const assignedMotherName = assignedPiglets[item.id] || null;
+    const isAssigned = assignedMotherName && assignedMotherName !== item.pigName;
+    const buttonDisabled = isAssigned;
 
-          return (
-            <View style={styles.pigContainer}>
-              <Text style={styles.detail}>Name: {item.pigName}</Text>
-              <Text style={styles.detail}>Group: {item.groupName}</Text>
-              <Text style={styles.detail}>ID: {item.id}</Text>
-              <Text style={styles.detail}>Gender: {item.gender}</Text>
-              {isAssigned && (
-                <Text style={styles.assignedText}>Assigned to mother: {assignedMotherName}</Text>
-              )}
-              <TouchableOpacity
-                style={[styles.selectButton, selectedPiglets.includes(item.id) && styles.selectedButton, buttonDisabled && styles.disabledButton]}
-                onPress={() => togglePigletSelection(item.id)}
-                disabled={buttonDisabled}
-              >
-                <Text style={styles.buttonText}>
-                  {buttonDisabled
-                    ? "Already Assigned"
-                    : selectedPiglets.includes(item.id)
-                    ? "Deselect Piglet"
-                    : "Select as Piglet"}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          );
-        }}
-      />
+    return (
+      <View style={styles.pigContainer}>
+        <Text style={styles.detail}>Name: {item.pigName}</Text>
+        <Text style={styles.detail}>Group: {item.groupName}</Text>
+        <Text style={styles.detail}>ID: {item.id}</Text>
+        <Text style={styles.detail}>Gender: {item.gender}</Text>
+        {isAssigned && (
+          <Text style={styles.assignedText}>Assigned to mother: {assignedMotherName}</Text>
+        )}
+        <TouchableOpacity
+          style={[
+            styles.selectButton,
+            selectedPiglets.includes(item.id) && styles.selectedButton,
+            buttonDisabled && styles.disabledButton,
+          ]}
+          onPress={() => togglePigletSelection(item.id)}
+          disabled={buttonDisabled}
+        >
+          <Text style={styles.buttonText}>
+            {buttonDisabled
+              ? "Already Assigned"
+              : selectedPiglets.includes(item.id)
+              ? "Deselect Piglet"
+              : "Select as Piglet"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }}
+/>
+
+
       <Button
         title="Save Selected Pigs"
         onPress={saveSelectedPigs}
@@ -228,15 +236,26 @@ const styles = StyleSheet.create({
     width: '60%',
     marginLeft: 10,
   },
-  pigContainer: { marginBottom: 10, padding: 10, borderWidth: 1, borderColor: '#ccc', borderRadius: 5 },
-  detail: { fontSize: 16 },
-  assignedText: { fontSize: 14, color: 'red' },
+  pigContainer: {
+    flex: 1,
+    margin: 5,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '48%',
+  },
+  detail: { fontSize: 16, textAlign: 'center' },
+  assignedText: { fontSize: 14, color: 'red', textAlign: 'center' },
   selectButton: {
     backgroundColor: '#007BFF',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 10,
+    width: '100%',
   },
   selectedButton: {
     backgroundColor: '#28A745',
@@ -246,5 +265,6 @@ const styles = StyleSheet.create({
   },
   buttonText: { color: '#fff', fontSize: 16 },
 });
+
 
 export default PigDetailsScreen;
