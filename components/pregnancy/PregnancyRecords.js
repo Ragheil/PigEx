@@ -28,10 +28,18 @@ const PregnancyRecords = ({ route, navigation }) => {
 
   const onDateChange = (event, selectedDate) => {
     if (selectedDate) {
-      setBreedingDate(selectedDate.toLocaleDateString()); // Format as required
+      // Format the date as "Month Day, Year" (e.g., "November 7, 2024")
+      const formattedDate = new Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }).format(selectedDate);
+      
+      setBreedingDate(formattedDate); // Set the formatted date
     }
     setShowDatePicker(false); // Hide the DatePicker after selection
   };
+  
   const fetchFemalePigs = async () => {
     setLoading(true);
     try {
