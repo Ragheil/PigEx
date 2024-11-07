@@ -298,24 +298,34 @@ const PregnancyRecords = ({ route, navigation }) => {
   <View style={PregnancyRecordsStyles.modalBackground}>
     <View style={PregnancyRecordsStyles.breedingHistoryModalContainer}>
       <Text style={PregnancyRecordsStyles.modalHeader}>Breeding History of {selectedPigName}</Text>
-      <FlatList
-        data={breedingHistory}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View style={PregnancyRecordsStyles.breedingHistoryItem}>
-            <View style={PregnancyRecordsStyles.breedingHistoryTextContainer}>
-              <Text style={PregnancyRecordsStyles.breedingHistoryLabel}>Breeding Date: {item.breedingDate}</Text>
-              <Text style={PregnancyRecordsStyles.breedingHistoryLabel}>Remarks: {item.remarks}</Text>
+      
+      {breedingHistory.length === 0 ? (
+        <Text style={PregnancyRecordsStyles.noBreedingHistoryText}>No breeding history</Text>
+      ) : (
+        <FlatList
+          data={breedingHistory}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View style={PregnancyRecordsStyles.breedingHistoryItem}>
+              <View style={PregnancyRecordsStyles.breedingHistoryTextContainer}>
+                <Text style={PregnancyRecordsStyles.breedingHistoryLabel}>Breeding Date: {item.breedingDate}</Text>
+                <Text style={PregnancyRecordsStyles.breedingHistoryLabel}>Remarks: {item.remarks}</Text>
+              </View>
             </View>
-          </View>
-        )}
-      />
-      <TouchableOpacity style={PregnancyRecordsStyles.closeButton} onPress={() => setBreedingHistoryVisible(false)}>
+          )}
+        />
+      )}
+      
+      <TouchableOpacity
+        style={PregnancyRecordsStyles.closeButton}
+        onPress={() => setBreedingHistoryVisible(false)}
+      >
         <Text style={PregnancyRecordsStyles.closeButtonText}>Close</Text>
       </TouchableOpacity>
     </View>
   </View>
 </Modal>
+
 
 
 
