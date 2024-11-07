@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, FlatList, Button, TouchableOpacity, Alert, TextInput } from 'react-native';
 import { firestore } from '../../firebase/config2';
 import { collection, getDocs, doc, setDoc, writeBatch, getDoc } from 'firebase/firestore';
+import PigDetailsScreenStyles from '../../frontend/Pregnancy/PigDetailsScreenStyles';
 
 const PigDetailsScreen = ({ route }) => {
   const { selectedBranch, user, pigId, pigName } = route.params;
@@ -156,15 +157,15 @@ const PigDetailsScreen = ({ route }) => {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Pig Details</Text>
-      <Text style={styles.pigInfo}>Pig Name: {pigName}</Text>
-      <Text style={styles.pigInfo}>Pig ID: {pigId}</Text>
+    <View style={PigDetailsScreenStyles.container}>
+      <Text style={PigDetailsScreenStyles.title}>Pig Details</Text>
+      <Text style={PigDetailsScreenStyles.pigInfo}>Pig Name: {pigName}</Text>
+      <Text style={PigDetailsScreenStyles.pigInfo}>Pig ID: {pigId}</Text>
 
-      <View style={styles.headerContainer}>
-        <Text style={styles.header}>All Pigs</Text>
+      <View style={PigDetailsScreenStyles.headerContainer}>
+        <Text style={PigDetailsScreenStyles.header}>All Pigs</Text>
         <TextInput
-          style={styles.searchInput}
+          style={PigDetailsScreenStyles.searchInput}
           placeholder="Search by name"
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -172,46 +173,44 @@ const PigDetailsScreen = ({ route }) => {
       </View>
 
       <FlatList
-  data={filteredPigs}
-  key={2}  // Add this line
-  keyExtractor={item => item.id}
-  numColumns={2}
-  renderItem={({ item }) => {
-    const assignedMotherName = assignedPiglets[item.id] || null;
-    const isAssigned = assignedMotherName && assignedMotherName !== item.pigName;
-    const buttonDisabled = isAssigned;
+        data={filteredPigs}
+        key={2}
+        keyExtractor={item => item.id}
+        numColumns={2}
+        renderItem={({ item }) => {
+          const assignedMotherName = assignedPiglets[item.id] || null;
+          const isAssigned = assignedMotherName && assignedMotherName !== item.pigName;
+          const buttonDisabled = isAssigned;
 
-    return (
-      <View style={styles.pigContainer}>
-        <Text style={styles.detail}>Name: {item.pigName}</Text>
-        <Text style={styles.detail}>Group: {item.groupName}</Text>
-     {/* Modal for confirming deletion   <Text style={styles.detail}>ID: {item.id}</Text>*/}
-        <Text style={styles.detail}>Gender: {item.gender}</Text>  
-        {isAssigned && (
-          <Text style={styles.assignedText}>Assigned to mother: {assignedMotherName}</Text>
-        )}
-        <TouchableOpacity
-          style={[
-            styles.selectButton,
-            selectedPiglets.includes(item.id) && styles.selectedButton,
-            buttonDisabled && styles.disabledButton,
-          ]}
-          onPress={() => togglePigletSelection(item.id)}
-          disabled={buttonDisabled}
-        >
-          <Text style={styles.buttonText}>
-            {buttonDisabled
-              ? "Already Assigned"
-              : selectedPiglets.includes(item.id)
-              ? "Deselect Piglet"
-              : "Select as Piglet"}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }}
-/>
-
+          return (
+            <View style={PigDetailsScreenStyles.pigContainer}>
+              <Text style={PigDetailsScreenStyles.detail}>Name: {item.pigName}</Text>
+              <Text style={PigDetailsScreenStyles.detail}>Group: {item.groupName}</Text>
+              <Text style={PigDetailsScreenStyles.detail}>Gender: {item.gender}</Text>
+              {isAssigned && (
+                <Text style={PigDetailsScreenStyles.assignedText}>Assigned to mother: {assignedMotherName}</Text>
+              )}
+              <TouchableOpacity
+                style={[
+                  PigDetailsScreenStyles.selectButton,
+                  selectedPiglets.includes(item.id) && PigDetailsScreenStyles.selectedButton,
+                  buttonDisabled && PigDetailsScreenStyles.disabledButton,
+                ]}
+                onPress={() => togglePigletSelection(item.id)}
+                disabled={buttonDisabled}
+              >
+                <Text style={PigDetailsScreenStyles.buttonText}>
+                  {buttonDisabled
+                    ? "Already Assigned"
+                    : selectedPiglets.includes(item.id)
+                    ? "Deselect Piglet"
+                    : "Select as Piglet"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          );
+        }}
+      />
 
       <Button
         title="Save Selected Pigs"
