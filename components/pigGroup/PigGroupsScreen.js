@@ -260,10 +260,6 @@ const onRefresh = () => {
             <View style={styles.subbox1}>
               <Text style={{fontWeight:'500', textTransform: 'uppercase' }}>{farmName}</Text>
             </View>
-            <TouchableOpacity style={styles.subbox2} onPress={() =>
-              setModalVisible(true)}>
-              <Text style={{fontSize: 12, fontWeight:'500'}}>My Account</Text>
-            </TouchableOpacity>
           </View>
         </View>
 
