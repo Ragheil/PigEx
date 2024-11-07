@@ -185,8 +185,8 @@ const PigDetailsScreen = ({ route }) => {
       <View style={styles.pigContainer}>
         <Text style={styles.detail}>Name: {item.pigName}</Text>
         <Text style={styles.detail}>Group: {item.groupName}</Text>
-        <Text style={styles.detail}>ID: {item.id}</Text>
-        <Text style={styles.detail}>Gender: {item.gender}</Text>
+     {/* Modal for confirming deletion   <Text style={styles.detail}>ID: {item.id}</Text>*/}
+        <Text style={styles.detail}>Gender: {item.gender}</Text>  
         {isAssigned && (
           <Text style={styles.assignedText}>Assigned to mother: {assignedMotherName}</Text>
         )}
