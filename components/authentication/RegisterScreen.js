@@ -81,9 +81,9 @@ const RegisterScreen = ({ email, setEmail, password, setPassword, handleAuthenti
             autoCapitalize="none"
           />
           
-          <View style={styles.passwordContainer}>
+          <View>
             <TextInput
-              style={styles.input}
+              style={[styles.input, styles.passwordContainer]} 
               value={password}
               onChangeText={setPassword}
               placeholder="Password"
@@ -97,9 +97,9 @@ const RegisterScreen = ({ email, setEmail, password, setPassword, handleAuthenti
             </TouchableOpacity>
           </View>
           
-          <View style={styles.passwordContainer}>
+          <View>
             <TextInput
-              style={styles.input}
+              style={[styles.input, styles.passwordContainer]}
               value={retypePassword}
               onChangeText={setRetypePassword}
               placeholder="Retype Password"
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F4F4F4',
   },
   headerBox: {
-    backgroundColor: '#A8C39F',
+    backgroundColor: '#79936a',
     borderBottomLeftRadius: 40,
     borderBottomRightRadius: 40,
     alignItems: 'center',
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     width: width, // Use screen width
-    height: 170,
+    height: 225,
     zIndex: 1, // Ensure the header is above other content
   },
   title: {
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 20,
-    marginTop: 170, // Adjust this value to avoid overlap with headerBox
+    marginTop: 200, // Adjust this value to avoid overlap with headerBox
   },
   header: {
     fontSize: 22,
@@ -188,13 +188,14 @@ const styles = StyleSheet.create({
     padding: 15,
     marginVertical: 5,
     elevation: 2,
+    width: '100%',
   },
   passwordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    marginVertical: 10,
+    // flexDirection: 'row',
+    // alignItems: 'center',
+    // backgroundColor: '#fff',
+    // borderRadius: 8,
+    marginVertical: 7,
     elevation: 4,
   },
   toggleIcon: {

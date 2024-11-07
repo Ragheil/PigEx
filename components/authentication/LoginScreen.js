@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F4F4F4',
   },
   headerBox: {
-    backgroundColor: '#A8C39F',
+    backgroundColor: '#79936a',
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25,
     alignItems: 'center',
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     width: width, // Use screen width
-    height: 200,
+    height: 225,
     zIndex: 1, // Ensure the header is above other content
   },
   title: {
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 20,
-    marginTop: 200, // Make space for the header box
+    marginTop: 250, // Make space for the header box
   },
   header: {
     fontSize: 22,
