@@ -9,14 +9,47 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    flex: 1,
+    // backgroundColor: 'green',
+    flex: 4,
     padding: 16,
   },
+  mainheader: {
+    flexDirection: 'column',
+    backgroundColor: '#869f77',
+    paddingTop: 40,
+    paddingBottom: 10,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+  },
+  subheader: {
+    // backgroundColor: 'red',
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+  },
+  subbox1: {
+    flex: 1,
+    flexDirection: 'culomn',
+    // backgroundColor: 'blue',
+  },
+  subbox2: {
+    backgroundColor:'#566F48',
+    padding: 5,
+    borderRadius:5,
+    zIndex: 1,
+  },
+  appname: {
+    fontSize: 45,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 15,
+    // fontFamily:
+  },
   title: {
+    // backgroundColor: 'red',
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
-    marginTop: 60,
+    // marginTop: 60,
     textAlign: 'center',
   },
   pigGroupSummary: {

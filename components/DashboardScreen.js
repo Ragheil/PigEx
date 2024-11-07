@@ -21,6 +21,7 @@ import { Picker } from '@react-native-picker/picker';
 import styles from '../frontend/componentsStyles/DashboardScreenStyles';
 import { updateEmail, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import { sendEmailVerification } from 'firebase/auth';
+import { fonts } from 'react-native-elements/dist/config';
 
 export default function DashboardScreen({ firstName, lastName, farmName, onLogout }) {
   // State variables
@@ -331,26 +332,38 @@ const handleAddBranch = async () => {
 };
 
 
-
-
   return (
     <View style={styles.container}>
       <LinearGradient
         colors={['#FDE9EA', '#869F77', '#588061']}
         style={styles.gradient}
       >
+        <View style={styles.mainheader}>
+          <Text style={styles.appname}>PigEx</Text>
+          <Text style={{fontSize: 12,fontWeight:'800', textTransform: 'uppercase' }}>Dashboard</Text>
+          <View style={styles.subheader}>
+            <View style={styles.subbox1}>
+              <Text style={{fontWeight:'500', textTransform: 'uppercase' }}>{farmName}</Text>
+            </View>
+            <TouchableOpacity style={styles.subbox2} onPress={
+              setModalVisible}>
+              <Text style={{fontSize: 12, fontWeight:'500'}}>My Account</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        
         <View style={styles.contentContainer}>
           <Text style={styles.title}>Pig Groups Summary</Text>
-
+          
           <TouchableOpacity
-  style={[styles.seeAllButton, { zIndex: 10, elevation: 5 }]}
-  onPress={() => navigation.navigate('PigGroups', {
-    selectedBranch: selectedBranch === `Main Farm: ${farmName}` ? 'Main Farm' : selectedBranch,
-    farmName: farmName // Pass the farm name here
-  })}
->
-  <Text style={styles.seeAllText}>See All</Text>
-</TouchableOpacity>
+            style={[styles.seeAllButton, { zIndex: 10, elevation: 5 }]}
+            onPress={() => navigation.navigate('PigGroups', {
+              selectedBranch: selectedBranch === `Main Farm: ${farmName}` ? 'Main Farm' : selectedBranch,
+              farmName: farmName // Pass the farm name here
+            })}
+          >
+            <Text style={styles.seeAllText}>See All</Text>
+          </TouchableOpacity>
 
 
           <FlatList
@@ -376,13 +389,13 @@ const handleAddBranch = async () => {
         </View>
 
         <FooterScreen 
-  firstName={firstName} 
-  lastName={lastName} 
-  farmName={farmName} 
-  selectedBranch={selectedBranch} 
-  toggleSidebar={toggleSidebar} 
-  userId={userId} 
-/>
+          firstName={firstName} 
+          lastName={lastName} 
+          farmName={farmName} 
+          selectedBranch={selectedBranch} 
+          toggleSidebar={toggleSidebar} 
+          userId={userId} 
+        />
 
 
 
@@ -402,19 +415,19 @@ const handleAddBranch = async () => {
 
           {/* Branch Picker */}
           <Picker
-    selectedValue={selectedBranch}
-    onValueChange={handleBranchSwitch}
-    style={styles.picker}
->
-    <Picker.Item label="Select a Branch" value="" />
-    {branches.map((branch) => (
-        <Picker.Item
-            key={branch.id}
-            label={branch.name}
-            value={branch.id}
-        />
-    ))}
-</Picker>
+              selectedValue={selectedBranch}
+              onValueChange={handleBranchSwitch}
+              style={styles.picker}
+          >
+              <Picker.Item label="Select a Branch" value="" />
+              {branches.map((branch) => (
+                  <Picker.Item
+                      key={branch.id}
+                      label={branch.name}
+                      value={branch.id}
+                  />
+              ))}
+          </Picker>
 
 
 
@@ -430,14 +443,14 @@ const handleAddBranch = async () => {
 
 
           <TouchableOpacity
-  style={[styles.seeAllButton, { zIndex: 10, elevation: 5 }]}
-  onPress={() => {
-    console.log("Navigating to PregnancyRecords with:", { selectedBranch, user });
-    navigation.navigate('PregnancyRecords', { selectedBranch, user });
-  }}
->
-  <Text style={styles.seeAllText}>Pregnancy Records</Text>
-</TouchableOpacity>
+            style={[styles.seeAllButton, { zIndex: 10, elevation: 5 }]}
+            onPress={() => {
+              console.log("Navigating to PregnancyRecords with:", { selectedBranch, user });
+              navigation.navigate('PregnancyRecords', { selectedBranch, user });
+            }}
+          >
+            <Text style={styles.seeAllText}>Pregnancy Records</Text>
+          </TouchableOpacity>
 
 
 
@@ -449,7 +462,7 @@ const handleAddBranch = async () => {
 
         {/* Account Modal */}
    {/* Account Update Modal */}
-   <Modal visible={modalVisible} animationType="slide" transparent>
+        <Modal visible={modalVisible} animationType="slide" transparent>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Update Account</Text>

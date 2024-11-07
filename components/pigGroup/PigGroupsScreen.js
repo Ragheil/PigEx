@@ -8,6 +8,7 @@ import editIcon from '../../assets/images/buttons/editIcon.png';
 import deleteIcon from '../../assets/images/buttons/deleteIcon.png';
 import styles from '../../frontend/pigGroupStyles/PigGroupsScreenStyles';
 
+
 const PigGroupsScreen = ({ navigation, route }) => {
  // const { selectedBranch } = route.params;
   const user = auth.currentUser;
@@ -15,6 +16,7 @@ const PigGroupsScreen = ({ navigation, route }) => {
   const [filteredPigGroups, setFilteredPigGroups] = useState([]);
   const [name, setName] = useState('');
   const [editPigGroupId, setEditPigGroupId] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
   const [isAddEditModalVisible, setIsAddEditModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -30,7 +32,6 @@ const PigGroupsScreen = ({ navigation, route }) => {
       return () => unsubscribe();
     }
   }, [user, selectedBranch]);
-  
 
   useEffect(() => {
     const results = pigGroups.filter(group =>
@@ -251,12 +252,28 @@ const onRefresh = () => {
 }, [selectedBranch, user.uid]); // Fetch when selectedBranch or user ID changes
 
   return (
-    <View style={styles.container}>
-        <Text style={styles.title}>
+    <View style={styles.container1}>
+      <View style={styles.mainheader}>
+          <Text style={styles.appname}>PigEx</Text>
+          <Text style={{fontSize: 12,fontWeight:'800', textTransform: 'uppercase' }}>Pig Groups</Text>
+          <View style={styles.subheader}>
+            <View style={styles.subbox1}>
+              <Text style={{fontWeight:'500', textTransform: 'uppercase' }}>{farmName}</Text>
+            </View>
+            <TouchableOpacity style={styles.subbox2} onPress={() =>
+              setModalVisible(true)}>
+              <Text style={{fontSize: 12, fontWeight:'500'}}>My Account</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+    <View style={styles.container2}>
+        {/* <Text style={styles.title}>
             Pig Groups for {farmName || 'Loading...'} branch
-        </Text>
+        </Text> */}
+        
       <View style={styles.searchAndAddContainer}>
-        <Button title="Add Pig Group" onPress={openAddPigGroupModal} color="#4CAF50" />
+        <Button title="Add Pig Group"  onPress={openAddPigGroupModal} color="#869F77"/>
         <TextInput
           style={styles.searchInput}
           placeholder="Search by name"
@@ -265,7 +282,7 @@ const onRefresh = () => {
         />
       </View>
 
-      <Text style={styles.tableHeader}>Pig Groups</Text>
+      {/* <Text style={styles.tableHeader}>Pig Groups</Text> */}
 <ScrollView
   refreshControl={
     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -305,6 +322,7 @@ const onRefresh = () => {
           <Button title="Cancel" onPress={closeModal} color="#4CAF50" />
         </View>
       </Modal>
+      </View>
     </View>
   );
 };

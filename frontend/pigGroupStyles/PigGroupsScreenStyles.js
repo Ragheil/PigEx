@@ -3,29 +3,69 @@ import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
 
-    container: {
+    container1: {
+        flex: 1,
+        // padding: 16,
+        backgroundColor: '#F5F5F5',
+      },
+      container2: {
         flex: 1,
         padding: 16,
-        backgroundColor: '#F5F5F5',
+        backgroundColor: '#566F48',
+      },
+      mainheader: {
+        flexDirection: 'column',
+        backgroundColor: '#869f77',
+        paddingTop: 40,
+        paddingBottom: 10,
+        paddingHorizontal: 16,
+        alignItems: 'center',
+      },
+      subheader: {
+        // backgroundColor: 'red',
+        flexDirection: 'row',
+        alignItems: 'flex-end',
+      },
+      subbox1: {
+        flex: 1,
+        flexDirection: 'culomn',
+        // backgroundColor: 'blue',
+      },
+      subbox2: {
+        backgroundColor:'#566F48',
+        padding: 5,
+        borderRadius:5,
+        zIndex: 1,
+      },
+      appname: {
+        fontSize: 45,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 15,
+        // fontFamily:
       },
       title: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 16,
         textAlign: 'center',
-        marginTop: 60
+        // marginTop: 60
       },
       searchAndAddContainer: {
+        // backgroundColor: 'lightblue',
         flexDirection: 'row',
         justifyContent: 'space-between',
+        marginTop: 5,
         marginBottom: 16,
       },
       searchInput: {
         flex: 1,
         borderColor: '#ccc',
+        backgroundColor: '#FFFFFF',
         borderWidth: 1,
         borderRadius: 4,
-        padding: 8,
+        // padding: 8,
+        paddingLeft: 10,
         marginLeft: 8,
       },
       grid: {
@@ -85,9 +125,9 @@ export default StyleSheet.create({
         borderColor: '#ccc',
         borderWidth: 1,
         borderRadius: 4,
-        padding: 8,
+        // padding: 8,
         width: '100%',
-        marginBottom: 16,
+        // marginBottom: 16,
       },
       addButton: {
         width: '100%',
