@@ -9,11 +9,11 @@ export default function WelcomeScreen({ onStart }) {
       style={styles.gradient}
     >
       <View style={styles.container}>
-        <Text style={styles.greeting}>Hello!</Text>
-        <Text style={styles.title}>Welcome to!</Text>
+        {/* <Text style={styles.greeting}>Hello!</Text> */}
         <Text style={styles.appName}>PigEx</Text>
+        <Text style={styles.title}>Welcome to PigEx!</Text>
         <Text style={styles.description}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          Our app is here to help swine farmers effortlessly track expenses, manage farm records, and boost productivity all in one easy-to-use tool.
         </Text>
         <TouchableOpacity style={styles.startButton} onPress={onStart}>
           <Text style={styles.startButtonText}>Start Now</Text>
@@ -39,29 +39,31 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   title: {
-    fontSize: 28,
-    marginBottom: 65,
+    fontSize: 25,
     fontWeight: 'bold',
     color: '#000',
+    letterSpacing: 1.5,
   },
   appName: {
     fontSize: 60,
     fontWeight: 'bold',
     color: '#060606',
-    marginBottom: 20,
+    marginTop: 80,
+    marginBottom: 200,
   },
   description: {
     textAlign: 'center',
     color: '#060606',
-    fontWeight: 'bold',
+    fontWeight: '450',
     marginBottom: 40,
     paddingHorizontal: 20,
-    marginTop: 100,
+    marginTop: 5,
+    lineHeight: 18,
   },
   startButton: {
     backgroundColor: '#000',
     paddingVertical: 15,
-    paddingHorizontal: 40,
+    paddingHorizontal: 100,
     borderRadius: 8,
     marginTop: 100,
   },
