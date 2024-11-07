@@ -139,13 +139,75 @@ const PigDetailsScreen = ({ route }) => {
 };
 
 
-  const togglePigletSelection = (pigId) => {
+const togglePigletSelection = (pigletId) => {
+  // Check if the selected piglet is assigned to the current mother
+  const assignedMotherId = assignedPiglets[pigletId];
+
+  if (assignedMotherId === pigId) {
+    // If the current mother is the assigned mother, allow deselection
     setSelectedPiglets(prevSelected =>
-      prevSelected.includes(pigId)
-        ? prevSelected.filter(id => id !== pigId)
-        : [...prevSelected, pigId]
+      prevSelected.includes(pigletId)
+        ? prevSelected.filter(id => id !== pigletId) // Deselect if already selected
+        : [...prevSelected, pigletId] // Select if not already selected
     );
+  } else {
+    // Else, toggle selection only if it’s not assigned to a different mother
+    setSelectedPiglets(prevSelected =>
+      prevSelected.includes(pigletId)
+        ? prevSelected.filter(id => id !== pigletId)
+        : [...prevSelected, pigletId]
+    );
+  }
+};
+
+
+  const removePigletFromMother = async (pigletId) => {
+    try {
+      if (!user) return;
+  
+      const isMainFarm = selectedBranch === 'Main Farm';
+      const pregnancyRecordsPath = isMainFarm
+        ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords`
+        : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords`;
+  
+      // Fetch all pregnancy records to locate the specific mother record
+      const recordsSnapshot = await getDocs(collection(firestore, pregnancyRecordsPath));
+  
+      let motherDocId = null;
+      let updatedPiglets = [];
+  
+      // Find the mother document that contains the piglet to be removed
+      recordsSnapshot.forEach((doc) => {
+        const data = doc.data();
+        const pigletIndex = (data.piglets || []).findIndex(p => p.id === pigletId);
+        if (pigletIndex !== -1) {
+          motherDocId = doc.id;
+          updatedPiglets = [...data.piglets];
+          updatedPiglets.splice(pigletIndex, 1); // Remove piglet from array
+        }
+      });
+  
+      // If a mother document was found, update the piglet list
+      if (motherDocId) {
+        const motherDocRef = doc(firestore, pregnancyRecordsPath, motherDocId);
+        await setDoc(motherDocRef, { piglets: updatedPiglets }, { merge: true });
+        Alert.alert('Success', 'Piglet successfully unassigned from its mother.');
+        
+        // Update assignedPiglets state to reflect removal
+        setAssignedPiglets(prev => {
+          const updatedAssignments = { ...prev };
+          delete updatedAssignments[pigletId];
+          return updatedAssignments;
+        });
+      } else {
+        Alert.alert('Error', 'Piglet assignment not found.');
+      }
+    } catch (error) {
+      console.error('Error removing piglet from mother:', error);
+      Alert.alert('Error', 'Failed to unassign piglet. Please try again.');
+    }
   };
+
 
   // Filter pigs based on the search query
   const filteredPigs = allPigs.filter(pig =>
@@ -181,6 +243,8 @@ const PigDetailsScreen = ({ route }) => {
           const assignedMotherName = assignedPiglets[item.id] || null;
           const isAssigned = assignedMotherName && assignedMotherName !== item.pigName;
           const buttonDisabled = isAssigned;
+          const assignedMotherId = assignedPiglets[item.id] || null;
+          const isAssignedToOtherMother = assignedMotherId && assignedMotherId !== pigId;
 
           return (
             <View style={PigDetailsScreenStyles.pigContainer}>
@@ -188,7 +252,9 @@ const PigDetailsScreen = ({ route }) => {
               <Text style={PigDetailsScreenStyles.detail}>Group: {item.groupName}</Text>
               <Text style={PigDetailsScreenStyles.detail}>Gender: {item.gender}</Text>
               {isAssigned && (
-                <Text style={PigDetailsScreenStyles.assignedText}>Assigned to mother: {assignedMotherName}</Text>
+                <Text style={PigDetailsScreenStyles.assignedText}>
+                  Assigned to mother: {assignedMotherName}
+                </Text>
               )}
               <TouchableOpacity
                 style={[
@@ -209,6 +275,7 @@ const PigDetailsScreen = ({ route }) => {
               </TouchableOpacity>
             </View>
           );
+          
         }}
       />
 
@@ -220,50 +287,6 @@ const PigDetailsScreen = ({ route }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 8 },
-  pigInfo: { fontSize: 18, marginBottom: 8 },
-  headerContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  header: { fontSize: 20, fontWeight: 'bold', marginBottom: 16 },
-  searchInput: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 8,
-    width: '60%',
-    marginLeft: 10,
-  },
-  pigContainer: {
-    flex: 1,
-    margin: 5,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '48%',
-  },
-  detail: { fontSize: 16, textAlign: 'center' },
-  assignedText: { fontSize: 14, color: 'red', textAlign: 'center' },
-  selectButton: {
-    backgroundColor: '#007BFF',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 10,
-    width: '100%',
-  },
-  selectedButton: {
-    backgroundColor: '#28A745',
-  },
-  disabledButton: {
-    backgroundColor: '#ccc',
-  },
-  buttonText: { color: '#fff', fontSize: 16 },
-});
 
 
 export default PigDetailsScreen;
