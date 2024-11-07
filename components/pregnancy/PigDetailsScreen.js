@@ -220,6 +220,6 @@ const PigDetailsScreen = ({ route }) => {
     </View>
   );
 };
-
+ 
 
 export default PigDetailsScreen;
