@@ -80,72 +80,119 @@ const PigDetailsScreen = ({ route }) => {
 
   const saveSelectedPigs = async () => {
     try {
-        if (!user) return;
+      if (!user) return;
+  
+      const pregnancyRecordPath = selectedBranch === 'Main Farm'
+        ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${pigId}`
+        : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${pigId}`;
+  
+      const pregnancyDocRef = doc(firestore, pregnancyRecordPath);
+      const existingRecordSnapshot = await getDoc(pregnancyDocRef);
+      const existingRecord = existingRecordSnapshot.exists() ? existingRecordSnapshot.data() : null;
+  
+      // Set up the updated pregnancy record document
+      const updatedPregnancyRecordDoc = {
+        pigName: pigName || 'Unnamed Pig',
+        id: pigId,
+        date: new Date().toISOString(),
+        piglets: existingRecord ? existingRecord.piglets || [] : []
+      };
+  
+      const motherRecordsPath = selectedBranch === 'Main Farm'
+        ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${pigId}/motherRecords`
+        : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${pigId}/motherRecords`;
+  
+      const batch = writeBatch(firestore);
+  
+      // Find piglets to be removed (in Firestore but not in selectedPiglets)
+      const pigletsToRemove = updatedPregnancyRecordDoc.piglets.filter(
+        p => !selectedPiglets.includes(p.id)
+      );
+  
+      // Remove deselected piglets from motherRecords in Firestore
+      pigletsToRemove.forEach(piglet => {
+        const pigletRecordRef = doc(firestore, motherRecordsPath, piglet.id);
+        batch.delete(pigletRecordRef);
+      });
+  
+      // Clear removed piglets from the updated pregnancy record
+      updatedPregnancyRecordDoc.piglets = updatedPregnancyRecordDoc.piglets.filter(
+        p => selectedPiglets.includes(p.id)
+      );
+  
+      // Add newly selected piglets to updatedPregnancyRecordDoc and motherRecords
+      selectedPiglets.forEach(id => {
+        const piglet = allPigs.find(p => p.id === id);
+        if (piglet && !updatedPregnancyRecordDoc.piglets.find(p => p.id === id)) {
+          updatedPregnancyRecordDoc.piglets.push({ id, pigName: piglet.pigName });
+  
+          const pigletData = {
+            pigName: piglet.pigName,
+            pigId: piglet.id,
+            group: piglet.groupName
+          };
+          const pigletRecordRef = doc(collection(firestore, motherRecordsPath));
+          batch.set(pigletRecordRef, pigletData);
+        }
+      });
+  
+      // Save updated pregnancy record document
+      await setDoc(pregnancyDocRef, updatedPregnancyRecordDoc, { merge: true });
+      await batch.commit();
+  
+      Alert.alert('Success', 'Pregnancy record and selected piglets saved successfully.');
+    } catch (error) {
+      console.error('Error saving pregnancy record and piglets:', error);
+      Alert.alert('Error', 'Failed to save pregnancy record and piglets. Please try again.');
+    }
+  };
+  
 
-        // Path for the pregnancy record document
-        const pregnancyRecordPath = selectedBranch === 'Main Farm'
-            ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${pigId}`
-            : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${pigId}`;
 
-        const pregnancyDocRef = doc(firestore, pregnancyRecordPath);
+  const togglePigletSelection = async (pigletId) => {
+    const isSelected = selectedPiglets.includes(pigletId);
+  
+    // Path for the pregnancy record document
+    const pregnancyRecordPath = selectedBranch === 'Main Farm'
+      ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${pigId}`
+      : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${pigId}`;
+    const pregnancyDocRef = doc(firestore, pregnancyRecordPath);
+  
+    try {
+      if (isSelected) {
+        // Deselect piglet: remove it from selected piglets
+        setSelectedPiglets(prevSelected => prevSelected.filter(id => id !== pigletId));
+  
+        // Fetch the current pregnancy record document
         const existingRecordSnapshot = await getDoc(pregnancyDocRef);
-        const existingRecord = existingRecordSnapshot.exists() ? existingRecordSnapshot.data() : null;
-
-        // Create a new pregnancy record document if none exists
-        const updatedPregnancyRecordDoc = {
-            pigName: pigName || 'Unnamed Pig',
-            id: pigId,
-            date: new Date().toISOString(),
-            piglets: existingRecord ? existingRecord.piglets || [] : []
-        };
-
-        // Prepare the path for motherRecords as a sub-collection of the pregnancy record
-        const motherRecordsPath = selectedBranch === 'Main Farm'
+        if (existingRecordSnapshot.exists()) {
+          const existingRecord = existingRecordSnapshot.data();
+  
+          // Remove the piglet from the piglets array
+          const updatedPiglets = existingRecord.piglets.filter(p => p.id !== pigletId);
+  
+          // Update Firestore without the deselected piglet
+          await setDoc(pregnancyDocRef, { piglets: updatedPiglets }, { merge: true });
+  
+          // Remove the piglet from motherRecords sub-collection
+          const motherRecordsPath = selectedBranch === 'Main Farm'
             ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${pigId}/motherRecords`
             : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${pigId}/motherRecords`;
-
-        const batch = writeBatch(firestore);
-        
-        // Loop through selected piglets to add to both pregnancy record and motherRecords
-        selectedPiglets.forEach(id => {
-            const piglet = allPigs.find(p => p.id === id);
-            if (piglet) {
-                // Add piglet to the pregnancy record
-                if (!updatedPregnancyRecordDoc.piglets.find(p => p.id === id)) {
-                    updatedPregnancyRecordDoc.piglets.push({ id, pigName: piglet.pigName });
-                }
-
-                // Prepare motherRecords data
-                const pigletData = {
-                  pigName: piglet.pigName,
-                    pigId: piglet.id,
-                    group: piglet.groupName
-                };
-                const pigletRecordRef = doc(collection(firestore, motherRecordsPath));
-
-                // Set the piglet record in motherRecords
-                batch.set(pigletRecordRef, pigletData);
-            }
-        });
-
-        // Save the pregnancy record and commit the batch
-        await setDoc(pregnancyDocRef, updatedPregnancyRecordDoc, { merge: true });
-        await batch.commit();
-        Alert.alert('Success', 'Pregnancy record and selected piglets saved successfully.');
+          const pigletRecordRef = doc(firestore, motherRecordsPath, pigletId); // assuming piglet ID is the document ID
+  
+          // Delete the piglet's record from the motherRecords sub-collection
+          await deleteDoc(pigletRecordRef);
+        }
+      } else {
+        // Select piglet: add it to selected piglets
+        setSelectedPiglets(prevSelected => [...prevSelected, pigletId]);
+      }
     } catch (error) {
-        console.error('Error saving pregnancy record and piglets:', error);
-        Alert.alert('Error', 'Failed to save pregnancy record and piglets. Please try again.');
+      console.error('Error updating selection:', error);
+      Alert.alert('Error', 'Failed to update piglet selection. Please try again.');
     }
-};
-
-
-  const togglePigletSelection = (pigId) => {
-    setSelectedPiglets(prevSelected =>
-      prevSelected.includes(pigId)
-        ? prevSelected.filter(id => id !== pigId)
-        : [...prevSelected, pigId]
-    );
   };
+  
 
   // Filter pigs based on the search query
   const filteredPigs = allPigs.filter(pig =>
@@ -179,35 +226,35 @@ const PigDetailsScreen = ({ route }) => {
         numColumns={2}
         renderItem={({ item }) => {
           const assignedMotherName = assignedPiglets[item.id] || null;
-          const isAssigned = assignedMotherName && assignedMotherName !== item.pigName;
-          const buttonDisabled = isAssigned;
+          const isAssigned = assignedMotherName && assignedMotherName !== pigName;
+          const canDeselect = assignedMotherName === pigName;
 
           return (
             <View style={PigDetailsScreenStyles.pigContainer}>
-              <Text style={PigDetailsScreenStyles.detail}>Name: {item.pigName}</Text>
-              <Text style={PigDetailsScreenStyles.detail}>Group: {item.groupName}</Text>
-              <Text style={PigDetailsScreenStyles.detail}>Gender: {item.gender}</Text>
-              {isAssigned && (
-                <Text style={PigDetailsScreenStyles.assignedText}>Assigned to mother: {assignedMotherName}</Text>
-              )}
-              <TouchableOpacity
-                style={[
-                  PigDetailsScreenStyles.selectButton,
-                  selectedPiglets.includes(item.id) && PigDetailsScreenStyles.selectedButton,
-                  buttonDisabled && PigDetailsScreenStyles.disabledButton,
-                ]}
-                onPress={() => togglePigletSelection(item.id)}
-                disabled={buttonDisabled}
-              >
-                <Text style={PigDetailsScreenStyles.buttonText}>
-                  {buttonDisabled
-                    ? "Already Assigned"
-                    : selectedPiglets.includes(item.id)
-                    ? "Deselect Piglet"
-                    : "Select as Piglet"}
-                </Text>
-              </TouchableOpacity>
-            </View>
+            <Text style={PigDetailsScreenStyles.detail}>Name: {item.pigName}</Text>
+            <Text style={PigDetailsScreenStyles.detail}>Group: {item.groupName}</Text>
+            <Text style={PigDetailsScreenStyles.detail}>Gender: {item.gender}</Text>
+            {assignedMotherName && (
+              <Text style={PigDetailsScreenStyles.assignedText}>Assigned to mother: {assignedMotherName}</Text>
+            )}
+            <TouchableOpacity
+              style={[
+                PigDetailsScreenStyles.selectButton,
+                selectedPiglets.includes(item.id) && PigDetailsScreenStyles.selectedButton,
+                isAssigned && !canDeselect && PigDetailsScreenStyles.disabledButton,
+              ]}
+              onPress={() => togglePigletSelection(item.id)}
+              disabled={isAssigned && !canDeselect}
+            >
+              <Text style={PigDetailsScreenStyles.buttonText}>
+                {isAssigned && !canDeselect
+                  ? "Already Assigned"
+                  : selectedPiglets.includes(item.id)
+                  ? "Deselect Piglet"
+                  : "Select as Piglet"}
+              </Text>
+            </TouchableOpacity>
+          </View>
           );
         }}
       />
