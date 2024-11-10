@@ -238,7 +238,7 @@ const MoneyOutScreen = ({ route }) => {
   console.log(formattedDate);
   const renderMoneyRecord = ({ item }) => (
     <View style={MoneyOutScreenStyles.dateGroup}>
-      <Text style={MoneyOutScreenStyles.groupDate}>{item.date}</Text>
+          <Text style={MoneyOutScreenStyles.flatListItemText}>{item.date}</Text>
       {item.records.map(record => (
         <View style={MoneyOutScreenStyles.record} key={record.id}>
           <Text style={MoneyOutScreenStyles.recordText}>Amount PHP: {record.amount.toFixed(2)}</Text>

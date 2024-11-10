@@ -125,6 +125,11 @@ const MoneyOutScreenStyles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
   },
+  flatListItemText: {
+    fontSize: 20, // Bigger font size
+    fontWeight: 'bold', // Bold font
+    color: '#212529', // Dark color for readability
+  },
 });
 
 export default MoneyOutScreenStyles;
