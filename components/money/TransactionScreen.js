@@ -640,7 +640,7 @@ const [error, setError] = useState(null);
   <Text style={TransactionScreenStyles.noTransactionsText}>No transactions found.</Text>
 )}
       </ScrollView>
-
+ 
       <TouchableOpacity style={TransactionScreenStyles.pdfButton} onPress={generatePDF}>
         <Text style={TransactionScreenStyles.pdfButtonText}>Generate PDF</Text>
       </TouchableOpacity>
