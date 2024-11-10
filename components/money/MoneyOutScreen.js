@@ -92,9 +92,15 @@ const MoneyOutScreen = ({ route }) => {
       // Sort records by date (latest first)
       const sortedRecords = records.sort((a, b) => new Date(b.date) - new Date(a.date));
   
-      // Group records by date
+      // Group records by formatted date
       const groupedRecords = sortedRecords.reduce((groups, record) => {
-        const recordDate = new Date(record.date).toLocaleDateString(); // Format the date for grouping
+        // Format the date into "Month Day, Year" format
+        const recordDate = new Date(record.date).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
+        
         if (!groups[recordDate]) {
           groups[recordDate] = [];
         }
@@ -104,7 +110,7 @@ const MoneyOutScreen = ({ route }) => {
   
       // Convert the grouped records to an array for rendering
       const groupedRecordsArray = Object.keys(groupedRecords).map(date => ({
-        date,
+        date, // This will now be a formatted string like "November 10, 2024"
         records: groupedRecords[date],
       }));
   
@@ -114,6 +120,7 @@ const MoneyOutScreen = ({ route }) => {
       console.error('Error fetching money records:', error);
     }
   };
+  
   
 
   const handleAddMoney = async () => {
