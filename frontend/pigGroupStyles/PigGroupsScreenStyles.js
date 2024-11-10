@@ -11,7 +11,8 @@ export default StyleSheet.create({
       container2: {
         flex: 1,
         padding: 16,
-        backgroundColor: '#566F48',
+        backgroundColor: '#F5F5F5',
+        // backgroundColor: '#566F48',
       },
       mainheader: {
         flexDirection: 'column',
@@ -71,11 +72,22 @@ export default StyleSheet.create({
       grid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'space-around',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        
+      },
+      pigIcon: {
+        width: 100,     // Set the width as needed
+        height: 100,    // Set the height as needed
+        marginBottom: 5,
+        // backgroundColor: 'lightblue',
+        alignSelf: 'center',
       },
       pigGroupItem: {
         backgroundColor: '#fff',
+        borderColor: '#566F48',
         borderRadius: 8,
+        borderWidth: 3,
         padding: 16,
         margin: 8,
         width: '45%',

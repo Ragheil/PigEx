@@ -4,6 +4,7 @@ import { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc,
 import { auth, firestore } from '../../firebase/config2';
 import Modal from 'react-native-modal';
 import { useRoute } from '@react-navigation/native';
+import pigImage from '../../assets/images/pigIcon.png';
 import editIcon from '../../assets/images/buttons/editIcon.png';
 import deleteIcon from '../../assets/images/buttons/deleteIcon.png';
 import styles from '../../frontend/pigGroupStyles/PigGroupsScreenStyles';
@@ -207,11 +208,13 @@ const onRefresh = () => {
     return (
       <View style={styles.grid}>
         {filteredPigGroups.map(pigGroup => (
+
           <TouchableOpacity
             key={pigGroup.id}
             onPress={() => handlePigGroupClick(pigGroup)}
             style={styles.pigGroupItem}
           >
+            <Image source={require('../../assets/images/pigIcon.png')} style={styles.pigIcon} />
             <Text style={styles.pigGroupText}>{pigGroup.name}</Text>
               {/* Display Pig Count Below the Name */}
           <Text style={styles.pigCountText}>Pigs: {pigGroup.pigCount}</Text>
@@ -269,7 +272,10 @@ const onRefresh = () => {
         </Text> */}
         
       <View style={styles.searchAndAddContainer}>
-        <Button title="Add Pig Group"  onPress={openAddPigGroupModal} color="#869F77"/>
+        <Button title="Add Pig Group"  onPress={openAddPigGroupModal} 
+        // color="#869F77"
+        color="#566F48"
+        />
         <TextInput
           style={styles.searchInput}
           placeholder="Search by name"
