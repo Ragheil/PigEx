@@ -4,6 +4,7 @@ import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from 'firebase
 import { firestore } from '../../firebase/config2'; // Adjust path as needed
 import { Picker } from '@react-native-picker/picker'; // Ensure this package is installed
 import DateTimePicker from '@react-native-community/datetimepicker'; // For picking the date
+import styles from '../../frontend/money/MoneyInScreenStyles';
 
 const MoneyInScreen = ({ route }) => {
   const { farmName, selectedBranch, userId } = route.params; // Get farmName, selectedBranch, and userId from route params
@@ -71,17 +72,28 @@ const MoneyInScreen = ({ route }) => {
       const moneyInRecordsRef = collection(firestore, moneyInPath);
       const inRecordsSnapshot = await getDocs(moneyInRecordsRef);
   
-      const records = [];
+      // Collect records and group by date
+      const recordsByDate = {};
       inRecordsSnapshot.forEach((doc) => {
         const data = doc.data();
-        records.push({ id: doc.id, ...data }); // Store record with its ID
+        const date = new Date(data.date).toDateString(); // Convert to date string for grouping
+        if (!recordsByDate[date]) {
+          recordsByDate[date] = [];
+        }
+        recordsByDate[date].push({ id: doc.id, ...data });
       });
   
-      setMoneyRecords(records); // Update state with fetched records
+      // Convert object to an array of date groups, sorted by date in descending order
+      const sortedRecords = Object.keys(recordsByDate)
+        .sort((a, b) => new Date(b) - new Date(a)) // Sort dates in descending order
+        .map((date) => ({ date, records: recordsByDate[date] }));
+  
+      setMoneyRecords(sortedRecords); // Update state with grouped and sorted records
     } catch (error) {
       console.error('Error fetching money records:', error);
     }
   };
+  
 
   const handleAddMoney = async () => {
     if (!amount) {
@@ -197,208 +209,128 @@ const handleDeleteMoney = async (id) => {
   };
 
   const renderMoneyRecord = ({ item }) => (
-    <View style={styles.record}>
-      <Text style={styles.recordText}>Amount PHP: {item.amount.toFixed(2)}</Text>
-      <Text style={styles.recordText}>Category: {item.category}</Text>
-      <Text style={styles.recordText}>Remarks: {item.remarks}</Text>
-      <View style={styles.recordButtons}>
-        <Pressable style={styles.editButton} onPress={() => {
-          setAmount(item.amount.toString());
-          setRemarks(item.remarks);
-          setCategory(item.category);
-          setCurrentRecordId(item.id);
-          setModalVisible(true);
-          setIsEditing(true);
-        }}>
-          <Text style={styles.buttonText}>Edit</Text>
-        </Pressable>
-        <Pressable style={styles.deleteButton} onPress={() => handleDeleteMoney(item.id)}>
-          <Text style={styles.buttonText}>Delete</Text>
-        </Pressable>
-      </View>
+    <View style={styles.dateGroup}>
+      <Text style={styles.dateHeader}>{item.date}</Text>
+      {item.records.map((record) => (
+        <View key={record.id} style={styles.record}>
+          <Text style={styles.recordText}>Amount PHP: {record.amount.toFixed(2)}</Text>
+          <Text style={styles.recordText}>Category: {record.category}</Text>
+          <Text style={styles.recordText}>Remarks: {record.remarks}</Text>
+          <View style={styles.recordButtons}>
+            <Pressable
+              style={styles.editButton}
+              onPress={() => {
+                setAmount(record.amount.toString());
+                setRemarks(record.remarks);
+                setCategory(record.category);
+                setCurrentRecordId(record.id);
+                setModalVisible(true);
+                setIsEditing(true);
+              }}
+            >
+              <Text style={styles.buttonText}>Edit</Text>
+            </Pressable>
+            <Pressable style={styles.deleteButton} onPress={() => handleDeleteMoney(record.id)}>
+              <Text style={styles.buttonText}>Delete</Text>
+            </Pressable>
+          </View>
+        </View>
+      ))}
     </View>
   );
 
+  
+
   return (
     <View style={styles.container}>
-     <Text style={styles.title}>Money In: {farmName || 'No farm selected'} Branch</Text>
+      <Text style={styles.title}>Money In</Text>
       <Text style={styles.balance}>Total Balance: ₱{totalBalance.toFixed(2)}</Text>
       <Text style={styles.farmName}>Current Branch: {farmName || 'No branch selected'}</Text>
       <FlatList
         data={moneyRecords}
+        keyExtractor={(item) => item.date}
         renderItem={renderMoneyRecord}
-        keyExtractor={(item) => item.id}
-        style={styles.recordList}
       />
-      <Pressable style={styles.addButton} onPress={() => setModalVisible(true)}>
-        <Text style={styles.buttonText}>Add Money In</Text>
-      </Pressable>
 
-      {/* Modal for adding/editing records */}
-      <Modal visible={isModalVisible} animationType="slide">
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>{isEditing ? 'Edit Money In' : 'Add Money In'}</Text>
-          <TextInput
-            placeholder="Amount"
-            keyboardType="numeric"
-            value={amount}
-            onChangeText={setAmount}
-            style={styles.input}
-          />
-          <TextInput
-            placeholder="Remarks"
-            value={remarks}
-            onChangeText={setRemarks}
-            style={styles.input}
-          />
-          <Picker selectedValue={category} onValueChange={handleCategoryChange} style={styles.picker}>
-            <Picker.Item label="Salary" value="salary" />
-            <Picker.Item label="Bonus" value="bonus" />
-            <Picker.Item label="Other" value="other" />
-          </Picker>
-          {showOtherCategoryInput && (
+      <Button title="Add Money" onPress={() => setModalVisible(true)} />
+
+      {/* Modal for adding/editing money record */}
+      <Modal
+        visible={isModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>{isEditing ? 'Edit Money Record' : 'Add Money'}</Text>
             <TextInput
-              placeholder="Specify Other Category"
-              value={otherCategory}
-              onChangeText={setOtherCategory}
               style={styles.input}
+              placeholder="Amount"
+              value={amount}
+              onChangeText={(text) => setAmount(text)}
+              keyboardType="numeric"
             />
-          )}
-          <Text style={styles.dateLabel}>Date:</Text>
-          <Pressable onPress={() => setShowDatePicker(true)}>
-            <Text style={styles.dateText}>{date.toLocaleDateString()}</Text>
-          </Pressable>
-          {showDatePicker && (
-            <DateTimePicker
-              value={date}
-              mode="date"
-              display="default"
-              onChange={(event, selectedDate) => {
-                const currentDate = selectedDate || date;
-                setShowDatePicker(false);
-                setDate(currentDate);
-              }}
+            <TextInput
+              style={styles.input}
+              placeholder="Remarks"
+              value={remarks}
+              onChangeText={(text) => setRemarks(text)}
             />
-          )}
-          <Pressable style={styles.modalButton} onPress={isEditing ? handleEditMoney : handleAddMoney}>
-            <Text style={styles.buttonText}>{isEditing ? 'Update' : 'Add'}</Text>
-          </Pressable>
-          <Pressable style={styles.modalButton} onPress={() => setModalVisible(false)}>
-            <Text style={styles.buttonText}>Cancel</Text>
-          </Pressable>
+            <Picker
+              selectedValue={category}
+              onValueChange={handleCategoryChange}
+            >
+              <Picker.Item label="Salary" value="salary" />
+              <Picker.Item label="Sales" value="sales" />
+              <Picker.Item label="Other" value="other" />
+            </Picker>
+            {showOtherCategoryInput && (
+              <TextInput
+                style={styles.input}
+                placeholder="Enter other category"
+                value={otherCategory}
+                onChangeText={(text) => setOtherCategory(text)}
+              />
+            )}
+            <Pressable
+              style={styles.datePickerButton}
+              onPress={() => setShowDatePicker(true)}
+            >
+              <Text style={styles.datePickerText}>{date.toDateString()}</Text>
+            </Pressable>
+            {showDatePicker && (
+              <DateTimePicker
+                value={date}
+                mode="date"
+                display="default"
+                onChange={(event, selectedDate) => {
+                  setShowDatePicker(false);
+                  if (selectedDate) setDate(selectedDate);
+                }}
+              />
+            )}
+            <View style={styles.modalButtons}>
+              <Button
+                title={isEditing ? 'Update' : 'Add'}
+                onPress={isEditing ? handleEditMoney : handleAddMoney}
+              />
+              <Button
+                title="Cancel"
+                onPress={() => {
+                  setModalVisible(false);
+                  setIsEditing(false);
+                  setCurrentRecordId(null);
+                }}
+              />
+            </View>
+          </View>
         </View>
       </Modal>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#f5f5f5',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  balance: {
-    fontSize: 18,
-    marginBottom: 20,
-    textAlign: 'center',
-    color: '#4caf50', // Green for positive balance
-  },
-  recordList: {
-    marginBottom: 20,
-  },
-  record: {
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    padding: 15,
-    marginVertical: 8,
-    elevation: 1,
-  },
-  recordText: {
-    fontSize: 16,
-    color: '#333333',
-  },
-  recordButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 10,
-  },
-  editButton: {
-    backgroundColor: '#2196F3', // Blue for edit button
-    padding: 10,
-    borderRadius: 5,
-  },
-  deleteButton: {
-    backgroundColor: '#f44336', // Red for delete button
-    padding: 10,
-    borderRadius: 5,
-  },
-  buttonText: {
-    color: '#ffffff',
-    textAlign: 'center',
-  },
-  addButton: {
-    backgroundColor: '#4caf50', // Green for add button
-    padding: 15,
-    borderRadius: 5,
-  },
-  modalContent: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 20,
-    backgroundColor: '#ffffff',
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  input: {
-    height: 50,
-    borderColor: '#cccccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 10,
-  },
-  picker: {
-    height: 50,
-    marginBottom: 10,
-  },
-  dateLabel: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  dateText: {
-    fontSize: 16,
-    color: '#2196F3', // Blue for date text
-    marginBottom: 20,
-  },
-  modalButton: {
-    backgroundColor: '#2196F3', // Blue for modal buttons
-    padding: 15,
-    borderRadius: 5,
-    marginTop: 10,
-  },
-  farmName: {
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    marginTop: 60
 
-  },
-
-});
 
 export default MoneyInScreen;
