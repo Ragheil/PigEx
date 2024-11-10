@@ -85,15 +85,36 @@ const MoneyOutScreen = ({ route }) => {
       const moneyOutPath = selectedBranch === 'Main Farm'
         ? `users/${userId}/farmBranches/Main Farm/moneyOutRecords`
         : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyOutRecords`;
-
+  
       const outRecordsSnapshot = await getDocs(collection(firestore, moneyOutPath));
       const records = outRecordsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setMoneyRecords(records);
+  
+      // Sort records by date (latest first)
+      const sortedRecords = records.sort((a, b) => new Date(b.date) - new Date(a.date));
+  
+      // Group records by date
+      const groupedRecords = sortedRecords.reduce((groups, record) => {
+        const recordDate = new Date(record.date).toLocaleDateString(); // Format the date for grouping
+        if (!groups[recordDate]) {
+          groups[recordDate] = [];
+        }
+        groups[recordDate].push(record);
+        return groups;
+      }, {});
+  
+      // Convert the grouped records to an array for rendering
+      const groupedRecordsArray = Object.keys(groupedRecords).map(date => ({
+        date,
+        records: groupedRecords[date],
+      }));
+  
+      setMoneyRecords(groupedRecordsArray);
     } catch (error) {
       Alert.alert('Error', 'Failed to fetch money records. Please try again.');
       console.error('Error fetching money records:', error);
     }
   };
+  
 
   const handleAddMoney = async () => {
     if (!amount) {
@@ -201,27 +222,38 @@ const MoneyOutScreen = ({ route }) => {
     setCategory(value);
     setShowOtherCategoryInput(value === 'other');
   };
-
+  const formattedDate = date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+  
+  console.log(formattedDate);
   const renderMoneyRecord = ({ item }) => (
-    <View style={MoneyOutScreenStyles.record}>
-      <Text style={MoneyOutScreenStyles.recordText}>Amount PHP: {item.amount.toFixed(2)}</Text>
-      <Text style={MoneyOutScreenStyles.recordText}>Category: {item.category}</Text>
-      <Text style={MoneyOutScreenStyles.recordText}>Remarks: {item.remarks}</Text>
-      <View style={MoneyOutScreenStyles.recordButtons}>
-        <Pressable style={MoneyOutScreenStyles.editButton} onPress={() => {
-          setAmount(item.amount.toString());
-          setRemarks(item.remarks);
-          setCategory(item.category);
-          setCurrentRecordId(item.id);
-          setModalVisible(true);
-          setIsEditing(true);
-        }}>
-          <Text style={MoneyOutScreenStyles.buttonText}>Edit</Text>
-        </Pressable>
-        <Pressable style={MoneyOutScreenStyles.deleteButton} onPress={() => handleDeleteMoney(item.id)}>
-          <Text style={MoneyOutScreenStyles.buttonText}>Delete</Text>
-        </Pressable>
-      </View>
+    <View style={MoneyOutScreenStyles.dateGroup}>
+      <Text style={MoneyOutScreenStyles.groupDate}>{item.date}</Text>
+      {item.records.map(record => (
+        <View style={MoneyOutScreenStyles.record} key={record.id}>
+          <Text style={MoneyOutScreenStyles.recordText}>Amount PHP: {record.amount.toFixed(2)}</Text>
+          <Text style={MoneyOutScreenStyles.recordText}>Category: {record.category}</Text>
+          <Text style={MoneyOutScreenStyles.recordText}>Remarks: {record.remarks}</Text>
+          <View style={MoneyOutScreenStyles.recordButtons}>
+            <Pressable style={MoneyOutScreenStyles.editButton} onPress={() => {
+              setAmount(record.amount.toString());
+              setRemarks(record.remarks);
+              setCategory(record.category);
+              setCurrentRecordId(record.id);
+              setModalVisible(true);
+              setIsEditing(true);
+            }}>
+              <Text style={MoneyOutScreenStyles.buttonText}>Edit</Text>
+            </Pressable>
+            <Pressable style={MoneyOutScreenStyles.deleteButton} onPress={() => handleDeleteMoney(record.id)}>
+              <Text style={MoneyOutScreenStyles.buttonText}>Delete</Text>
+            </Pressable>
+          </View>
+        </View>
+      ))}
     </View>
   );
 
@@ -233,10 +265,10 @@ const MoneyOutScreen = ({ route }) => {
       <Text style={MoneyOutScreenStyles.farmName}>Current Branch: {farmBranchName || 'No branch selected'}</Text>
 
       <FlatList
-        data={moneyRecords}
-        renderItem={renderMoneyRecord}
-        keyExtractor={item => item.id}
-      />
+      data={moneyRecords}
+      renderItem={renderMoneyRecord}
+      keyExtractor={(item, index) => item.date + index}
+    />
 
       <Pressable style={MoneyOutScreenStyles.addButton} onPress={() => setModalVisible(true)}>
         <Text style={MoneyOutScreenStyles.buttonText}>Add Money Out</Text>
