@@ -4,6 +4,7 @@ import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc } from '
 import { firestore } from '../../firebase/config2'; 
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import MoneyOutScreenStyles from '../../frontend/money/MoneyOutScreenStyles'; // Import the styles
 
 const MoneyOutScreen = ({ route }) => {
   const { farmName, selectedBranch, userId } = route.params;
@@ -202,12 +203,12 @@ const MoneyOutScreen = ({ route }) => {
   };
 
   const renderMoneyRecord = ({ item }) => (
-    <View style={styles.record}>
-      <Text style={styles.recordText}>Amount PHP: {item.amount.toFixed(2)}</Text>
-      <Text style={styles.recordText}>Category: {item.category}</Text>
-      <Text style={styles.recordText}>Remarks: {item.remarks}</Text>
-      <View style={styles.recordButtons}>
-        <Pressable style={styles.editButton} onPress={() => {
+    <View style={MoneyOutScreenStyles.record}>
+      <Text style={MoneyOutScreenStyles.recordText}>Amount PHP: {item.amount.toFixed(2)}</Text>
+      <Text style={MoneyOutScreenStyles.recordText}>Category: {item.category}</Text>
+      <Text style={MoneyOutScreenStyles.recordText}>Remarks: {item.remarks}</Text>
+      <View style={MoneyOutScreenStyles.recordButtons}>
+        <Pressable style={MoneyOutScreenStyles.editButton} onPress={() => {
           setAmount(item.amount.toString());
           setRemarks(item.remarks);
           setCategory(item.category);
@@ -215,21 +216,21 @@ const MoneyOutScreen = ({ route }) => {
           setModalVisible(true);
           setIsEditing(true);
         }}>
-          <Text style={styles.buttonText}>Edit</Text>
+          <Text style={MoneyOutScreenStyles.buttonText}>Edit</Text>
         </Pressable>
-        <Pressable style={styles.deleteButton} onPress={() => handleDeleteMoney(item.id)}>
-          <Text style={styles.buttonText}>Delete</Text>
+        <Pressable style={MoneyOutScreenStyles.deleteButton} onPress={() => handleDeleteMoney(item.id)}>
+          <Text style={MoneyOutScreenStyles.buttonText}>Delete</Text>
         </Pressable>
       </View>
     </View>
   );
 
   return (
-    <View style={styles.container}>
+    <View style={MoneyOutScreenStyles.container}>
       
-      <Text style={styles.title}>Money Out Records</Text>
-      <Text style={styles.balance}>Total Balance: PHP {totalBalance.toFixed(2)}</Text>
-      <Text style={styles.farmName}>Current Branch: {farmBranchName || 'No branch selected'}</Text>
+      <Text style={MoneyOutScreenStyles.title}>Money Out Records</Text>
+      <Text style={MoneyOutScreenStyles.balance}>Total Balance: PHP {totalBalance.toFixed(2)}</Text>
+      <Text style={MoneyOutScreenStyles.farmName}>Current Branch: {farmBranchName || 'No branch selected'}</Text>
 
       <FlatList
         data={moneyRecords}
@@ -237,22 +238,22 @@ const MoneyOutScreen = ({ route }) => {
         keyExtractor={item => item.id}
       />
 
-      <Pressable style={styles.addButton} onPress={() => setModalVisible(true)}>
-        <Text style={styles.buttonText}>Add Money Out</Text>
+      <Pressable style={MoneyOutScreenStyles.addButton} onPress={() => setModalVisible(true)}>
+        <Text style={MoneyOutScreenStyles.buttonText}>Add Money Out</Text>
       </Pressable>
 
       <Modal visible={isModalVisible} animationType="slide">
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>{isEditing ? 'Edit Money Out' : 'Add Money Out'}</Text>
+        <View style={MoneyOutScreenStyles.modalContent}>
+          <Text style={MoneyOutScreenStyles.modalTitle}>{isEditing ? 'Edit Money Out' : 'Add Money Out'}</Text>
           <TextInput
-            style={styles.input}
+            style={MoneyOutScreenStyles.input}
             placeholder="Amount"
             value={amount}
             onChangeText={setAmount}
             keyboardType="numeric"
           />
           <TextInput
-            style={styles.input}
+            style={MoneyOutScreenStyles.input}
             placeholder="Remarks"
             value={remarks}
             onChangeText={setRemarks}
@@ -264,14 +265,14 @@ const MoneyOutScreen = ({ route }) => {
           </Picker>
           {showOtherCategoryInput && (
             <TextInput
-              style={styles.input}
+              style={MoneyOutScreenStyles.input}
               placeholder="Specify Category"
               value={otherCategory}
               onChangeText={setOtherCategory}
             />
           )}
           <Pressable onPress={() => setShowDatePicker(true)}>
-            <Text style={styles.dateText}>{date.toDateString()}</Text>
+            <Text style={MoneyOutScreenStyles.dateText}>{date.toDateString()}</Text>
           </Pressable>
           {showDatePicker && (
             <DateTimePicker
@@ -286,11 +287,11 @@ const MoneyOutScreen = ({ route }) => {
               }}
             />
           )}
-          <Pressable style={styles.saveButton} onPress={isEditing ? handleEditMoney : handleAddMoney}>
-            <Text style={styles.buttonText}>{isEditing ? 'Update' : 'Save'}</Text>
+          <Pressable style={MoneyOutScreenStyles.saveButton} onPress={isEditing ? handleEditMoney : handleAddMoney}>
+            <Text style={MoneyOutScreenStyles.buttonText}>{isEditing ? 'Update' : 'Save'}</Text>
           </Pressable>
-          <Pressable style={styles.cancelButton} onPress={resetModalState}>
-            <Text style={styles.buttonText}>Cancel</Text>
+          <Pressable style={MoneyOutScreenStyles.cancelButton} onPress={resetModalState}>
+            <Text style={MoneyOutScreenStyles.buttonText}>Cancel</Text>
           </Pressable>
         </View>
       </Modal>
@@ -298,79 +299,6 @@ const MoneyOutScreen = ({ route }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginTop: 60
-  },
-  balance: {
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  record: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    paddingVertical: 10,
-  },
-  recordText: {
-    fontSize: 16,
-  },
-  recordButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 5,
-  },
-  editButton: {
-    backgroundColor: 'blue',
-    padding: 10,
-  },
-  deleteButton: {
-    backgroundColor: 'red',
-    padding: 10,
-  },
-  buttonText: {
-    color: 'white',
-  },
-  modalContent: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 20,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    marginBottom: 10,
-  },
-  dateText: {
-    fontSize: 16,
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  saveButton: {
-    backgroundColor: 'green',
-    padding: 10,
-  },
-  cancelButton: {
-    backgroundColor: 'gray',
-    padding: 10,
-  },
-  addButton: {
-    backgroundColor: 'blue',
-    padding: 15,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-});
+
 
 export default MoneyOutScreen;
