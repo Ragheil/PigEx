@@ -234,7 +234,9 @@ const [error, setError] = useState(null);
     });
   };
 
-  const groupedTransactions = filteredTransactions.reduce((acc, transaction) => {
+  const groupedTransactions = filteredTransactions
+  .sort((a, b) => new Date(b.date) - new Date(a.date)) // Sort by date descending
+  .reduce((acc, transaction) => {
     const dateKey = formatDate(transaction.date);
     if (!acc[dateKey]) {
       acc[dateKey] = [];
@@ -615,28 +617,28 @@ const [error, setError] = useState(null);
         
         
       </View>
-        {filteredTransactions.length > 0 ? (
-          Object.entries(groupedTransactions).map(([date, transactions]) => (
-            <View key={date} style={TransactionScreenStyles.transactionContainer}>
-              <Text style={TransactionScreenStyles.dateText}>{date}</Text>
-              {transactions.map((transaction) => (
-                <View key={transaction.id} style={TransactionScreenStyles.transactionItem}>
-                  <Text style={TransactionScreenStyles.transactionLabel}>
-                    <Text style={TransactionScreenStyles.categoryText}>{transaction.category || 'N/A'}</Text>:
-                    <Text style={transaction.type === 'in' ? TransactionScreenStyles.income : TransactionScreenStyles.expense}>
-                      ₱{parseFloat(transaction.amount).toFixed(2)}
-                    </Text>
-                  </Text>
-                  <Text style={TransactionScreenStyles.remarksText}>
-                    Remarks: {transaction.remarks || 'No remarks provided.'}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          ))
-        ) : (
-          <Text style={TransactionScreenStyles.noTransactionsText}>No transactions found.</Text>
-        )}
+      {filteredTransactions.length > 0 ? (
+  Object.entries(groupedTransactions).map(([date, transactions]) => (
+    <View key={date} style={TransactionScreenStyles.transactionContainer}>
+      <Text style={TransactionScreenStyles.dateText}>{date}</Text>
+      {transactions.map((transaction) => (
+        <View key={transaction.id} style={TransactionScreenStyles.transactionItem}>
+          <Text style={TransactionScreenStyles.transactionLabel}>
+            <Text style={TransactionScreenStyles.categoryText}>{transaction.category || 'N/A'}</Text>:
+            <Text style={transaction.type === 'in' ? TransactionScreenStyles.income : TransactionScreenStyles.expense}>
+              ₱{parseFloat(transaction.amount).toFixed(2)}
+            </Text>
+          </Text>
+          <Text style={TransactionScreenStyles.remarksText}>
+            Remarks: {transaction.remarks || 'No remarks provided.'}
+          </Text>
+        </View>
+      ))}
+    </View>
+  ))
+) : (
+  <Text style={TransactionScreenStyles.noTransactionsText}>No transactions found.</Text>
+)}
       </ScrollView>
 
       <TouchableOpacity style={TransactionScreenStyles.pdfButton} onPress={generatePDF}>
