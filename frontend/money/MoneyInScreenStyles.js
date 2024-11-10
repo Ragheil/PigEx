@@ -113,6 +113,7 @@ export default StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 10,
     width: '80%',  // You can adjust the width as needed
+    justifyContent: 'flex-start',
   },
   modalTitle: {
     fontSize: 20,

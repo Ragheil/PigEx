@@ -64,6 +64,7 @@ const MoneyOutScreenStyles = StyleSheet.create({
     padding: 20,
     justifyContent: 'center',
     backgroundColor: '#fff',
+    justifyContent: 'flex-start',
   },
   modalTitle: {
     fontSize: 20,
@@ -79,6 +80,20 @@ const MoneyOutScreenStyles = StyleSheet.create({
     paddingLeft: 8,
     fontSize: 16,
   },
+  saveButton: {
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 10,  // Space between buttons
+    alignItems: 'center',
+  },
+  cancelButton: {
+    backgroundColor: '#F44336',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  
 });
 
 export default MoneyOutScreenStyles;
