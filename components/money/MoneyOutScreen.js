@@ -21,6 +21,8 @@ const MoneyOutScreen = ({ route }) => {
   const [currentRecordId, setCurrentRecordId] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [farmBranchName, setFarmBranchName] = useState('Unknown Branch'); // Store the fetched farm name
+  const [time, setTime] = useState(new Date());
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   useEffect(() => {
     const fetchFarmBranchName = async () => {
@@ -128,21 +130,22 @@ const MoneyOutScreen = ({ route }) => {
       Alert.alert('Error', 'Please enter an amount.');
       return;
     }
-
+  
     const selectedCategory = category === 'other' ? otherCategory : category;
-
+  
     try {
       const moneyRecord = {
         amount: parseFloat(amount),
         remarks,
-        date: date.toISOString(),
+        date: date.toISOString(), // Store date as ISO string
+        time: time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), // Store time as a formatted string
         category: selectedCategory,
       };
-
+  
       const path = selectedBranch === 'Main Farm'
         ? `users/${userId}/farmBranches/Main Farm/moneyOutRecords`
         : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyOutRecords`;
-
+  
       await addDoc(collection(firestore, path), moneyRecord);
       Alert.alert('Success', 'Money out added successfully!');
       resetModalState();
@@ -153,27 +156,28 @@ const MoneyOutScreen = ({ route }) => {
       console.error('Error adding money out record:', error);
     }
   };
-
+  
   const handleEditMoney = async () => {
     if (!amount) {
       Alert.alert('Error', 'Please enter an amount.');
       return;
     }
-
+  
     const selectedCategory = category === 'other' ? otherCategory : category;
-
+  
     try {
       const moneyRecord = {
         amount: parseFloat(amount),
         remarks,
-        date: date.toISOString(),
+        date: date.toISOString(), // Store date as ISO string
+        time: time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), // Store time as a formatted string
         category: selectedCategory,
       };
-
+  
       const path = selectedBranch === 'Main Farm'
         ? `users/${userId}/farmBranches/Main Farm/moneyOutRecords/${currentRecordId}`
         : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyOutRecords/${currentRecordId}`;
-
+  
       await updateDoc(doc(firestore, path), moneyRecord);
       Alert.alert('Success', 'Money out record updated successfully!');
       resetModalState();
@@ -184,6 +188,8 @@ const MoneyOutScreen = ({ route }) => {
       console.error('Error updating money out record:', error);
     }
   };
+
+  
 
   const handleDeleteMoney = async (id) => {
     const confirmation = await new Promise(resolve => {
@@ -238,12 +244,13 @@ const MoneyOutScreen = ({ route }) => {
   console.log(formattedDate);
   const renderMoneyRecord = ({ item }) => (
     <View style={MoneyOutScreenStyles.dateGroup}>
-          <Text style={MoneyOutScreenStyles.flatListItemText}>{item.date}</Text>
+      <Text style={MoneyOutScreenStyles.flatListItemText}>{item.date}</Text>
       {item.records.map(record => (
         <View style={MoneyOutScreenStyles.record} key={record.id}>
           <Text style={MoneyOutScreenStyles.recordText}>Amount PHP: {record.amount.toFixed(2)}</Text>
           <Text style={MoneyOutScreenStyles.recordText}>Category: {record.category}</Text>
           <Text style={MoneyOutScreenStyles.recordText}>Remarks: {record.remarks}</Text>
+          <Text style={MoneyOutScreenStyles.recordText}>Time: {record.time || 'Not set'}</Text> 
           <View style={MoneyOutScreenStyles.recordButtons}>
             <Pressable style={MoneyOutScreenStyles.editButton} onPress={() => {
               setAmount(record.amount.toString());
@@ -252,6 +259,26 @@ const MoneyOutScreen = ({ route }) => {
               setCurrentRecordId(record.id);
               setModalVisible(true);
               setIsEditing(true);
+  
+              // Check if record.time is defined before splitting
+              if (record.time) {
+                const [hours, minutes] = record.time.split(':');
+                const [parsedHours, period] = hours.split(' '); // Split to get AM/PM
+                let hour = parseInt(parsedHours, 10);
+                if (period === 'PM' && hour < 12) {
+                  hour += 12; // Convert PM hour to 24-hour format
+                } else if (period === 'AM' && hour === 12) {
+                  hour = 0; // Convert 12 AM to 0 hours
+                }
+  
+                const newTime = new Date();
+                newTime.setHours(hour);
+                newTime.setMinutes(parseInt(minutes, 10));
+                setTime(newTime); // Set the time for editing
+              } else {
+                // If time is not set, you can set a default time (e.g., current time)
+                setTime(new Date()); // Set to current time or any default time
+              }
             }}>
               <Text style={MoneyOutScreenStyles.buttonText}>Edit</Text>
             </Pressable>
@@ -266,16 +293,15 @@ const MoneyOutScreen = ({ route }) => {
 
   return (
     <View style={MoneyOutScreenStyles.container}>
-      
       <Text style={MoneyOutScreenStyles.title}>Money Out Records</Text>
       <Text style={MoneyOutScreenStyles.balance}>Total Balance: PHP {totalBalance.toFixed(2)}</Text>
       <Text style={MoneyOutScreenStyles.farmName}>Current Branch: {farmBranchName || 'No branch selected'}</Text>
 
       <FlatList
-      data={moneyRecords}
-      renderItem={renderMoneyRecord}
-      keyExtractor={(item, index) => item.date + index}
-    />
+        data={moneyRecords}
+        renderItem={renderMoneyRecord}
+        keyExtractor={(item, index) => item.date + index}
+      />
 
       <Pressable style={MoneyOutScreenStyles.addButton} onPress={() => setModalVisible(true)}>
         <Text style={MoneyOutScreenStyles.buttonText}>Add Money Out</Text>
@@ -326,6 +352,22 @@ const MoneyOutScreen = ({ route }) => {
               }}
             />
           )}
+          <Pressable onPress={() => setShowTimePicker(true)}>
+            <Text style={MoneyOutScreenStyles.dateText}>{time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+          </Pressable>
+          {showTimePicker && (
+            <DateTimePicker
+              value={time}
+              mode="time"
+              display="default"
+              onChange={(event, selectedTime) => {
+                setShowTimePicker(false);
+                if (selectedTime) {
+                  setTime(selectedTime);
+                }
+              }}
+            />
+          )}
           <Pressable style={MoneyOutScreenStyles.saveButton} onPress={isEditing ? handleEditMoney : handleAddMoney}>
             <Text style={MoneyOutScreenStyles.buttonText}>{isEditing ? 'Update' : 'Save'}</Text>
           </Pressable>
@@ -337,6 +379,7 @@ const MoneyOutScreen = ({ route }) => {
     </View>
   );
 };
+
 
 
 
