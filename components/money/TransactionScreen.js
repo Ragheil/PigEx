@@ -271,7 +271,13 @@ const [error, setError] = useState(null);
   
     // Determine the branch name
     const branchFarmName = selectedBranch === 'Main Farm' ? 'Main Farm' : farmBranchName; // Fetch the branch name
-  
+    const formatTime = (date) => {
+      const d = new Date(date);
+      if (isNaN(d.getTime())) {
+        return 'Invalid Time'; // Handle invalid dates
+      }
+      return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+    };
     // Start building the HTML content for the PDF
     let htmlContent = `
       <div style="margin: 20px;">
@@ -327,7 +333,7 @@ const [error, setError] = useState(null);
   
         htmlContent += `
           <tr>
-            <td style="padding: 8px; text-align: center;">${formatDateToWords(transaction.date)}</td>
+            <td style="padding: 8px; text-align: center;">${formatTime(transaction.date)}</td>
             <td style="padding: 8px; text-align: center;">${transaction.category || 'N/A'}</td>
             <td style="padding: 8px; text-align: center;">${transaction.type}</td>
             <td style="color: ${amountColor}; text-align: center; padding: 8px;">${formattedAmount}</td>
