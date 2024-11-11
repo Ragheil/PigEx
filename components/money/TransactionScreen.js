@@ -322,6 +322,7 @@ const [error, setError] = useState(null);
 
             htmlContent += `
                 <tr>
+                    <td style="padding: 8px; text-align: center;">${formatDateToWords(transaction.date)}</td>
                     <td style="padding: 8px; text-align: center;">${formattedTime}</td>
                     <td style="padding : 8px; text-align: center;">${transaction.category || 'N/A'}</td>
                     <td style="padding: 8px; text-align: center;">${transaction.type}</td>
