@@ -282,7 +282,6 @@ const [error, setError] = useState(null);
             <table border="1" width="100%" style="border-collapse: collapse; table-layout: fixed;">
                 <thead>
                     <tr>
-                        <th style="width: 27%; text-align: center;">Date</th>
                         <th style="width: 25%; text-align: center;">Time</th>
                         <th style="width: 30%; text-align: center;">Description</th>
                         <th style="width: 25%; text-align: center;">Type of Money</th>
@@ -322,7 +321,6 @@ const [error, setError] = useState(null);
 
             htmlContent += `
                 <tr>
-                    <td style="padding: 8px; text-align: center;">${formatDateToWords(transaction.date)}</td>
                     <td style="padding: 8px; text-align: center;">${formattedTime}</td>
                     <td style="padding : 8px; text-align: center;">${transaction.category || 'N/A'}</td>
                     <td style="padding: 8px; text-align: center;">${transaction.type}</td>
