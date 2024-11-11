@@ -117,7 +117,7 @@ const MoneyInScreen = ({ route }) => {
 
     const selectedCategory = category === 'other' ? otherCategory : category;
 
-    try {
+    try {handle
       const moneyRecord = {
         amount: parseFloat(amount),
         remarks,

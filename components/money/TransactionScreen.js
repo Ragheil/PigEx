@@ -248,136 +248,125 @@ const [error, setError] = useState(null);
   const generatePDF = async () => {
     // Helper function to format the date into words
     const formatDateToWords = (date) => {
-      const d = new Date(date);
-      if (isNaN(d.getTime())) {
-        return 'Invalid Date'; // Handle invalid dates
-      }
-  
-      // Define options for toLocaleDateString
-      const options = { year: 'numeric', month: 'long', day: 'numeric' };
-      return d.toLocaleDateString(undefined, options); // Format the date to words
+        const d = new Date(date);
+        if (isNaN(d.getTime())) {
+            return 'Invalid Date'; // Handle invalid dates
+        }
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return d.toLocaleDateString(undefined, options); // Format the date to words
     };
-  
+
     // Format the date range in words
     const formatDateRange = (start, end) => {
-      if (start === end) {
-        return `As of ${formatDateToWords(end)}`;
-      }
-      return `${formatDateToWords(start)} - ${formatDateToWords(end)}`;
+        if (start === end) {
+            return `As of ${formatDateToWords(end)}`;
+        }
+        return `${formatDateToWords(start)} - ${formatDateToWords(end)}`;
     };
-  
+
     // Get the actual start and end dates from the picker
     const dateRange = formatDateRange(startDate, endDate);
-  
+
     // Determine the branch name
     const branchFarmName = selectedBranch === 'Main Farm' ? 'Main Farm' : farmBranchName; // Fetch the branch name
-    const formatTime = (date) => {
-      const d = new Date(date);
-      if (isNaN(d.getTime())) {
-        return 'Invalid Time'; // Handle invalid dates
-      }
-      return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
-    };
+
     // Start building the HTML content for the PDF
     let htmlContent = `
-      <div style="margin: 20px;">
-        <h1 style="text-align: center;">PigEx Transaction Report</h1>
-        <h3 style="text-align: left;">As of: ${dateRange}</h3>
-        <h2 style="text-align: left;">Branch Name: ${branchFarmName}</h2>
-        <h3 style="text-align: left;">Total Balance: ₱${totalBalance.toFixed(2)}</h3>
-        <h3 style="text-align: left;">Total Income: ₱${totalIncome.toFixed(2)}</h3>
-        <h3 style="text-align: left;">Total Expense: ₱${totalExpense.toFixed(2)}</h3>
-        <table border="1" width="100%" style="border-collapse: collapse; table-layout: fixed;">
-          <thead>
-            <tr>
-              <th style="width: 27%; text-align: center;">Date</th>
-              <th style="width: 30%; text-align: center;">Description</th>
-              <th style="width: 25%; text-align: center;">Type of Money</th>
-              <th style="width: 23%; text-align: center;">Amount</th>
-              <th style="width: 25%; text-align: center;">Remarks</th>
-            </tr>
-          </thead>
-          <tbody>
+        <div style="margin: 20px;">
+            <h1 style="text-align: center;">PigEx Transaction Report</h1>
+            <h3 style="text-align: left;">As of: ${dateRange}</h3>
+            <h2 style="text-align: left;">Branch Name: ${branchFarmName}</h2>
+            <h3 style="text-align: left;">Total Balance: ₱${totalBalance.toFixed(2)}</h3>
+            <h3 style="text-align: left;">Total Income: ₱${totalIncome.toFixed(2)}</h3>
+            <h3 style="text-align: left;">Total Expense: ₱${totalExpense.toFixed(2)}</h3>
+            <table border="1" width="100%" style="border-collapse: collapse; table-layout: fixed;">
+                <thead>
+                    <tr>
+                        <th style="width: 27%; text-align: center;">Date</th>
+                        <th style="width: 25%; text-align: center;">Time</th>
+                        <th style="width: 30%; text-align: center;">Description</th>
+                        <th style="width: 25%; text-align: center;">Type of Money</th>
+                        <th style="width: 23%; text-align: center;">Amount</th>
+                        <th style="width: 25%; text-align: center;">Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
     `;
-  
+
     // Loop through grouped transactions by date
     for (const date in groupedTransactions) {
-      // Use the date from the first transaction in the group for the header
-      const firstTransactionDate = groupedTransactions[date][0].date; // Get the date of the first transaction
-      const formattedHeaderDate = formatDateToWords(firstTransactionDate); // Format that date for display
-  
-      // Add the date header for each group of transactions
-      htmlContent += `
-        <tr>
-          <td colspan="5" style="font-weight: bold; text-align: center; padding: 10px; background-color: #D7FBC0FF;">
-            ${formattedHeaderDate}
-          </td>
-        </tr>
-      `;
-  
-      // Loop through transactions for the current date
-      for (const transaction of groupedTransactions[date]) {
-        // Log the original date for debugging
-        console.log(`Processing transaction date: ${transaction.date}`);
-  
-        // Attempt to create a Date object
-        const transactionDate = new Date(transaction.date);
-        if (isNaN(transactionDate.getTime())) {
-          console.error(`Invalid date found: ${transaction.date}`);
-          continue; // Skip this transaction if the date is invalid
-        }
-  
-        const amountColor = transaction.type === 'in' ? 'green' : 'red';
-        const amountSign = transaction.type === 'in' ? '+' : '-';
-        const formattedAmount = `${amountSign} ₱${parseFloat(transaction.amount).toFixed(2)}`;
-  
+        const firstTransactionDate = groupedTransactions[date][0].date; // Get the date of the first transaction
+        const formattedHeaderDate = formatDateToWords(firstTransactionDate); // Format that date for display
+
+        // Add the date header for each group of transactions
         htmlContent += `
-          <tr>
-            <td style="padding: 8px; text-align: center;">${formatTime(transaction.date)}</td>
-            <td style="padding: 8px; text-align: center;">${transaction.category || 'N/A'}</td>
-            <td style="padding: 8px; text-align: center;">${transaction.type}</td>
-            <td style="color: ${amountColor}; text-align: center; padding: 8px;">${formattedAmount}</td>
-            <td style="padding: 8px; text-align: center;">${transaction.remarks || 'No remarks provided.'}</td>
-          </tr>
+            <tr>
+                <td colspan="6" style="font-weight: bold; text-align: center; padding: 10px; background-color: #D7FBC0FF;">
+                    ${formattedHeaderDate}
+                </td>
+            </tr>
         `;
-      }
+
+        // Loop through transactions for the current date
+        for (const transaction of groupedTransactions[date]) {
+            const transactionDate = new Date(transaction.date);
+            if (isNaN(transactionDate.getTime())) {
+                console.error(`Invalid date found: ${transaction.date}`);
+                continue; // Skip this transaction if the date is invalid
+            }
+
+            const formattedTime = transaction.time; // Assuming time is stored in the transaction object
+            const amountColor = transaction.type === 'in' ? 'green' : 'red';
+            const amountSign = transaction.type === 'in' ? '+' : '-';
+            const formattedAmount = `${amountSign} ₱${parseFloat(transaction.amount).toFixed(2)}`;
+
+            htmlContent += `
+                <tr>
+                    <td style="padding: 8px; text-align: center;">${formattedTime}</td>
+                    <td style="padding : 8px; text-align: center;">${transaction.category || 'N/A'}</td>
+                    <td style="padding: 8px; text-align: center;">${transaction.type}</td>
+                    <td style="color: ${amountColor}; text-align: center; padding: 8px;">${formattedAmount}</td>
+                    <td style="padding: 8px; text-align: center;">${transaction.remarks || 'No remarks provided.'}</td>
+                </tr>
+            `;
+        }
     }
-  
+
     htmlContent += `
-          </tbody>
-        </table>
-        <div style="margin-top: 30px; text-align: center;">
-          <p>--- End of Report ---</p>
+                </tbody>
+            </table>
+            <div style="margin-top: 30px; text-align: center;">
+                <p>--- End of Report ---</p>
+            </div>
         </div>
-      </div>
-      `;
-  
+    `;
+
     try {
-      const { uri } = await Print.printToFileAsync({
-        html: htmlContent,
-      });
-  
-      const downloadsDir = FileSystem.documentDirectory + 'downloads/';
-      const fileName = 'PigEx Transaction Report.pdf';
-      const fileUri = downloadsDir + fileName;
-  
-      await FileSystem.makeDirectoryAsync(downloadsDir, { intermediates: true });
-      await FileSystem.moveAsync({
-        from: uri,
-        to: fileUri,
-      });
-  
-      await Sharing.shareAsync(fileUri, {
-        dialogTitle: 'Share PigEx Transaction Report',
-      });
-  
-      Alert.alert('Success', 'PDF generated and ready to share!');
-  
+        const { uri } = await Print.printToFileAsync({
+            html: htmlContent,
+        });
+
+        const downloadsDir = FileSystem.documentDirectory + 'downloads/';
+        const fileName = 'PigEx Transaction Report.pdf';
+        const fileUri = downloadsDir + fileName;
+
+        await FileSystem.makeDirectoryAsync(downloadsDir, { intermediates: true });
+        await FileSystem.moveAsync({
+            from: uri,
+            to: fileUri,
+        });
+
+        await Sharing.shareAsync(fileUri, {
+            dialogTitle: 'Share PigEx Transaction Report',
+        });
+
+        Alert.alert('Success', 'PDF generated and ready to share!');
+
     } catch (error) {
-      console.error('Error creating or sharing PDF:', error);
-      Alert.alert('Error', 'Could not create PDF file.');
+        console.error('Error creating or sharing PDF:', error);
+        Alert.alert('Error', 'Could not create PDF file.');
     }
-  };
+};
   
 
 
