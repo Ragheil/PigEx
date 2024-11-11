@@ -20,11 +20,13 @@ const MoneyInScreen = ({ route }) => {
   const [moneyRecords, setMoneyRecords] = useState([]); // State to hold money records
   const [currentRecordId, setCurrentRecordId] = useState(null); // ID of the record being edited
   const [isEditing, setIsEditing] = useState(false); // State to track if we're in edit mode
+  const [time, setTime] = useState(new Date()); // Time picker state
+  const [showTimePicker, setShowTimePicker] = useState(false); // Show time picker state
 
   useEffect(() => {
-    fetchTotalBalance(); // Fetch total balance when the component mounts
-    fetchMoneyRecords(); // Fetch money records when the component mounts
-  }, [selectedBranch, userId]); // Run when selectedBranch or userId changes
+    fetchTotalBalance();
+    fetchMoneyRecords();
+  }, [selectedBranch, userId]);
 
   const fetchTotalBalance = async () => {
     try {
@@ -62,7 +64,19 @@ const MoneyInScreen = ({ route }) => {
     }
   };
   
+  const handleDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setShowDatePicker(false);
+    setDate(currentDate);
+  };
 
+  const handleTimeChange = (event, selectedTime) => {
+    const currentTime = selectedTime || time;
+    setShowTimePicker(false);
+    setTime(currentTime);
+  };
+
+  
   const fetchMoneyRecords = async () => {
     try {
       const moneyInPath = selectedBranch === 'Main Farm'
@@ -100,32 +114,33 @@ const MoneyInScreen = ({ route }) => {
       Alert.alert('Error', 'Please enter an amount.');
       return;
     }
-  
+
     const selectedCategory = category === 'other' ? otherCategory : category;
-  
+
     try {
       const moneyRecord = {
         amount: parseFloat(amount),
         remarks,
-        date: date.toISOString(),
+        date: date.toISOString().split('T')[0], // Store date
+        time: time.toISOString().split('T')[1].substring(0, 5), // Store time in HH:MM format
         category: selectedCategory,
       };
-  
+
       const path = selectedBranch === 'Main Farm'
         ? `users/${userId}/farmBranches/Main Farm/moneyInRecords`
         : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyInRecords`;
-  
+
       const moneyInRecordsRef = collection(firestore, path);
       await addDoc(moneyInRecordsRef, moneyRecord);
-  
+
       Alert.alert('Success', 'Money added successfully!');
-      fetchTotalBalance(); // Update balance after adding money
-      fetchMoneyRecords(); // Fetch updated records after adding money
+      fetchTotalBalance();
+      fetchMoneyRecords();
       setAmount('');
       setRemarks('');
       setCategory('salary');
       setOtherCategory('');
-      setModalVisible(false); // Close modal after success
+      setModalVisible(false);
     } catch (error) {
       console.error('Error adding money record:', error);
       Alert.alert('Error', 'Failed to add money. Please try again.');
@@ -139,38 +154,36 @@ const MoneyInScreen = ({ route }) => {
       return;
     }
 
-    const selectedCategory = category === 'other' ? otherCategory : category;
+    // Format time separately as HH:MM
+    const formattedTime = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    const moneyRecord = {
+      amount: parseFloat(amount),
+      remarks,
+      date: date.toISOString(),  // Store date as main date
+      time: formattedTime,        // Store time as separate field
+    };
+
+    const path = selectedBranch === 'Main Farm'
+      ? `users/${userId}/farmBranches/Main Farm/moneyInRecords/${currentRecordId}`
+      : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyInRecords/${currentRecordId}`;
 
     try {
-      const moneyRecord = {
-        amount: parseFloat(amount),
-        remarks,
-        date: date.toISOString(),
-        category: selectedCategory,
-      };
-
-      const path = selectedBranch === 'Main Farm'
-        ? `users/${userId}/farmBranches/Main Farm/moneyInRecords/${currentRecordId}`
-        : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyInRecords/${currentRecordId}`; // Use userId here
-
       const moneyRecordRef = doc(firestore, path);
       await updateDoc(moneyRecordRef, moneyRecord);
 
       Alert.alert('Success', 'Money record updated successfully!');
-      fetchTotalBalance(); // Update balance after editing money
-      fetchMoneyRecords(); // Fetch updated records after editing money
+      fetchTotalBalance();
+      fetchMoneyRecords();
       setAmount('');
       setRemarks('');
-      setCategory('salary');
-      setOtherCategory('');
-      setModalVisible(false); // Close modal after success
-      setIsEditing(false); // Reset edit state
-      setCurrentRecordId(null); // Clear current record ID
+      setIsEditing(false);
+      setCurrentRecordId(null);
     } catch (error) {
       console.error('Error updating money record:', error);
       Alert.alert('Error', 'Failed to update money record. Please try again.');
     }
-};
+  };
 
 const handleDeleteMoney = async (id) => {
   try {
@@ -205,7 +218,7 @@ const handleDeleteMoney = async (id) => {
 
   const handleCategoryChange = (value) => {
     setCategory(value);
-    setShowOtherCategoryInput(value === 'other'); // Show input if "Other" is selected
+    setShowOtherCategoryInput(value === 'other');
   };
 
   const renderMoneyRecord = ({ item }) => (
@@ -299,17 +312,30 @@ const handleDeleteMoney = async (id) => {
             >
               <Text style={styles.datePickerText}>{date.toDateString()}</Text>
             </Pressable>
-            {showDatePicker && (
-              <DateTimePicker
-                value={date}
-                mode="date"
-                display="default"
-                onChange={(event, selectedDate) => {
-                  setShowDatePicker(false);
-                  if (selectedDate) setDate(selectedDate);
-                }}
-              />
-            )}
+      {/* Date Picker */}
+      <Button title="Pick Date" onPress={() => setShowDatePicker(true)} />
+      {showDatePicker && (
+        <DateTimePicker
+          value={date}
+          mode="date"
+          display="default"
+          onChange={handleDateChange}
+        />
+      )}
+      <Text>Selected Date: {date.toLocaleDateString()}</Text>
+      {/* Time Picker */}
+      <Button title="Pick Time" onPress={() => setShowTimePicker(true)} />
+      {showTimePicker && (
+        <DateTimePicker
+          value={time}
+          mode="time"
+          display="default"
+          onChange={handleTimeChange}
+        />
+      )}
+      <Text>Selected Time: {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+
+
             <View style={styles.modalButtons}>
               <Button
                 title={isEditing ? 'Update' : 'Add'}
