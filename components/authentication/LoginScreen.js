@@ -28,7 +28,7 @@ const LoginScreen = ({ email, setEmail, password, setPassword, handleAuthenticat
 
     try {
       await sendPasswordResetEmail(auth, email);
-      Alert.alert('Success', 'Password reset email sent!');
+      Alert.alert('Success', 'Password reset email sent! Please check your email.');
       setForgotPassword(false); // Return to the login screen
     } catch (error) {
       Alert.alert('Error', error.message);
