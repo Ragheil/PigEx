@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, FlatList, Button, TouchableOpacity, Alert, TextInput } from 'react-native';
 import { firestore } from '../../firebase/config2';
-import { collection, getDocs, doc, setDoc, writeBatch, getDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, setDoc, writeBatch, getDoc, deleteDoc, query, where } from 'firebase/firestore';
 import PigDetailsScreenStyles from '../../frontend/Pregnancy/PigDetailsScreenStyles';
 
 const PigDetailsScreen = ({ route }) => {
@@ -151,17 +151,28 @@ const PigDetailsScreen = ({ route }) => {
 
   const togglePigletSelection = async (pigletId) => {
     const isSelected = selectedPiglets.includes(pigletId);
-  
+    
     // Path for the pregnancy record document
     const pregnancyRecordPath = selectedBranch === 'Main Farm'
       ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${pigId}`
       : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${pigId}`;
     const pregnancyDocRef = doc(firestore, pregnancyRecordPath);
+    
+    // Path for the motherRecords sub-collection
+    const motherRecordsPath = selectedBranch === 'Main Farm'
+      ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${pigId}/motherRecords`
+      : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${pigId}/motherRecords`;
   
     try {
       if (isSelected) {
         // Deselect piglet: remove it from selected piglets
-        setSelectedPiglets(prevSelected => prevSelected.filter(id => id !== pigletId));
+        setSelectedPiglets(prevSelected => {
+          const updatedSelected = prevSelected.filter(id => id !== pigletId);
+          
+          // Show alert for deselection
+          Alert.alert('Deselection', `Piglet ${pigletId} has been deselected.`);
+          return updatedSelected;
+        });
   
         // Fetch the current pregnancy record document
         const existingRecordSnapshot = await getDoc(pregnancyDocRef);
@@ -174,25 +185,33 @@ const PigDetailsScreen = ({ route }) => {
           // Update Firestore without the deselected piglet
           await setDoc(pregnancyDocRef, { piglets: updatedPiglets }, { merge: true });
   
-          // Remove the piglet from motherRecords sub-collection
-          const motherRecordsPath = selectedBranch === 'Main Farm'
-            ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${pigId}/motherRecords`
-            : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${pigId}/motherRecords`;
-          const pigletRecordRef = doc(firestore, motherRecordsPath, pigletId); // assuming piglet ID is the document ID
+          // Now, remove the corresponding motherRecords entry where pigId matches pigletId
+          const querySnapshot = await getDocs(query(collection(firestore, motherRecordsPath), where("pigId", "==", pigletId)));
   
-          // Delete the piglet's record from the motherRecords sub-collection
-          await deleteDoc(pigletRecordRef);
+          if (!querySnapshot.empty) {
+            // If a matching record is found, delete it
+            querySnapshot.forEach(async (doc) => {
+              await deleteDoc(doc.ref);
+              console.log(`Deleted mother record for pigId: ${pigletId}`);
+            });
+          } else {
+            console.error(`No mother record found for pigId: ${pigletId}`);
+          }
         }
       } else {
-        // Select piglet: add it to selected piglets
-        setSelectedPiglets(prevSelected => [...prevSelected, pigletId]);
+        // Check if the piglet is already selected before adding it
+        if (selectedPiglets.length < 10 && !selectedPiglets.includes(pigletId)) { // Example limit to 10 selections
+          // Select piglet: add it to selected piglets
+          setSelectedPiglets(prevSelected => [...prevSelected, pigletId]);
+        } else {
+          Alert.alert('Selection Limit', 'You cannot select more piglets or this piglet is already selected.');
+        }
       }
     } catch (error) {
       console.error('Error updating selection:', error);
       Alert.alert('Error', 'Failed to update piglet selection. Please try again.');
     }
   };
-  
 
   // Filter pigs based on the search query
   const filteredPigs = allPigs.filter(pig =>
