@@ -11,7 +11,29 @@ const PigDetailsScreen = ({ route }) => {
   const [selectedPiglets, setSelectedPiglets] = useState([]);
   const [assignedPiglets, setAssignedPiglets] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
+  const fetchSelectedPiglets = async () => {
+    try {
+      const pregnancyRecordPath = selectedBranch === 'Main Farm'
+        ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${pigId}`
+        : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${pigId}`;
 
+      const pregnancyDocRef = doc(firestore, pregnancyRecordPath);
+      const existingRecordSnapshot = await getDoc(pregnancyDocRef);
+      if (existingRecordSnapshot.exists()) {
+        const existingRecord = existingRecordSnapshot.data();
+        const piglets = existingRecord.piglets || [];
+        setSelectedPiglets(piglets.map(piglet => piglet.id)); // Set selected piglets based on existing record
+      }
+    } catch (error) {
+      console.error("Error fetching selected piglets: ", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllPigs();
+    fetchAssignedPiglets();
+    fetchSelectedPiglets(); // Fetch selected piglets when the component mounts
+  }, [selectedBranch, user]);
   const fetchAllPigs = async () => {
     setLoading(true);
     try {
@@ -255,17 +277,16 @@ const PigDetailsScreen = ({ route }) => {
       </View>
 
       <FlatList
-        data={filteredPigs}
-        key={2}
-        keyExtractor={item => item.id}
-        numColumns={2}
-        renderItem={({ item }) => {
-          const assignedMotherName = assignedPiglets[item.id] || null;
-          const isAssigned = assignedMotherName && assignedMotherName !== pigName;
-          const canDeselect = assignedMotherName === pigName;
+      data={filteredPigs}
+      keyExtractor={item => item.id}
+      numColumns={2}
+      renderItem={({ item }) => {
+        const assignedMotherName = assignedPiglets[item.id] || null;
+        const isAssigned = assignedMotherName && assignedMotherName !== pigName;
+        const canDeselect = assignedMotherName === pigName;
 
-          return (
-            <View style={PigDetailsScreenStyles.pigContainer}>
+        return (
+          <View style={PigDetailsScreenStyles.pigContainer}>
             <Text style={PigDetailsScreenStyles.detail}>Name: {item.pigName}</Text>
             <Text style={PigDetailsScreenStyles.detail}>Group: {item.groupName}</Text>
             <Text style={PigDetailsScreenStyles.detail}>Gender: {item.gender}</Text>
@@ -282,17 +303,15 @@ const PigDetailsScreen = ({ route }) => {
               disabled={isAssigned && !canDeselect}
             >
               <Text style={PigDetailsScreenStyles.buttonText}>
-                {isAssigned && !canDeselect
-                  ? "Already Assigned"
-                  : selectedPiglets.includes(item.id)
+                {selectedPiglets.includes(item.id)
                   ? "Deselect Piglet"
                   : "Select as Piglet"}
               </Text>
             </TouchableOpacity>
           </View>
-          );
-        }}
-      />
+        );
+      }}
+    />
 
       <Button
         title="Save Selected Pigs"
