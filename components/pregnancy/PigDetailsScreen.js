@@ -290,9 +290,14 @@ const PigDetailsScreen = ({ route }) => {
             <Text style={PigDetailsScreenStyles.detail}>Name: {item.pigName}</Text>
             <Text style={PigDetailsScreenStyles.detail}>Group: {item.groupName}</Text>
             <Text style={PigDetailsScreenStyles.detail}>Gender: {item.gender}</Text>
-            {assignedMotherName && (
-              <Text style={PigDetailsScreenStyles.assignedText}>Assigned to mother: {assignedMotherName}</Text>
+            
+            {/* Only show assigned text if the piglet is selected */}
+            {selectedPiglets.includes(item.id) && assignedMotherName && (
+              <Text style={PigDetailsScreenStyles.assignedText}>
+                Assigned to mother: {assignedMotherName}
+              </Text>
             )}
+            
             <TouchableOpacity
               style={[
                 PigDetailsScreenStyles.selectButton,
