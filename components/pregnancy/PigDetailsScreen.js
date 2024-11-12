@@ -165,39 +165,55 @@ const PigDetailsScreen = ({ route }) => {
   
     try {
       if (isSelected) {
-        // Deselect piglet: remove it from selected piglets
-        setSelectedPiglets(prevSelected => {
-          const updatedSelected = prevSelected.filter(id => id !== pigletId);
-          
-          // Show alert for deselection
-          Alert.alert('Deselection', `Piglet ${pigletId} has been deselected.`);
-          return updatedSelected;
-        });
+        // Show confirmation alert before deselecting
+        Alert.alert(
+          'Confirm Removal',
+         // `Do you want to remove piglet ${pig} from its mother?`,
+          `Do you want to remove this piglet from its mother?`,
+          [
+            {
+              text: 'Cancel',
+              onPress: () => console.log('Removal canceled'),
+              style: 'cancel',
+            },
+            {
+              text: 'Yes',
+              onPress: async () => {
+                // Deselect piglet: remove it from selected piglets
+                setSelectedPiglets(prevSelected => {
+                  const updatedSelected = prevSelected.filter(id => id !== pigletId);
+                  return updatedSelected;
+                });
   
-        // Fetch the current pregnancy record document
-        const existingRecordSnapshot = await getDoc(pregnancyDocRef);
-        if (existingRecordSnapshot.exists()) {
-          const existingRecord = existingRecordSnapshot.data();
+                // Fetch the current pregnancy record document
+                const existingRecordSnapshot = await getDoc(pregnancyDocRef);
+                if (existingRecordSnapshot.exists()) {
+                  const existingRecord = existingRecordSnapshot.data();
   
-          // Remove the piglet from the piglets array
-          const updatedPiglets = existingRecord.piglets.filter(p => p.id !== pigletId);
+                  // Remove the piglet from the piglets array
+                  const updatedPiglets = existingRecord.piglets.filter(p => p.id !== pigletId);
   
-          // Update Firestore without the deselected piglet
-          await setDoc(pregnancyDocRef, { piglets: updatedPiglets }, { merge: true });
+                  // Update Firestore without the deselected piglet
+                  await setDoc(pregnancyDocRef, { piglets: updatedPiglets }, { merge: true });
   
-          // Now, remove the corresponding motherRecords entry where pigId matches pigletId
-          const querySnapshot = await getDocs(query(collection(firestore, motherRecordsPath), where("pigId", "==", pigletId)));
+                  // Now, remove the corresponding motherRecords entry where pigId matches pigletId
+                  const querySnapshot = await getDocs(query(collection(firestore, motherRecordsPath), where("pigId", "==", pigletId)));
   
-          if (!querySnapshot.empty) {
-            // If a matching record is found, delete it
-            querySnapshot.forEach(async (doc) => {
-              await deleteDoc(doc.ref);
-              console.log(`Deleted mother record for pigId: ${pigletId}`);
-            });
-          } else {
-            console.error(`No mother record found for pigId: ${pigletId}`);
-          }
-        }
+                  if (!querySnapshot.empty) {
+                    // If a matching record is found, delete it
+                    querySnapshot.forEach(async (doc) => {
+                      await deleteDoc(doc.ref);
+                      console.log(`Deleted mother record for pigId: ${pigletId}`);
+                    });
+                  } else {
+                    console.error(`No mother record found for pigId: ${pigletId}`);
+                  }
+                }
+              },
+            },
+          ],
+          { cancelable: false }
+        );
       } else {
         // Check if the piglet is already selected before adding it
         if (selectedPiglets.length < 10 && !selectedPiglets.includes(pigletId)) { // Example limit to 10 selections
