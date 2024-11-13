@@ -76,10 +76,34 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   flatListContent: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 10, // Add horizontal padding to the list
+  },
+  pigGroupSummary: {
+    width: 150, // Set a fixed width for each item
+    marginRight: 10, // Spacing between items
+    alignItems: 'center', // Center items horizontally
+    justifyContent: 'center', // Center items vertically
+    backgroundColor: '#f0f0f0', // Background color for each item
+    borderRadius: 10, // Rounded corners
+    padding: 10, // Padding inside each item
+  },
+  pigGroupText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  pigCountText: {
+    fontSize: 14,
+    color: 'gray',
+  },
+  emptyMessage: {
+    fontSize: 16,
+    color: 'gray',
+    textAlign: 'center',
+    marginTop: 20,
   },
   flatList: {
     flexGrow: 0, 
+    
   },
   seeAllButton: {
     marginBottom: 20, 

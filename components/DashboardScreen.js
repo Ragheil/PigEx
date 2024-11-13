@@ -331,6 +331,26 @@ const handleAddBranch = async () => {
   } 
 };
 
+useEffect(() => {
+  if (user) {
+    const pigGroupsCollection = selectedBranch === 'Main Farm'
+      ? collection(firestore, `users/${user.uid}/farmBranches/Main Farm/pigGroups`)
+      : collection(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups`);
+
+    const unsubscribePigGroups = onSnapshot(pigGroupsCollection, (snapshot) => {
+      const pigGroupsList = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      console.log("Fetched pig groups:", pigGroupsList); // Debug log to check fetched data
+
+      setPigGroups(pigGroupsList);
+    });
+
+    return () => unsubscribePigGroups();
+  }
+}, [user, selectedBranch]); // Add selectedBranch to dependencies
 
   return (
     <View style={styles.container}>
@@ -349,39 +369,41 @@ const handleAddBranch = async () => {
         </View>
         
         <View style={styles.contentContainer}>
-          <Text style={styles.title}>Pig Groups Summary</Text>
-          
-          <TouchableOpacity
-            style={[styles.seeAllButton, { zIndex: 10, elevation: 5 }]}
-            onPress={() => navigation.navigate('PigGroups', {
-              selectedBranch: selectedBranch === `Main Farm: ${farmName}` ? 'Main Farm' : selectedBranch,
-              farmName: farmName // Pass the farm name here
-            })}
-          >
-            <Text style={styles.seeAllText}>See All</Text>
-          </TouchableOpacity>
+  <Text style={styles.title}>Pig Groups Summary</Text>
+  
+  <TouchableOpacity
+    style={[styles.seeAllButton, { zIndex: 10, elevation: 5 }]}
+    onPress={() => navigation.navigate('PigGroups', {
+      selectedBranch: selectedBranch === `Main Farm: ${farmName}` ? 'Main Farm' : selectedBranch,
+      farmName: farmName // Pass the farm name here
+    })}
+  >
+    <Text style={styles.seeAllText}>See All</Text>
+  </TouchableOpacity>
+
+  <FlatList
+    data={pigGroups}
+    renderItem={({ item }) => (
+      <View style={styles.pigGroupSummary}>
+        <Text style={styles.pigGroupText}>{item.name}</Text>
+        <Text style={styles.pigCountText}>
+                {/* <Text style={styles.tableHeader}>Pig Groups</Text> */}
+          <Text style={styles.boldText}>{item.pigCount || 0} Pigs</Text>
+        </Text>
+      </View>
+    )}
+    keyExtractor={(item) => item.id}
+    horizontal
+    showsHorizontalScrollIndicator={true}
+    contentContainerStyle={styles.flatListContent}
+    snapToAlignment="center"
+    snapToInterval={160}
+    decelerationRate="fast"
+    ListEmptyComponent={<Text style={styles.emptyMessage}>No pig groups available.</Text>}
+    style={styles.flatList}
+  />
 
 
-          <FlatList
-                    data={pigGroups}
-                    renderItem={({ item }) => (
-                        <View style={styles.pigGroupSummary}>
-                            <Text style={styles.pigGroupText}>{item.name}</Text>
-                            <Text style={styles.pigCountText}>
-                                <Text style={styles.boldText}>{/* {item.pigCount || 0} Pigs */}</Text>
-                            </Text>
-                        </View>
-                    )}
-            keyExtractor={(item) => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.flatListContent}
-            snapToAlignment="center"
-            snapToInterval={160}
-            decelerationRate="fast"
-            ListEmptyComponent={<Text>No pig groups available.</Text>}
-            style={styles.flatList}
-          />
         </View>
 
         <FooterScreen 
