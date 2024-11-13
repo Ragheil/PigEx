@@ -10,6 +10,8 @@ import {
   Alert,
   TouchableWithoutFeedback,
   Dimensions,
+  ScrollView,
+  RefreshControl
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Divider } from 'react-native-paper';
@@ -22,6 +24,7 @@ import styles from '../frontend/componentsStyles/DashboardScreenStyles';
 import { updateEmail, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import { sendEmailVerification } from 'firebase/auth';
 import { fonts } from 'react-native-elements/dist/config';
+import { BarChart } from 'react-native-chart-kit'; // Import the bar chart component
 
 export default function DashboardScreen({ firstName, lastName, farmName, onLogout }) {
   // State variables
@@ -45,6 +48,100 @@ export default function DashboardScreen({ firstName, lastName, farmName, onLogou
   const [emailModalVisible, setEmailModalVisible] = useState(false);
   const user = auth.currentUser;
   
+  const [transactions, setTransactions] = useState([]);
+  const [barChartData, setBarChartData] = useState({
+    labels: [],
+    datasets: [
+      { label: 'Money In', data: [] },
+      { label: 'Money Out', data: [] },
+    ],
+  });
+  const screenWidth = Dimensions.get('window').width;
+
+  useEffect(() => {
+    const fetchTransactionRecords = async () => {
+      try {
+        const userId = auth.currentUser .uid; // Get the current user ID
+        const moneyInPath = `users/${userId}/farmBranches/Main Farm/moneyInRecords`;
+        const moneyOutPath = `users/${userId}/farmBranches/Main Farm/moneyOutRecords`;
+
+        const moneyInRecordsRef = collection(firestore, moneyInPath);
+        const moneyOutRecordsRef = collection(firestore, moneyOutPath);
+        
+        const inRecordsSnapshot = await getDocs(moneyInRecordsRef);
+        const outRecordsSnapshot = await getDocs(moneyOutRecordsRef);
+
+        let incoming = [];
+        inRecordsSnapshot.forEach((doc) => {
+          const recordData = { id: doc.id, ...doc.data(), type: 'in' };
+          incoming.push(recordData);
+        });
+
+        let outgoing = [];
+        outRecordsSnapshot.forEach((doc) => {
+          const recordData = { id: doc.id, ...doc.data(), type: 'out' };
+          outgoing.push(recordData);
+        });
+
+        const combinedTransactions = [...incoming, ...outgoing];
+        setTransactions(combinedTransactions);
+        generateBarChartData(combinedTransactions); // Generate chart data
+      } catch (error) {
+        console.error('Error fetching transaction records:', error);
+      }
+    };
+
+    fetchTransactionRecords();
+  }, []);
+
+
+  const generateBarChartData = (transactions) => {
+    const data = {
+      labels: [],
+      datasets: [
+        {
+          label: 'Money In',
+          data: [],
+          color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`, // Green for income
+        },
+        {
+          label: 'Money Out',
+          data: [],
+          color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`, // Red for expenses
+        },
+      ],
+    };
+
+    const incomeData = {};
+    const expenseData = {};
+
+    transactions.forEach(transaction => {
+      const date = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
+      const key = date.toLocaleDateString(); // Group by date
+
+      if (!incomeData[key]) {
+        incomeData[key] = 0;
+      }
+      if (!expenseData[key]) {
+        expenseData[key] = 0;
+      }
+
+      if (transaction.type === 'in') {
+        incomeData[key] += parseFloat(transaction.amount);
+      } else {
+        expenseData[key] += parseFloat(transaction.amount);
+      }
+    });
+
+    Object.keys(incomeData).forEach(key => {
+      data.labels.push(key);
+      data.datasets[0].data.push(incomeData[key]); // Money In
+      data.datasets[1].data.push(expenseData[key] || 0); // Money Out
+    });
+
+    setBarChartData(data);
+  };
+
  // const userId = user ? user.uid : null; // Ensure that userId is defined
   const [userId, setUserId] = useState(null);
 
@@ -369,42 +466,77 @@ useEffect(() => {
         </View>
         
         <View style={styles.contentContainer}>
-  <Text style={styles.title}>Pig Groups Summary</Text>
-  
-  <TouchableOpacity
-    style={[styles.seeAllButton, { zIndex: 10, elevation: 5 }]}
-    onPress={() => navigation.navigate('PigGroups', {
-      selectedBranch: selectedBranch === `Main Farm: ${farmName}` ? 'Main Farm' : selectedBranch,
-      farmName: farmName // Pass the farm name here
-    })}
-  >
-    <Text style={styles.seeAllText}>See All</Text>
-  </TouchableOpacity>
+              <Text style={styles.title}>Pig Groups Summary</Text>
+              
+              <TouchableOpacity
+                style={[styles.seeAllButton, { zIndex: 10, elevation: 5 }]}
+                onPress={() => navigation.navigate('PigGroups', {
+                  selectedBranch: selectedBranch === `Main Farm: ${farmName}` ? 'Main Farm' : selectedBranch,
+                  farmName: farmName // Pass the farm name here
+                })}
+              >
+                <Text style={styles.seeAllText}>See All</Text>
+              </TouchableOpacity>
 
-  <FlatList
-    data={pigGroups}
-    renderItem={({ item }) => (
-      <View style={styles.pigGroupSummary}>
-        <Text style={styles.pigGroupText}>{item.name}</Text>
-        <Text style={styles.pigCountText}>
-                {/* <Text style={styles.tableHeader}>Pig Groups</Text> */}
-          <Text style={styles.boldText}>{item.pigCount || 0} Pigs</Text>
-        </Text>
-      </View>
-    )}
-    keyExtractor={(item) => item.id}
-    horizontal
-    showsHorizontalScrollIndicator={true}
-    contentContainerStyle={styles.flatListContent}
-    snapToAlignment="center"
-    snapToInterval={160}
-    decelerationRate="fast"
-    ListEmptyComponent={<Text style={styles.emptyMessage}>No pig groups available.</Text>}
-    style={styles.flatList}
-  />
+              <FlatList
+                data={pigGroups}
+                renderItem={({ item }) => (
+                  <View style={styles.pigGroupSummary}>
+                    <Text style={styles.pigGroupText}>{item.name}</Text>
+                    <Text style={styles.pigCountText}>
+                            {/* <Text style={styles.tableHeader}>Pig Groups</Text> */}
+                      <Text style={styles.boldText}>{item.pigCount || 0} Pigs</Text>
+                    </Text>
+                  </View>
+                )}
+                keyExtractor={(item) => item.id}
+                horizontal
+                showsHorizontalScrollIndicator={true}
+                contentContainerStyle={styles.flatListContent}
+                snapToAlignment="center"
+                snapToInterval={160}
+                decelerationRate="fast"
+                ListEmptyComponent={<Text style={styles.emptyMessage}>No pig groups available.</Text>}
+                style={styles.flatList}
+              />
 
 
+<View style={{ flex: 1, padding: 16 }}>
+      <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Transaction Preview</Text>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={false} onRefresh={() => {}} />
+        }
+      >
+        <View style={{ alignItems: 'center', marginVertical: 20 }}>
+          <BarChart
+            data={barChartData}
+            width={screenWidth - 30} // Define your screen width
+            height={220}
+            chartConfig={{
+              backgroundColor: '#94E334FF',
+              backgroundGradientFrom: '#9ED74AFF',
+              backgroundGradientTo: '#FFFFFFFF',
+              decimalPlaces: 2,
+              color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              style: {
+                borderRadius: 16,
+              },
+            }}
+            style={{
+              marginVertical: 8,
+              borderRadius: 16,
+            }}
+          />
         </View>
+      </ScrollView>
+    </View>
+        </View>
+
+
+     
+
 
         <FooterScreen 
           firstName={firstName} 
