@@ -62,6 +62,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 10,
   },
+  branchNameToDelete: {
+    fontWeight: 'bold',
+    marginVertical: 10,
+    fontSize: 16,
+    color: 'red', // Optional: Change color to indicate importance
+  },
 });
 
 export default styles;

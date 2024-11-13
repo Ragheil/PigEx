@@ -11,32 +11,32 @@ const SeeAllBranchesScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState(null);
   const [newBranchName, setNewBranchName] = useState('');
-  const [branchModalVisible, setBranchModalVisible] = useState(false);  // Fix: Set boolean type
-  const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [branchModalVisible, setBranchModalVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false); // State for delete modal
+  const [branchNameToDelete, setBranchNameToDelete] = useState(''); // State for branch name input
 
-  const user = auth.currentUser;
+  const user = auth.currentUser ;
 
   useEffect(() => {
     if (user) {
       const userId = user.uid;
       const branchRef = collection(firestore, `users/${userId}/farmBranches/Farm Branch/Branches`);
 
-      // Listen for branch updates
       const unsubscribe = onSnapshot(branchRef, (snapshot) => {
         const branchList = snapshot.docs.map(doc => ({
           id: doc.id,
-          branch: doc.id,  // Add branch property here
+          branch: doc.id,
           ...doc.data(),
         }));
         setBranches(branchList);
-        setIsLoading(false);  // Data loaded
+        setIsLoading(false);
       });
 
       return () => unsubscribe();
     }
   }, [user]);
 
-  // Handle branch selection
   const handleBranchSelect = (branch) => {
     if (!branch || !branch.farmName) {
       Alert.alert('Error', 'Branch data is incomplete.');
@@ -45,7 +45,6 @@ const SeeAllBranchesScreen = () => {
     Alert.alert('Branch Selected', `You selected ${branch.farmName}`);
   };
 
-  // Open the edit modal
   const openEditModal = (branch) => {
     if (!branch) {
       Alert.alert('Error', 'Branch data is missing.');
@@ -56,7 +55,6 @@ const SeeAllBranchesScreen = () => {
     setModalVisible(true);
   };
 
-  // Handle the editing of a branch
   const handleEdit = async () => {
     if (!selectedBranch || !newBranchName.trim()) {
       Alert.alert('Error', 'Farm name cannot be empty or no branch selected.');
@@ -67,57 +65,58 @@ const SeeAllBranchesScreen = () => {
       await setDoc(
         doc(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch.id}`),
         { farmName: newBranchName },
-        { merge: true } // Merge updates to avoid overwriting the whole document
+        { merge: true }
       );
 
       Alert.alert('Success', 'Branch updated successfully!');
       setModalVisible(false);
-      setSelectedBranch(null); // Reset selected branch
+      setSelectedBranch(null);
     } catch (error) {
       console.error("Update Error: ", error);
       Alert.alert('Error', 'Could not update the branch.');
     }
   };
 
-  // Handle branch deletion
-  const handleDelete = async (branchId) => {
+  const openDeleteModal = (branch) => {
+    setSelectedBranch(branch);
+    setBranchNameToDelete(branch.farmName); // Set the branch name to delete
+    setDeleteModalVisible(true);
+  };
+
+  const handleDelete = async () => {
+    if (branchNameToDelete.trim() !== selectedBranch.farmName) {
+      Alert.alert('Error', 'Branch name does not match. Please type the exact name to delete.');
+      return;
+    }
+
     try {
-      await deleteDoc(doc(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches/${branchId}`));
-      setBranches((prevBranches) => prevBranches.filter(branch => branch.id !== branchId)); // Remove from state
+      await deleteDoc(doc(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch.id}`));
+      setBranches((prevBranches) => prevBranches.filter(branch => branch.id !== selectedBranch.id));
       Alert.alert('Success', 'Branch deleted successfully!');
+      setDeleteModalVisible(false);
+      setSelectedBranch(null);
     } catch (error) {
       console.error('Delete Error: ', error);
       Alert.alert('Error', 'Could not delete the branch.');
     }
   };
 
-  // Render each branch item
   const renderBranchItem = ({ item }) => (
     <View style={styles.branchItem}>
       <TouchableOpacity onPress={() => handleBranchSelect(item)}>
         <Text style={styles.branchName}>{item.farmName}</Text>
       </TouchableOpacity>
-      <View style={styles.iconContainer}>
+      <View style={ styles.iconContainer}>
         <TouchableOpacity onPress={() => openEditModal(item)}>
           <Image source={editIcon} style={styles.icon} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => {
-          Alert.alert(
-            'Delete Branch',
-            'Are you sure you want to delete this branch?',
-            [
-              { text: 'Cancel', style: 'cancel' },
-              { text: 'OK', onPress: () => handleDelete(item.id) },
-            ],
-          );
-        }}>
+        <TouchableOpacity onPress={() => openDeleteModal(item)}>
           <Image source={deleteIcon} style={styles.icon} />
         </TouchableOpacity>
       </View>
     </View>
   );
 
-  // Handle adding a new branch
   const handleAddBranch = async () => {
     if (!newBranchName.trim()) {
       Alert.alert('Validation Error', 'Farm name is required!');
@@ -129,17 +128,14 @@ const SeeAllBranchesScreen = () => {
         const branchesCollectionRef = collection(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches`);
         const branchSnapshot = await getDocs(branchesCollectionRef);
 
-        // Check if a branch with this farmName already exists
         const branchExists = branchSnapshot.docs.some(doc => doc.data().farmName === newBranchName);
         if (branchExists) {
           Alert.alert('Branch Error', 'A branch with this farm name already exists!');
           return;
         }
 
-        // Add a new branch with a unique ID but with the 'newBranchName' field
         await addDoc(branchesCollectionRef, { farmName: newBranchName });
 
-        // Reset input and close modal
         setNewBranchName('');
         setBranchModalVisible(false);
         Alert.alert('Success', 'Branch added successfully!');
@@ -150,7 +146,7 @@ const SeeAllBranchesScreen = () => {
   };
 
   if (isLoading) {
-    return <Text>Loading...</Text>;  // Handle loading state
+    return <Text>Loading...</Text>;
   }
 
   return (
@@ -163,10 +159,8 @@ const SeeAllBranchesScreen = () => {
         ListEmptyComponent={<Text>No branches available.</Text>}
       />
 
-      {/* Add Branch Button */}
       <Button title="Add Branch" onPress={() => setBranchModalVisible(true)} />
 
-      {/* Add Branch Modal */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -187,8 +181,35 @@ const SeeAllBranchesScreen = () => {
           </View>
         </View>
       </Modal>
+      <Modal
+  animationType="slide"
+  transparent={true}
+  visible={deleteModalVisible}
+  onRequestClose={() => setDeleteModalVisible(false)}
+>
+  <View style={styles.modalContainer}>
+    <View style={styles.modalView}>
+      <Text style={styles.modalTitle}>Delete Branch</Text>
+      <Text>
+        Do you want to delete this branch? Type  <Text style={{ marginTop: 10, color: 'red',fontWeight: 'bold', }}>
+        "{selectedBranch?.farmName}"
+      </Text> to perform this action.
+      </Text>
+      <Text style={{ marginTop: 10, color: 'red' }}>
+        Note: After deletion, you won't be able to recover this branch it anymore.
+      </Text>
+      <TextInput
+        style={styles.input}
+       // value={branchNameToDelete}
+       // onChangeText={setBranchNameToDelete}       
+       // placeholder={`Type "${selectedBranch?.farmName}"`}
+      />
+      <Button title="Delete" onPress={handleDelete} />
+      <Button title="Cancel" onPress={() => setDeleteModalVisible(false)} color="red" />
+    </View>
+  </View>
+</Modal>
 
-      {/* Edit Modal */}
       <Modal
         animationType="slide"
         transparent={true}
