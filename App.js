@@ -11,8 +11,6 @@ import {
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { StyleSheet,Alert } from 'react-native';
 
-//Import fonts
-
 // Import screens
 import WelcomeScreen from './components/WelcomeScreen';
 import LoginScreen from './components/authentication/LoginScreen';
