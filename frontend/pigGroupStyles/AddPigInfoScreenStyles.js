@@ -4,38 +4,54 @@ import { StyleSheet } from 'react-native';
 export default StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
+        // padding: 20,
+      },
+      mainheader: {
+        backgroundColor: '#869f77',
+        paddingHorizontal: 20,
+        // paddingTop: 10,
+        rowGap: 15,
       },
       title: {
-        fontSize: 24,
+        fontSize: 26,
         fontWeight: 'bold',
-        marginBottom: 10,
-        marginTop: 60,
+        // marginBottom: 10,
+        marginTop: 40,
     
       },
       groupName: {
         fontSize: 18,
-        marginBottom: 20,
+        marginBottom: 10,
         fontWeight: 'bold',
       },
       searchContainer: {
         marginBottom: 20,
+        padding: 20,
       },
       searchInput: {
-        borderWidth: 1,
+        borderWidth: 2,
         borderColor: '#ddd',
         padding: 10,
         borderRadius: 5,
-        marginTop: 10,
+        marginTop: 5,
       },
       addButton: {
-        marginBottom: 10,
+        marginBottom: 5,
+        backgroundColor: '#DCFFB7',
+        padding: 10,
+
       },
+      // addButtonText: {
+      //   color: '#399918', // Text color
+      //   fontSize: 16,
+      //   fontWeight: 'bold',
+      // },
       list: {
         flex: 1,
       },
       listContent: {
         paddingBottom: 20,
+        paddingHorizontal: 16,
       },
       pigContainer: {
         flexDirection: 'row',
@@ -55,30 +71,19 @@ export default StyleSheet.create({
       actionsContainer: {
         flexDirection: 'row',
         alignItems: 'center',
+        columnGap: 5,
       },
-      icon: {
+      iview:{
+        width: 28,
+        height: 28,
+      },
+      iedit: {
+        width: 23,
+        height: 23,
+      },
+      idelete: {
         width: 24,
         height: 24,
-        marginHorizontal: 5,
-      },
-      modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)',
-      },
-      modalContent: {
-        backgroundColor: '#fff',
-        padding: 20,
-        borderRadius: 10,
-        width: '80%',
-      },
-      input: {
-        borderWidth: 1,
-        borderColor: '#ddd',
-        padding: 10,
-        borderRadius: 5,
-        marginBottom: 15,
       },
       picker: {
         borderWidth: 1,
@@ -109,5 +114,59 @@ export default StyleSheet.create({
         justifyContent: 'space-between',
         marginVertical: 10,
       },      
+      titlename: {
+        paddingLeft: 3,
+        marginBottom: 3,
+        // backgroundColor: 'lightblue',
+      },
+      detailText: {
+        fontSize: 18,
+        fontWeight: '700',
+      },
 
+      //modal
+      modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#00000080',
+      },
+      modalbox: {
+        padding: 20,
+      },
+      modalTitle: {
+        width: '80%',
+        backgroundColor: '#869f77',
+        fontSize: 18,
+        fontWeight: 'bold',
+        paddingVertical: 7,
+        padding: 10,
+        borderTopRightRadius: 10,
+        borderTopLeftRadius: 10,
+      },
+      modalContent: {
+        backgroundColor: '#fff',
+        padding: 15,
+        borderBottomRightRadius: 10,
+        borderBottomLeftRadius: 10,
+        width: '80%',
+        rowGap: 3,
+      },
+      input: {
+        borderWidth: 1,
+        borderColor: '#ddd',
+        padding: 10,
+        borderRadius: 5,
+        marginBottom: 10,
+      },
+      modalsavecancel: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'flex-end',
+        alignSelf: 'flex-end',
+        gap: 10,
+        width: '70%',
+        // backgroundColor: 'lightblue',
+
+      },
 });

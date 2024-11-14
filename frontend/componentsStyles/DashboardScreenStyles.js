@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
   mainheader: {
     flexDirection: 'column',
     backgroundColor: '#869f77',
-    paddingTop: 40,
+    paddingTop: 30,
     paddingBottom: 10,
     paddingHorizontal: 16,
     alignItems: 'center',

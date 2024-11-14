@@ -17,9 +17,9 @@ export default StyleSheet.create({
       mainheader: {
         flexDirection: 'column',
         backgroundColor: '#869f77',
-        paddingTop: 40,
+        paddingTop: 30,
         paddingBottom: 10,
-        paddingHorizontal: 16,
+        paddingHorizontal: 20,
         alignItems: 'center',
       },
       subheader: {
@@ -82,9 +82,11 @@ export default StyleSheet.create({
         // justifyContent: 'space-evenly',
         // justifyContent: 'flex-start',
         // justifyContent: 'space-around',
-        gap: 20,
-        columnGap: 32,
-        paddingHorizontal: 25,
+        // justifyContent: 'center',
+        justifyContent: 'space-between',
+        // gap: 10,
+        rowGap: 25,
+        paddingHorizontal: 20,
         // backgroundColor: 'lightblue',
         
       },
@@ -95,10 +97,10 @@ export default StyleSheet.create({
         alignSelf: 'center',
       },
       pigGroupItem: {
-        backgroundColor: '#FAF7F0',
+        backgroundColor: '#F5F5F5',
         borderColor: '#566F48',
         borderRadius: 13,
-        borderWidth: 3,
+        borderWidth: 4,
         padding: 15,
         // margin: 8,
         width: '45%',
@@ -160,7 +162,7 @@ export default StyleSheet.create({
         flexDirection: 'column',
       },
       modalContent: {
-        backgroundColor: '#FAF7F0',
+        backgroundColor: '#F5F5F5',
         // backgroundColor: '#869f77',
         padding: 16,
         // borderRadius: 8,

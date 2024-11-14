@@ -46,7 +46,8 @@ export default function AddPigInfoScreen({ route }) {
   const [loading, setLoading] = useState(true);
   const [motherName, setMotherName] = useState("");
   const [selectedPiglets, setSelectedPiglets] = useState([]); // Add this line to your state initialization
-
+  
+  
   const handleOpenDatePicker = () => {
     setOpenDatePicker(true);
   };
@@ -352,7 +353,7 @@ const updateMotherRecordsInAllFarmBranches = async (db, userId, pigId, newPigNam
           setSelectedPig(item);
           setDetailModalVisible(true);
         }}>
-          <Image source={viewIcon} style={styles.icon} />
+          <Image source={viewIcon} style={styles.iview} />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => {
           setPigName(item.pigName);
@@ -364,10 +365,10 @@ const updateMotherRecordsInAllFarmBranches = async (db, userId, pigId, newPigNam
           setIsEditing(true);
           setModalVisible(true);
         }}>
-          <Image source={editIcon} style={styles.icon} />
+          <Image source={editIcon} style={styles.iedit} />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleDeletePig(item.id)}>
-          <Image source={deleteIcon} style={styles.icon} />
+          <Image source={deleteIcon} style={styles.idelete} />
         </TouchableOpacity>
       </View>
     </View>
@@ -375,8 +376,10 @@ const updateMotherRecordsInAllFarmBranches = async (db, userId, pigId, newPigNam
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Pig Information</Text>
-      <Text style={styles.groupName}>Current Pig Group: {pigGroupName}</Text>
+      <View style={styles.mainheader}>
+        <Text style={styles.title}>Pig Information</Text>
+        <Text style={styles.groupName}>Current Pig Group: {pigGroupName}</Text>
+      </View>
       <View style={styles.searchContainer}>
       <Button
           title="Add Pig"
@@ -386,7 +389,8 @@ const updateMotherRecordsInAllFarmBranches = async (db, userId, pigId, newPigNam
             setModalVisible(true);
           }}
           style={styles.addButton}
-          color="#4CAF50"
+          color="#566F48"
+          
         />
         <TextInput
           style={styles.searchInput}
@@ -407,18 +411,26 @@ const updateMotherRecordsInAllFarmBranches = async (db, userId, pigId, newPigNam
       <Modal
         visible={modalVisible}
         transparent={true}
-        animationType="slide"
+        // animationType="slide"
+        animationIn="fadeIn" // Fades in the modal
+        animationOut="fadeOut" // Fades out the modal
+        animationInTiming={500} // Duration of fadeIn (in milliseconds)
+        animationOutTiming={800} // Duration of fadeOut (in milliseconds)
+        backdropOpacity={1} // Background opacity when the modal is visible
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalContainer}>
+          <Text style={styles.modalTitle}>{isEditing ? 'Edit Pig' : 'Add Pig'}</Text>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{isEditing ? 'Edit Pig' : 'Add Pig'}</Text>
+            <Text style={styles.titlename}>Pig Name</Text>
             <TextInput
               style={styles.input}
               placeholder="Pig Name"
               value={pigName}
               onChangeText={setPigName}
             />
+            
+            <Text style={styles.titlename}>Tag Number</Text>
             <TextInput
               style={styles.input}
               placeholder="Tag Number"
@@ -449,6 +461,7 @@ const updateMotherRecordsInAllFarmBranches = async (db, userId, pigId, newPigNam
               <Picker.Item label="Male" value="male" />
               <Picker.Item label="Female" value="female" />
             </Picker>
+            <Text style={styles.titlename}>Race</Text>
             <TextInput
               style={styles.input}
               placeholder="Race"
@@ -456,56 +469,54 @@ const updateMotherRecordsInAllFarmBranches = async (db, userId, pigId, newPigNam
               onChangeText={setRace}
             />
 
+          {isEditing && (
+            <View style={styles.switchContainer}>
+              <Text>Is the pig deceased?</Text>
+              <Switch
+                value={isDeceased}
+                onValueChange={setIsDeceased}
+              />
+            </View>
+          )}
 
 
 
-{isEditing && (
-  <View style={styles.switchContainer}>
-    <Text>Is the pig deceased?</Text>
-    <Switch
-      value={isDeceased}
-      onValueChange={setIsDeceased}
-    />
-  </View>
-)}
-
-
-
-{/* Show cause of death and date of death only if editing and the pig is deceased */}
-{isEditing && isDeceased && (
-  <>
-    <TextInput
-      style={styles.input}
-      placeholder="Cause of Death"
-      value={causeOfDeath}
-      onChangeText={setCauseOfDeath}
-    />
-    <TouchableOpacity onPress={handleOpenDeathDatePicker}>
-      <Text>Select Date of Death</Text>
-    </TouchableOpacity>
-    <DateTimePickerModal
-      isVisible={openDeathDatePicker}
-      mode="date"
-      date={dateOfDeath}
-      onConfirm={(date) => {
-        setDateOfDeath(date);
-        setOpenDeathDatePicker(false);
-      }}
-      onCancel={() => setOpenDeathDatePicker(false)}
-    />
-  </>
-)}
-
-            <Button
-              title={isEditing ? 'Update Pig' : 'Add Pig'}
-              onPress={isEditing ? handleEditPig : handleAddPig}
-              color="#4CAF50"
-            />
-            <Button
-              title="Cancel"
-              onPress={() => setModalVisible(false)}
-              color="#f44336"
-            />
+          {/* Show cause of death and date of death only if editing and the pig is deceased */}
+          {isEditing && isDeceased && (
+            <>
+              <TextInput
+                style={styles.input}
+                placeholder="Cause of Death"
+                value={causeOfDeath}
+                onChangeText={setCauseOfDeath}
+              />
+              <TouchableOpacity onPress={handleOpenDeathDatePicker}>
+                <Text>Select Date of Death</Text>
+              </TouchableOpacity>
+              <DateTimePickerModal
+                isVisible={openDeathDatePicker}
+                mode="date"
+                date={dateOfDeath}
+                onConfirm={(date) => {
+                  setDateOfDeath(date);
+                  setOpenDeathDatePicker(false);
+                }}
+                onCancel={() => setOpenDeathDatePicker(false)}
+              />
+            </>
+          )}
+            <View style={styles.modalsavecancel}>
+              <Button
+                title={isEditing ? 'Update Pig' : 'Add Pig'}
+                onPress={isEditing ? handleEditPig : handleAddPig}
+                color="#4CAF50"
+              />
+              <Button
+                title="Cancel"
+                onPress={() => setModalVisible(false)}
+                color="#f44336"
+              />
+            </View>
           </View>
         </View>
       </Modal>
@@ -518,10 +529,10 @@ const updateMotherRecordsInAllFarmBranches = async (db, userId, pigId, newPigNam
         onRequestClose={() => setDetailModalVisible(false)}
       >
         <View style={styles.modalContainer}>
+        <Text style={styles.modalTitle}>Pig Details</Text>
           <View style={styles.modalContent}>
             {selectedPig && (
               <>
-                <Text style={styles.modalTitle}>Pig Details</Text>
                 <Text style={styles.detailText}>Name: {selectedPig.pigName}</Text>
                 <Text style={styles.detailText}>Tag Number: {selectedPig.tagNumber}</Text>
                 <Text style={styles.detailText}>Gender: {selectedPig.gender}</Text>
@@ -529,35 +540,31 @@ const updateMotherRecordsInAllFarmBranches = async (db, userId, pigId, newPigNam
                 <Text style={styles.detailText}>Date of Birth: {selectedPig.dateOfBirth.toDate().toDateString()}</Text>
                 <Text style={styles.detailText}>Vitality: {selectedPig.vitality}</Text>
                 <Text style={styles.detailText}>
-  Mother Name: {
-    selectedFemalePigId
-      ? femalePigs.find(pig => pig.id === selectedFemalePigId)?.pigName || 'N/A'
-      : 'N/A'
-  }
-</Text>
+                  Mother Name: {
+                    selectedFemalePigId
+                      ? femalePigs.find(pig => pig.id === selectedFemalePigId)?.pigName || 'N/A'
+                      : 'N/A'
+                  }
+                </Text>
 
-          {/* View Medical Records Button */}
-          <Button
-  title="View Medical Records"
-  onPress={() => {
-    if (selectedPig) {
-      navigation.navigate('MedicalRecordScreen', {
-        userId: user.uid,
-        selectedBranch: selectedBranch, // Pass the selected branch
-        pigGroupId: pigGroupId,         // Pass the pig group ID
-        pigName: selectedPig.pigName,   // Pass the pig name
-        selectedPigId: selectedPig.id,   // Pass the selected pig ID
-      });
-    } else {
-      Alert.alert('Error', 'Please select a pig before viewing medical records.');
-    }
-  }}
-  color="#000000FF"
-/>
- 
-
-
-
+                  {/* View Medical Records Button */}
+                  <Button
+                    title="View Medical Records"
+                    onPress={() => {
+                      if (selectedPig) {
+                        navigation.navigate('MedicalRecordScreen', {
+                          userId: user.uid,
+                          selectedBranch: selectedBranch, // Pass the selected branch
+                          pigGroupId: pigGroupId,         // Pass the pig group ID
+                          pigName: selectedPig.pigName,   // Pass the pig name
+                          selectedPigId: selectedPig.id,   // Pass the selected pig ID
+                        });
+                      } else {
+                        Alert.alert('Error', 'Please select a pig before viewing medical records.');
+                      }
+                    }}
+                    color="#000000FF"
+                  />
               </>
             )}
             <Button
