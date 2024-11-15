@@ -114,25 +114,25 @@ const MoneyInScreen = ({ route }) => {
       Alert.alert('Error', 'Please enter an amount.');
       return;
     }
-
+  
     const selectedCategory = category === 'other' ? otherCategory : category;
-
-    try {handle
+  
+    try {
       const moneyRecord = {
         amount: parseFloat(amount),
         remarks,
-        date: date.toISOString().split('T')[0], // Store date
+        date: date.toISOString().split('T')[0], // Store date in YYYY-MM-DD format
         time: time.toISOString().split('T')[1].substring(0, 5), // Store time in HH:MM format
         category: selectedCategory,
       };
-
+  
       const path = selectedBranch === 'Main Farm'
         ? `users/${userId}/farmBranches/Main Farm/moneyInRecords`
         : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyInRecords`;
-
+  
       const moneyInRecordsRef = collection(firestore, path);
       await addDoc(moneyInRecordsRef, moneyRecord);
-
+  
       Alert.alert('Success', 'Money added successfully!');
       fetchTotalBalance();
       fetchMoneyRecords();
@@ -146,6 +146,7 @@ const MoneyInScreen = ({ route }) => {
       Alert.alert('Error', 'Failed to add money. Please try again.');
     }
   };
+  
   
 
   const handleEditMoney = async () => {
