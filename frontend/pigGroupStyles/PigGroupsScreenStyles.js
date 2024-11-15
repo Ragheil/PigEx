@@ -17,9 +17,9 @@ export default StyleSheet.create({
       mainheader: {
         flexDirection: 'column',
         backgroundColor: '#869f77',
-        paddingTop: 40,
+        paddingTop: 30,
         paddingBottom: 10,
-        paddingHorizontal: 16,
+        paddingHorizontal: 20,
         alignItems: 'center',
       },
       subheader: {
@@ -72,8 +72,20 @@ export default StyleSheet.create({
       grid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
+<<<<<<< HEAD
         justifyContent: 'flex-start',
         alignItems: 'center',
+=======
+        // justifyContent: 'space-evenly',
+        // justifyContent: 'flex-start',
+        // justifyContent: 'space-around',
+        // justifyContent: 'center',
+        justifyContent: 'space-between',
+        // gap: 10,
+        rowGap: 25,
+        paddingHorizontal: 20,
+        // backgroundColor: 'lightblue',
+>>>>>>> 0a23459bc0a98e9d3df96c7f1de9796f6b6a3291
         
       },
       pigIcon: {
@@ -84,12 +96,21 @@ export default StyleSheet.create({
         alignSelf: 'center',
       },
       pigGroupItem: {
+<<<<<<< HEAD
         backgroundColor: '#fff',
         borderColor: '#566F48',
         borderRadius: 8,
         borderWidth: 3,
         padding: 16,
         margin: 8,
+=======
+        backgroundColor: '#F5F5F5',
+        borderColor: '#566F48',
+        borderRadius: 13,
+        borderWidth: 4,
+        padding: 15,
+        // margin: 8,
+>>>>>>> 0a23459bc0a98e9d3df96c7f1de9796f6b6a3291
         width: '45%',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -161,5 +182,49 @@ export default StyleSheet.create({
         fontWeight: 'bold'
       },
 
+<<<<<<< HEAD
 
 });
+=======
+      //modal add pig group
+      modalbox: {
+        // backgroundColor: 'lightblue',
+        flexDirection: 'column',
+      },
+      modalContent: {
+        backgroundColor: '#F5F5F5',
+        // backgroundColor: '#869f77',
+        padding: 16,
+        // borderRadius: 8,
+        borderBottomRightRadius: 10,
+        borderBottomLeftRadius: 10,
+        
+      },
+      modalTitle: {
+        backgroundColor: '#869f77',
+        fontSize: 18,
+        fontWeight: 'bold',
+        paddingVertical: 7,
+        padding: 10,
+        borderTopRightRadius: 10,
+        borderTopLeftRadius: 10,
+      },
+      input: {
+        backgroundColor: '#fff',
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 4,
+        paddingLeft: 10,
+        width: '100%',
+        marginBottom: 15,
+      },
+      modalsavecancel: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        gap: 10,
+        width: '100%',
+        // backgroundColor: 'lightblue',
+      },
+      
+});
+>>>>>>> 0a23459bc0a98e9d3df96c7f1de9796f6b6a3291

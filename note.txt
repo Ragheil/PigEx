@@ -1,0 +1,22 @@
+/*color: hex type*/
+#000
+ - text
+
+#F5F5F5
+ - root
+ - search
+
+#869f77
+ - mainheader
+
+#566F48
+ - border
+ - add button
+    
+#DF2E38/#F28585
+ - delete
+ - cancel
+
+#399918/#DCFFB7
+ - save
+ - okay
