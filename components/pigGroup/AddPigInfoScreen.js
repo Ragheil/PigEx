@@ -539,6 +539,7 @@ const updateMotherRecordsInAllFarmBranches = async (db, userId, pigId, newPigNam
                 <Text style={styles.detailText}>Race: {selectedPig.race}</Text>
                 <Text style={styles.detailText}>Date of Birth: {selectedPig.dateOfBirth.toDate().toDateString()}</Text>
                 <Text style={styles.detailText}>Vitality: {selectedPig.vitality}</Text>
+                 {/* View Medical Records Button 
                 <Text style={styles.detailText}>
                   Mother Name: {
                     selectedFemalePigId
@@ -546,7 +547,9 @@ const updateMotherRecordsInAllFarmBranches = async (db, userId, pigId, newPigNam
                       : 'N/A'
                   }
                 </Text>
+                            */}
 
+                            
                   {/* View Medical Records Button */}
                   <Button
                     title="View Medical Records"
