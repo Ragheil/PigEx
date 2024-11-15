@@ -39,11 +39,18 @@ export default StyleSheet.create({
         zIndex: 1,
       },
       appname: {
+        // fontFamily: 'BakbakOne-Regular',
         fontSize: 45,
         fontWeight: 'bold',
         textAlign: 'center',
-        marginBottom: 15,
+        marginBottom: 5,
         // fontFamily:
+        textTransform: 'uppercase',
+      },
+      farmname: {
+        fontWeight:'900', 
+        textTransform: 'uppercase',
+        fontSize: 16,
       },
       title: {
         fontSize: 24,
@@ -62,7 +69,7 @@ export default StyleSheet.create({
       searchInput: {
         flex: 1,
         borderColor: '#ccc',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#fff',
         borderWidth: 1,
         borderRadius: 4,
         // padding: 8,
@@ -72,10 +79,6 @@ export default StyleSheet.create({
       grid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-<<<<<<< HEAD
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-=======
         // justifyContent: 'space-evenly',
         // justifyContent: 'flex-start',
         // justifyContent: 'space-around',
@@ -85,32 +88,21 @@ export default StyleSheet.create({
         rowGap: 25,
         paddingHorizontal: 20,
         // backgroundColor: 'lightblue',
->>>>>>> 0a23459bc0a98e9d3df96c7f1de9796f6b6a3291
         
       },
       pigIcon: {
         width: 100,     // Set the width as needed
         height: 100,    // Set the height as needed
-        marginBottom: 5,
         // backgroundColor: 'lightblue',
         alignSelf: 'center',
       },
       pigGroupItem: {
-<<<<<<< HEAD
-        backgroundColor: '#fff',
-        borderColor: '#566F48',
-        borderRadius: 8,
-        borderWidth: 3,
-        padding: 16,
-        margin: 8,
-=======
         backgroundColor: '#F5F5F5',
         borderColor: '#566F48',
         borderRadius: 13,
         borderWidth: 4,
         padding: 15,
         // margin: 8,
->>>>>>> 0a23459bc0a98e9d3df96c7f1de9796f6b6a3291
         width: '45%',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -143,25 +135,7 @@ export default StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 8,
       },
-      modalContent: {
-        backgroundColor: '#fff',
-        padding: 16,
-        borderRadius: 8,
-        alignItems: 'center',
-      },
-      modalTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 16,
-      },
-      input: {
-        borderColor: '#ccc',
-        borderWidth: 1,
-        borderRadius: 4,
-        // padding: 8,
-        width: '100%',
-        // marginBottom: 16,
-      },
+      
       addButton: {
         width: '100%',
         marginBottom: 8,
@@ -182,10 +156,6 @@ export default StyleSheet.create({
         fontWeight: 'bold'
       },
 
-<<<<<<< HEAD
-
-});
-=======
       //modal add pig group
       modalbox: {
         // backgroundColor: 'lightblue',
@@ -227,4 +197,3 @@ export default StyleSheet.create({
       },
       
 });
->>>>>>> 0a23459bc0a98e9d3df96c7f1de9796f6b6a3291
