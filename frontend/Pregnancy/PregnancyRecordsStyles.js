@@ -45,7 +45,7 @@ const PregnancyRecordsStyles = StyleSheet.create({
     flex: 1, 
     justifyContent: 'center', 
     alignItems: 'center', 
-    backgroundColor: 'rgba(0, 0, 0, 0.5)' 
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
   },
   modalContainer: { 
     width: '80%',  // Adjust width to make modal more responsive
@@ -151,17 +151,21 @@ const PregnancyRecordsStyles = StyleSheet.create({
     color: '#555',
   },
   breedingHistoryModalContainer: {
-    width: '90%', // Increase modal width to make it larger
-    height: '70%', // Adjust the height to make it larger
-    backgroundColor: '#fff',
+    width: '90%', // Make the modal wider
+    backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
+    elevation: 5,
   },
   modalHeader: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 15,
+    marginBottom: 10,
     textAlign: 'center',
+  },
+  noBreedingHistoryText: {
+    textAlign: 'center',
+    marginVertical: 20,
   },
   closeButton: {
     marginTop: 15,
@@ -170,23 +174,42 @@ const PregnancyRecordsStyles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 5,
   },
-  closeButtonText: {
-    color: '#fff',
-    fontSize: 16,
-  },
   breedingHistoryItem: {
-    marginBottom: 15, // Space between each history entry
-  },
-  // Container to place Breeding Date and Remarks side by side
-  breedingHistoryTextContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 5, // Space between each entry
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    },
+  // Container to place Breeding Date and Remarks side by side
+  breedingHistoryTextContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   breedingHistoryLabel: {
     fontWeight: 'bold',
     width: '45%', // Adjust width to make them fit on the same line
     marginRight: 10, // Space between the two labels
+    flex: 1,
+    fontSize: 16,
+  },
+  editButtonText: {
+    color: 'blue',
+    fontWeight: 'bold',
+    marginLeft: 10,
+  },
+  closeButton: {
+    backgroundColor: '#f44336',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 
 });
