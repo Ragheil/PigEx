@@ -25,7 +25,6 @@ const MedicalRecordScreen = ({ route, navigation }) => {
   const { userId, selectedBranch, pigGroupId, pigName, selectedPigId } = route.params;
   const [records, setRecords] = useState([]);
   const [filteredRecords, setFilteredRecords] = useState([]);
-  const [medicalId, setMedicalId] = useState('');
   const [name, setName] = useState('');
   const [date, setDate] = useState(new Date());
   const [remarks, setRemarks] = useState('');
@@ -58,7 +57,6 @@ const MedicalRecordScreen = ({ route, navigation }) => {
   // Filter records based on search query
   useEffect(() => {
     const filtered = records.filter(record =>
-      record.medicalId.toLowerCase().includes(searchQuery.toLowerCase()) ||
       record.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredRecords(filtered);
@@ -66,7 +64,7 @@ const MedicalRecordScreen = ({ route, navigation }) => {
 
   // Function to add new medical record
   const handleAddRecord = async () => {
-    if (!medicalId.trim() || !name.trim() || !remarks.trim()) {
+    if (!name.trim() || !remarks.trim()) {
       Alert.alert('Validation Error', 'All fields must be filled.');
       return;
     }
@@ -77,7 +75,6 @@ const MedicalRecordScreen = ({ route, navigation }) => {
 
     try {
       await addDoc(collection(firestore, recordsPath), {
-        medicalId,
         name,
         date,
         remarks,
@@ -94,7 +91,7 @@ const MedicalRecordScreen = ({ route, navigation }) => {
 
   // Function to edit an existing medical record
   const handleEditRecord = async (recordId) => {
-    if (!medicalId.trim() || !name.trim() || !remarks.trim()) {
+    if (!name.trim() || !remarks.trim()) {
       Alert.alert('Validation Error', 'All fields must be filled.');
       return;
     }
@@ -105,7 +102,6 @@ const MedicalRecordScreen = ({ route, navigation }) => {
 
     try {
       await updateDoc(doc(firestore, recordsPath), {
-        medicalId,
         name,
         date,
         remarks,
@@ -116,7 +112,7 @@ const MedicalRecordScreen = ({ route, navigation }) => {
       Alert.alert('Success', 'Medical record updated successfully!');
     } catch (error) {
       console.error('Error updating record:', error);
-      Alert.alert('Error', 'There was a problem updating the record.');
+      Alert.alert(' Error', 'There was a problem updating the record.');
     }
   };
 
@@ -150,7 +146,6 @@ const MedicalRecordScreen = ({ route, navigation }) => {
   };
 
   const resetFields = () => {
-    setMedicalId('');
     setName('');
     setDate(new Date());
     setRemarks('');
@@ -168,7 +163,7 @@ const MedicalRecordScreen = ({ route, navigation }) => {
 
       {/* Search Bar */}
       <TextInput
-        placeholder="Search by Medical ID or Name"
+        placeholder="Search by Name"
         value={searchQuery}
         onChangeText={setSearchQuery}
         style={styles.input}
@@ -184,14 +179,12 @@ const MedicalRecordScreen = ({ route, navigation }) => {
         data={filteredRecords}
         renderItem={({ item }) => (
           <View style={styles.recordItem}>
-            <Text>Medical ID: {item.medicalId}</Text>
             <Text>Name: {item.name}</Text>
             <Text>Date: {item.date ? item.date.toDate().toLocaleDateString() : "Date not available"}</Text>
             <Text>Remarks: {item.remarks}</Text>
             <Button
               title="Edit"
               onPress={() => {
-                setMedicalId(item.medicalId);
                 setName(item.name);
                 setDate(item.date ? item.date.toDate() : new Date());
                 setRemarks(item.remarks);
@@ -212,12 +205,6 @@ const MedicalRecordScreen = ({ route, navigation }) => {
       <Modal visible={modalVisible} animationType="slide">
         <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>{editRecordId ? 'Edit Record' : 'Add Record'}</Text>
-          <TextInput
-            placeholder="Medical ID"
-            value={medicalId}
-            onChangeText={setMedicalId}
-            style={styles.input}
-          />
           <TextInput
             placeholder="Name"
             value={name}
