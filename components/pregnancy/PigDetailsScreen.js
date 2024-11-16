@@ -277,46 +277,47 @@ const PigDetailsScreen = ({ route }) => {
       </View>
 
       <FlatList
-      data={filteredPigs}
-      keyExtractor={item => item.id}
-      numColumns={2}
-      renderItem={({ item }) => {
-        const assignedMotherName = assignedPiglets[item.id] || null;
-        const isAssigned = assignedMotherName && assignedMotherName !== pigName;
-        const canDeselect = assignedMotherName === pigName;
+  data={filteredPigs}
+  keyExtractor={item => item.id}
+  numColumns={2}
+  renderItem={({ item }) => {
+    const assignedMotherName = assignedPiglets[item.id] || null;
+    const isAssignedToDifferentMother = assignedMotherName && assignedMotherName !== pigName;
 
-        return (
-          <View style={PigDetailsScreenStyles.pigContainer}>
-            <Text style={PigDetailsScreenStyles.detail}>Name: {item.pigName}</Text>
-            <Text style={PigDetailsScreenStyles.detail}>Group: {item.groupName}</Text>
-            <Text style={PigDetailsScreenStyles.detail}>Gender: {item.gender}</Text>
-            
-            {/* Only show assigned text if the piglet is selected */}
-            {selectedPiglets.includes(item.id) && assignedMotherName && (
-              <Text style={PigDetailsScreenStyles.assignedText}>
-                Assigned to mother: {assignedMotherName}
-              </Text>
-            )}
-            
-            <TouchableOpacity
-              style={[
-                PigDetailsScreenStyles.selectButton,
-                selectedPiglets.includes(item.id) && PigDetailsScreenStyles.selectedButton,
-                isAssigned && !canDeselect && PigDetailsScreenStyles.disabledButton,
-              ]}
-              onPress={() => togglePigletSelection(item.id)}
-              disabled={isAssigned && !canDeselect}
-            >
-              <Text style={PigDetailsScreenStyles.buttonText}>
-                {selectedPiglets.includes(item.id)
-                  ? "Deselect Piglet"
-                  : "Select as Piglet"}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        );
-      }}
-    />
+    return (
+      <View style={PigDetailsScreenStyles.pigContainer}>
+        <Text style={PigDetailsScreenStyles.detail}>Name: {item.pigName}</Text>
+        <Text style={PigDetailsScreenStyles.detail}>Group: {item.groupName}</Text>
+        <Text style={PigDetailsScreenStyles.detail}>Gender: {item.gender}</Text>
+        
+        {/* Show assigned text for all piglets regardless of selection */}
+        {assignedMotherName && (
+          <Text style={PigDetailsScreenStyles.assignedText}>
+            Assigned to mother: {assignedMotherName}
+          </Text>
+        )}
+        
+        <TouchableOpacity
+          style={[
+            PigDetailsScreenStyles.selectButton,
+            isAssignedToDifferentMother ? PigDetailsScreenStyles.disabledButton : null,
+            selectedPiglets.includes(item.id) && PigDetailsScreenStyles.selectedButton,
+          ]}
+          onPress={() => togglePigletSelection(item.id)}
+          disabled={isAssignedToDifferentMother} // Disable button if assigned to a different mother
+        >
+          <Text style={PigDetailsScreenStyles.buttonText}>
+          {isAssignedToDifferentMother
+            ? `Already assigned to another mother: ${assignedMotherName}` // Using template literals
+            : selectedPiglets.includes(item.id)
+            ? "Deselect Piglet"
+            : "Select as Piglet"}
+        </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }}
+/>
 
       <Button
         title="Save Selected Pigs"

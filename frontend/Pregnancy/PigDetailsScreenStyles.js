@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-const PigDetailsScreenStyles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 8 },
   pigInfo: { fontSize: 18, marginBottom: 8 },
