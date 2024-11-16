@@ -170,17 +170,44 @@ const onRefresh = () => {
       Alert.alert('Validation Error', 'Pig group name does not match.');
       return;
     }
-
+  
     try {
       if (!user) return;
-
-      await deleteDoc(doc(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups`, editPigGroupId));
+  
+      // Determine the correct collection path based on the selected branch
+      const pigGroupsCollectionPath = selectedBranch === 'Main Farm'
+        ? `users/${user.uid}/farmBranches/Main Farm/pigGroups`
+        : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups`;
+  
+      // Create a reference to the document to delete
+      const docRef = doc(firestore, pigGroupsCollectionPath, editPigGroupId);
+      console.log('Deleting document at:', docRef.path); // Log the document path
+  
+      // Delete all subcollections
+      await deleteSubcollections(docRef);
+  
+      // Now delete the main document
+      await deleteDoc(docRef);
       console.log('Pig group deleted:', currentPigGroupName);
+      
+      // Close the modal and reset confirmation
       setIsDeleteModalVisible(false);
       setDeleteConfirmation('');
+      
+      // Refresh the list of pig groups
+      fetchPigGroups(); // Refresh the list after deletion
     } catch (error) {
       console.error('Error deleting pig group:', error);
+      Alert.alert('Error', 'Failed to delete pig group. Please try again.');
     }
+  };
+  
+  // Function to delete all subcollections of a document
+  const deleteSubcollections = async (docRef) => {
+    const subcollections = await getDocs(collection(docRef, 'pigs')); // Adjust the subcollection name as needed
+    const deletePromises = subcollections.docs.map(subDoc => deleteDoc(subDoc.ref));
+    await Promise.all(deletePromises);
+    console.log('All subcollections deleted for:', docRef.path);
   };
 
   const startEditPigGroup = (pigGroup) => {
