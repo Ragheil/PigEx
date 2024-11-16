@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, Modal, Image,TextInput } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, Modal, Image,TextInput, ScrollView } from 'react-native';
 import { firestore } from '../../firebase/config2';
 import { collection, getDocs, doc, getDoc,updateDoc,setDoc,addDoc } from 'firebase/firestore';
 import viewIcon from '../../assets/images/buttons/viewIcon.png';
@@ -169,6 +169,7 @@ const PregnancyRecords = ({ route, navigation }) => {
   return (
     <View style={PregnancyRecordsStyles.container}>
       <Text style={PregnancyRecordsStyles.header}>List of all Female Pigs</Text>
+      <ScrollView style={PregnancyRecordsStyles.container}>
       {femalePigs.sortedGroups.length === 0 ? (
         <Text>No female pigs found.</Text>
       ) : (
@@ -325,6 +326,7 @@ const PregnancyRecords = ({ route, navigation }) => {
     </View>
   </View>
 </Modal>
+</ScrollView>
 
 
 
