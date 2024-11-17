@@ -18,6 +18,7 @@ import {
   query,
   onSnapshot,
   deleteDoc,
+  Timestamp
 } from 'firebase/firestore';
 import styles from '../../frontend/medicalStyles/MedicalRecordScreenStyles';
 
@@ -34,26 +35,34 @@ const MedicalRecordScreen = ({ route, navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch Medical Records
-  useEffect(() => {
-    const fetchRecords = async () => {
-      const recordsPath = selectedBranch === 'Main Farm'
-        ? `users/${userId}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${selectedPigId}/medicalRecords`
-        : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${selectedPigId}/medicalRecords`;
-        
-      const q = query(collection(firestore, recordsPath));
 
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const recordsList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setRecords(recordsList);
-        setFilteredRecords(recordsList); // Initialize filtered records
+useEffect(() => {
+  const fetchRecords = async () => {
+    const recordsPath = selectedBranch === 'Main Farm'
+      ? `users/${userId}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${selectedPigId}/medicalRecords`
+      : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${selectedPigId}/medicalRecords`;
+      
+    const q = query(collection(firestore, recordsPath));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const recordsList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      // Sort records by date in descending order
+      recordsList.sort((a, b) => {
+        const dateA = a.date ? a.date.toDate() : new Date(0); // Fallback to epoch if date is not available
+        const dateB = b.date ? b.date.toDate() : new Date(0); // Fallback to epoch if date is not available
+        return dateB - dateA; // Sort in descending order
       });
 
-      return () => unsubscribe();
-    };
+      setRecords(recordsList);
+      setFilteredRecords(recordsList); // Initialize filtered records
+    });
 
-    fetchRecords();
-  }, [userId, selectedBranch, pigGroupId, selectedPigId]);
+    return () => unsubscribe();
+  };
 
+  fetchRecords();
+}, [userId, selectedBranch, pigGroupId, selectedPigId]);
   // Filter records based on search query
   useEffect(() => {
     const filtered = records.filter(record =>
@@ -78,7 +87,7 @@ const MedicalRecordScreen = ({ route, navigation }) => {
         name,
         date,
         remarks,
-        createdAt: new Date(),
+        createdAt: new Date(), // This should be a Firestore Timestamp
       });
       resetFields();
       setModalVisible(false);
