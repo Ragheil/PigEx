@@ -119,25 +119,33 @@ export default function AddPigInfoScreen({ route }) {
 
 
   // Fetch Pigs from the selected branch
-  useEffect(() => {
-    const fetchPigs = async () => {
-      const pigsCollectionPath = selectedBranch === 'Main Farm'
-        ? `users/${user.uid}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs`
-        : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs`;
-      
-      const q = query(collection(firestore, pigsCollectionPath));
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const allPigs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setPigs(allPigs);
-        setFemalePigs(allPigs.filter(pig => pig.gender === 'female')); // Filter female pigs
+  // Fetch Pigs from the selected branch
+useEffect(() => {
+  const fetchPigs = async () => {
+    const pigsCollectionPath = selectedBranch === 'Main Farm'
+      ? `users/${user.uid}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs`
+      : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs`;
+    
+    const q = query(collection(firestore, pigsCollectionPath));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const allPigs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      // Sort pigs by tagNumber in ascending order
+      allPigs.sort((a, b) => {
+        const tagNumberA = parseInt(a.tagNumber, 10); // Convert to number
+        const tagNumberB = parseInt(b.tagNumber, 10); // Convert to number
+        return tagNumberA - tagNumberB; // Sort in ascending order
       });
 
-      return () => unsubscribe();
-    };
+      setPigs(allPigs);
+      setFemalePigs(allPigs.filter(pig => pig.gender === 'female')); // Filter female pigs
+    });
 
-    fetchPigs();
-  }, [pigGroupId, user.uid, selectedBranch]);
+    return () => unsubscribe();
+  };
 
+  fetchPigs();
+}, [pigGroupId, user.uid, selectedBranch]);
   // Check for duplicates
   const checkForDuplicates = async () => {
     const pigCollectionPath = `users/${user.uid}/farmBranches/${selectedBranch}/pigGroups/${pigGroupId}/pigs`;
@@ -187,12 +195,11 @@ export default function AddPigInfoScreen({ route }) {
   
 
   // Edit Pig
- // Edit Pig
- const handleEditPig = async () => {
-  if (!pigName.trim() || !tagNumber.trim() || !gender || !race.trim()) {
-    Alert.alert('Validation Error', 'All fields are required.');
-    return;
-  }
+  const handleEditPig = async () => {
+    if (!pigName.trim() || !tagNumber.trim() || !gender || !race.trim()) {
+      Alert.alert('Validation Error', 'All fields are required.');
+      return;
+    }
 
   const pigCollectionPath = selectedBranch === 'Main Farm'
     ? `users/${user.uid}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${currentPigId}`
@@ -436,6 +443,7 @@ const updateMotherRecordsInAllFarmBranches = async (db, userId, pigId, newPigNam
               placeholder="Tag Number"
               value={tagNumber}
               onChangeText={setTagNumber}
+              keyboardType="phone-pad"
             />
                        {/* Date of Birth Picker */}
             <TouchableOpacity onPress={handleOpenDatePicker}>
