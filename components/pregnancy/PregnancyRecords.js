@@ -232,7 +232,9 @@ const PregnancyRecords = ({ route, navigation }) => {
             <Text>No piglets found for this pig.</Text>
           ) : (
             selectedPiglets.map(piglet => (
-              <Text key={piglet.id}>{piglet.pigName} ({piglet.groupName})</Text>
+              // <Text key={piglet.id}>Pig Name: {piglet.pigName} - Group Name: {piglet.group}</Text> group name temporaty removed
+              <Text key={piglet.id}>Pig Name: {piglet.pigName}</Text>
+              
             ))
           )}
           <TouchableOpacity
