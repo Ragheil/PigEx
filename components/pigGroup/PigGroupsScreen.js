@@ -61,42 +61,38 @@ const onRefresh = () => {
   fetchPigGroups();
 };
 
-  
-  const fetchPigGroups = () => {
-    if (!user || !farmName) return () => {}; 
-  
-    const pigGroupsCollectionPath = selectedBranch === 'Main Farm'
-      ? `users/${user.uid}/farmBranches/Main Farm/pigGroups`
-      : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups`;
-  
-    const pigGroupsCollection = collection(firestore, pigGroupsCollectionPath);
-    const q = query(pigGroupsCollection, orderBy('name'));
-  
-    return onSnapshot(q, (snapshot) => {
-      const pigGroupPromises = snapshot.docs.map(async (doc) => {
-        const pigGroupId = doc.id;
-  
-        const pigsCollectionPath = `${pigGroupsCollectionPath}/${pigGroupId}/pigs`;
-        const pigsCollection = collection(firestore, pigsCollectionPath);
-  
-        return new Promise((resolve) => {
-          onSnapshot(pigsCollection, (pigsSnapshot) => {
-            resolve({
-              id: pigGroupId,
-              ...doc.data(),
-              pigCount: pigsSnapshot.size,
-            });
-          });
-        });
-      });
-  
-      Promise.all(pigGroupPromises).then((pigGroupsList) => {
-        setPigGroups(pigGroupsList);
-        setRefreshing(false); // Stop refreshing after fetching data
-      });
+
+const fetchPigGroups = () => {
+  if (!user || !farmName) return () => {}; 
+
+  const pigGroupsCollectionPath = selectedBranch === 'Main Farm'
+    ? `users/${user.uid}/farmBranches/Main Farm/pigGroups`
+    : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups`;
+
+  const pigGroupsCollection = collection(firestore, pigGroupsCollectionPath);
+  const q = query(pigGroupsCollection, orderBy('name'));
+
+  return onSnapshot(q, (snapshot) => {
+    const pigGroupPromises = snapshot.docs.map(async (doc) => {
+      const pigGroupId = doc.id;
+
+      const pigsCollectionPath = `${pigGroupsCollectionPath}/${pigGroupId}/pigs`;
+      const pigsCollection = collection(firestore, pigsCollectionPath);
+      const pigsSnapshot = await getDocs(pigsCollection); // Get pigs snapshot directly
+
+      return {
+        id: pigGroupId,
+        ...doc.data(),
+        pigCount: pigsSnapshot.size, // Use pigsSnapshot size for pig count
+      };
     });
-  };
-  
+
+    Promise.all(pigGroupPromises).then((pigGroupsList) => {
+      setPigGroups(pigGroupsList);
+      setRefreshing(false); // Stop refreshing after fetching data
+    });
+  });
+};
   
 
 
