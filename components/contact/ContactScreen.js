@@ -40,6 +40,8 @@ const ContactScreen = ({ navigation }) => {
   
     return () => unsubscribe();
   }, []);
+
+  
   useEffect(() => {
     const results = contacts.filter(contact =>
       contact.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
