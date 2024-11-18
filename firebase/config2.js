@@ -1,9 +1,13 @@
 import { initializeApp } from 'firebase/app';
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore'; // Import Firestore
+import { 
+  getFirestore, 
+  persistentLocalCache, 
+  persistentMultipleTabManager 
+} from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-//back to old api version
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDK_2Wwa4m2n69P63K6HFRlKni4J7jOnrk",
   authDomain: "baboy-b3f36.firebaseapp.com",
@@ -12,15 +16,23 @@ const firebaseConfig = {
   messagingSenderId: "752217071135",
   appId: "1:752217071135:web:846395362ecc7f0f793f2a"
 };
+
+// Initialize Firebase app
 const app = initializeApp(firebaseConfig);
 
+// Initialize Authentication with React Native persistence
 const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(AsyncStorage),
 });
 
-const firestore = getFirestore(app); // Initialize Firestore
+// Initialize Firestore with multi-tab persistence
+const firestore = getFirestore(app, {
+  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+});
 
 export { auth, firestore };
+
+
 
 
 {/*

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, FlatList, TouchableOpacity, Alert, Linking, Modal, Image } from 'react-native';
-import { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc, onSnapshot  } from 'firebase/firestore';
 import { auth, firestore } from '../../firebase/config2'; // Adjust the path as needed
 import { Swipeable } from 'react-native-gesture-handler';
 import styles from '../../frontend/contactStyle/ContactScreenStyles'; // Importing the separated styles
+import NetInfo from "@react-native-community/netinfo";
+import { getFirestore, enablePersistence } from "firebase/firestore";
 
 
 const ContactScreen = ({ navigation }) => {
@@ -24,7 +26,20 @@ const ContactScreen = ({ navigation }) => {
       fetchContacts();
     }
   }, [user]);
-
+  
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      if (state.isConnected) {
+        console.log("You are online");
+        fetchContacts(); // Fetch contacts when online
+      } else {
+        console.log("You are offline");
+        // Handle offline state, e.g., show a message to the user
+      }
+    });
+  
+    return () => unsubscribe();
+  }, []);
   useEffect(() => {
     const results = contacts.filter(contact =>
       contact.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -38,12 +53,18 @@ const ContactScreen = ({ navigation }) => {
       if (!user) return;
       const userContactsCollection = collection(firestore, `users/${user.uid}/contacts`);
       const q = query(userContactsCollection, orderBy('name'));
-      const querySnapshot = await getDocs(q);
-      const contactsList = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setContacts(contactsList);
+  
+      // Listen for real-time updates
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const contactsList = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setContacts(contactsList);
+      });
+  
+      // Cleanup function to unsubscribe from the listener
+      return () => unsubscribe();
     } catch (error) {
       console.error('Error fetching contacts:', error);
     }
@@ -51,42 +72,49 @@ const ContactScreen = ({ navigation }) => {
 
   const addOrUpdateContact = async () => {
     if (!name || !address || !contactNumber) {
-      Alert.alert('Validation Error', 'All fields are required!');
-      return;
+        Alert.alert('Validation Error', 'All fields are required!');
+        return;
     }
 
     if (contactNumber.length !== 11) {
-      Alert.alert('Validation Error', 'Contact number must be 11 digits long.');
-      return;
+        Alert.alert('Validation Error', 'Contact number must be 11 digits long.');
+        return;
     }
 
     try {
-      if (!user) return;
+        if (!user) return;
 
-      if (editContactId) {
-        await updateDoc(doc(firestore, `users/${user.uid}/contacts`, editContactId), {
-          name,
-          address,
-          contactNumber,
-        });
-        setEditContactId(null);
-      } else {
-        await addDoc(collection(firestore, `users/${user.uid}/contacts`), {
-          name,
-          address,
-          contactNumber,
-        });
-      }
+        if (editContactId) {
+            // Update existing contact
+            await updateDoc(doc(firestore, `users/${user.uid}/contacts`, editContactId), {
+                name,
+                address,
+                contactNumber,
+            });
+            setEditContactId(null);
+        } else {
+            // Add new contact
+            await addDoc(collection(firestore, `users/${user.uid}/contacts`), {
+                name,
+                address,
+                contactNumber,
+            });
+        }
 
-      setName('');
-      setAddress('');
-      setContactNumber('');
-      setModalVisible(false);
-      fetchContacts();
+        // Clear the input fields
+        setName('');
+        setAddress('');
+        setContactNumber('');
+
+        // Close the modal immediately after the operation
+        setModalVisible(false);
+
+        // Fetch the updated contacts
+        fetchContacts();
     } catch (error) {
-      console.error('Error adding/updating contact:', error);
+        console.error('Error adding/updating contact:', error);
     }
-  };
+};
 
   const confirmDeleteContact = (contactId) => {
     Alert.alert(
