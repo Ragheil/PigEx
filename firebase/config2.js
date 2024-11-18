@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
-import { initializeFirestore, persistentLocalCache } from 'firebase/firestore';
+import { initializeFirestore, memoryLocalCache } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Firebase configuration
@@ -12,6 +12,8 @@ const firebaseConfig = {
   messagingSenderId: "752217071135",
   appId: "1:752217071135:web:846395362ecc7f0f793f2a"
 };
+
+// Initialize Firebase app
 const app = initializeApp(firebaseConfig);
 
 // Initialize Authentication with React Native persistence
@@ -19,13 +21,12 @@ const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(AsyncStorage),
 });
 
-// Initialize Firestore with persistent local cache
+// Initialize Firestore with memory cache (offline persistence disabled)
 const firestore = initializeFirestore(app, {
-  localCache: persistentLocalCache(),
+  localCache: memoryLocalCache(),
 });
 
 export { auth, firestore };
-
 
 
 
