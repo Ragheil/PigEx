@@ -10,7 +10,8 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { StyleSheet,Alert } from 'react-native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import NetInfo from '@react-native-community/netinfo';
 // Import screens
 import WelcomeScreen from './components/WelcomeScreen';
 import LoginScreen from './components/authentication/LoginScreen';
@@ -68,36 +69,91 @@ export default function App() {
 
   // Fetch user data from Firestore
   const fetchUserData = async (uid) => {
-    setLoading(true); // Start loading
-    
-    // Fetch the user's basic info (first name, last name) from the 'users' collection
-    const userDocRef = doc(firestore, 'users', uid);
-    const userDocSnap = await getDoc(userDocRef);
-
-    if (userDocSnap.exists()) {
-      const userData = userDocSnap.data();
-      setFirstName(userData.firstName || '');
-      setLastName(userData.lastName || '');
-      console.log('User basic data fetched from Firestore:', userData);
-
-      // Fetch the farm name from the 'farmBranches/Main Farm' sub-collection
-      const farmBranchDocRef = doc(firestore, 'users', uid, 'farmBranches', 'Main Farm');
-      const farmBranchDocSnap = await getDoc(farmBranchDocRef);
-
-      if (farmBranchDocSnap.exists()) {
-        const farmData = farmBranchDocSnap.data();
-        setFarmName(farmData.farmName || ''); // Set the farm name from 'Main Farm'
-        setIsFarmNameSet(!!farmData.farmName);
-        console.log('Farm data fetched from Firestore:', farmData);
-      } else {
-        console.log('No such farm branch document in Firestore!');
+    const netInfo = await NetInfo.fetch();
+    if (!netInfo.isConnected) {
+      console.log('No internet connection. Loading cached data.');
+      const cachedData = await AsyncStorage.getItem('userData');
+      if (cachedData) {
+        const { firstName, lastName, farmName } = JSON.parse(cachedData);
+        setFirstName(firstName || '');
+        setLastName(lastName || '');
+        setFarmName(farmName || '');
+        setIsFarmNameSet(!!farmName);
       }
-    } else {
-      console.log('No such user document in Firestore!');
+      return;
     }
-
-    setLoading(false); // End loading
+  
+    try {
+      const userDocRef = doc(firestore, 'users', uid);
+      const userDocSnap = await getDoc(userDocRef);
+  
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data();
+        setFirstName(userData.firstName || '');
+        setLastName(userData.lastName || '');
+        console.log('User basic data fetched from Firestore:', userData);
+  
+        const farmBranchDocRef = doc(firestore, 'users', uid, 'farmBranches', 'Main Farm');
+        const farmBranchDocSnap = await getDoc(farmBranchDocRef);
+  
+        if (farmBranchDocSnap.exists()) {
+          const farmData = farmBranchDocSnap.data();
+          setFarmName(farmData.farmName || '');
+          setIsFarmNameSet(!!farmData.farmName);
+          console.log('Farm data fetched from Firestore:', farmData);
+  
+          // Cache data locally
+          const cachedData = {
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            farmName: farmData.farmName,
+          };
+          await AsyncStorage.setItem('userData', JSON.stringify(cachedData));
+          console.log('User data cached for offline use.');
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
   };
+  
+
+
+  useEffect(() => {
+    const initializeApp = async () => {
+      const cachedData = await AsyncStorage.getItem('userData');
+      if (cachedData) {
+        const { firstName, lastName, farmName } = JSON.parse(cachedData);
+        setFirstName(firstName || '');
+        setLastName(lastName || '');
+        setFarmName(farmName || '');
+        setIsFarmNameSet(!!farmName);
+        console.log('App initialized with cached data:', cachedData);
+      }
+  
+      const unsubscribe = onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          setUser(user);
+          console.log(`User logged in: ${user.email}`);
+          if (!cachedData) {
+            // Fetch user data only if it's not cached
+            await fetchUserData(user.uid);
+          }
+        } else {
+          console.log('User logged out.');
+          setUser(null);
+          setIsFarmNameSet(false);
+          await AsyncStorage.removeItem('userData'); // Clear cached data on logout
+        }
+      });
+  
+      return () => unsubscribe();
+    };
+  
+    initializeApp();
+  }, []);
+  
+
 
   const handleAuthentication = async (firstName = '', lastName = '') => {
     try {
@@ -128,15 +184,15 @@ export default function App() {
   };
 
   const handleLogout = async () => {
-    console.log('Logging out user:', user ? user.email : 'No user logged in'); // Debug log
     await signOut(auth);
-    console.log('User logged out successfully.');
-
+    await AsyncStorage.removeItem('userData'); // Clear cached data
     setUser(null);
     setIsLogin(true);
     setShowWelcome(true);
     setIsFarmNameSet(false);
+    console.log('User logged out and cache cleared.');
   };
+  
 
   return (
     <NavigationContainer>
@@ -173,20 +229,21 @@ export default function App() {
         ) : (
           <>
             {farmName ? (
-              <Stack.Screen
-                name="Dashboard"
-                options={{ headerShown: false }}
-              >
-                {(props) => (
-                  <DashboardScreen 
-                    {...props} 
-                    firstName={firstName} 
-                    lastName={lastName} 
-                    farmName={farmName} // Pass farmName here
-                    onLogout={handleLogout} 
-                  />
-                )}
-              </Stack.Screen>
+             <Stack.Screen
+             name="Dashboard"
+             options={{ headerShown: false }}
+           >
+             {(props) => (
+               <DashboardScreen
+                 {...props}
+                 firstName={firstName}
+                 lastName={lastName}
+                 farmName={farmName} // Pass farmName here
+                 onLogout={handleLogout}
+               />
+             )}
+           </Stack.Screen>
+           
             ) : (
               // This renders if farmName is still being fetched
               <Stack.Screen
