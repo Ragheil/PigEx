@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, Modal, Pressable, FlatList } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, Modal, Pressable, FlatList, RefreshControl } from 'react-native';
 import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { firestore } from '../../firebase/config2'; // Adjust path as needed
 import { Picker } from '@react-native-picker/picker'; // Ensure this package is installed
@@ -22,6 +22,7 @@ const MoneyInScreen = ({ route }) => {
   const [isEditing, setIsEditing] = useState(false); // State to track if we're in edit mode
   const [time, setTime] = useState(new Date()); // Time picker state
   const [showTimePicker, setShowTimePicker] = useState(false); // Show time picker state
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchTotalBalance();
@@ -76,7 +77,14 @@ const MoneyInScreen = ({ route }) => {
     setTime(currentTime);
   };
 
-  
+  const handleRefresh = async () => {
+  setRefreshing(true);
+  await fetchTotalBalance();
+  await fetchMoneyRecords();
+  setRefreshing(false);
+};
+
+
   const fetchMoneyRecords = async () => {
     try {
       const moneyInPath = selectedBranch === 'Main Farm'
@@ -264,6 +272,9 @@ const handleDeleteMoney = async (id) => {
         data={moneyRecords}
         keyExtractor={(item) => item.date}
         renderItem={renderMoneyRecord}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }
       />
 
       <Button title="Add Money" onPress={() => setModalVisible(true)} />
