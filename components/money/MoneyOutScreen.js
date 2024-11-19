@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, Modal, Pressable, FlatList } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, Modal, Pressable, FlatList, RefreshControl } from 'react-native';
 import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
 import { firestore } from '../../firebase/config2'; 
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import MoneyOutScreenStyles from '../../frontend/money/MoneyOutScreenStyles'; // Import the styles
+import NetInfo from '@react-native-community/netinfo'; // For network status
 
 const MoneyOutScreen = ({ route }) => {
   const { farmName, selectedBranch, userId } = route.params;
@@ -23,6 +24,7 @@ const MoneyOutScreen = ({ route }) => {
   const [farmBranchName, setFarmBranchName] = useState('Unknown Branch'); // Store the fetched farm name
   const [time, setTime] = useState(new Date());
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     const fetchFarmBranchName = async () => {
@@ -50,10 +52,28 @@ const MoneyOutScreen = ({ route }) => {
     if (selectedBranch) {
       fetchFarmBranchName(); // Fetch the farm name when selectedBranch is set
     }
-  }, [selectedBranch, userId]); // Re-run the effect if selectedBranch or userId changes
+  }, [selectedBranch, userId]);
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      if (state.isConnected) {
+        console.log('Device is online, syncing data...');
+        fetchMoneyRecords(); // Fetch records when online
+      }
+    });
+
+    fetchMoneyRecords(); // Initial fetch
+    return () => unsubscribe();
+  }, [selectedBranch, userId]);
 
 
-
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchTotalBalance();
+    await fetchMoneyRecords();
+    setRefreshing(false);
+  };
+  
   useEffect(() => {
     fetchTotalBalance();
     fetchMoneyRecords();
@@ -301,6 +321,9 @@ const MoneyOutScreen = ({ route }) => {
         data={moneyRecords}
         renderItem={renderMoneyRecord}
         keyExtractor={(item, index) => item.date + index}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }
       />
 
       <Pressable style={MoneyOutScreenStyles.addButton} onPress={() => setModalVisible(true)}>
