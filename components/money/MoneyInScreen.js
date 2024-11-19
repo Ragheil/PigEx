@@ -4,6 +4,8 @@ import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from 'firebase
 import { firestore } from '../../firebase/config2'; // Adjust path as needed
 import { Picker } from '@react-native-picker/picker'; // Ensure this package is installed
 import DateTimePicker from '@react-native-community/datetimepicker'; // For picking the date
+import NetInfo from '@react-native-community/netinfo';
+
 import styles from '../../frontend/money/MoneyInScreenStyles';
 
 const MoneyInScreen = ({ route }) => {
@@ -27,6 +29,19 @@ const MoneyInScreen = ({ route }) => {
   useEffect(() => {
     fetchTotalBalance();
     fetchMoneyRecords();
+  }, [selectedBranch, userId]);
+
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      if (state.isConnected) {
+        console.log('Device is online, syncing data...');
+        fetchMoneyRecords(); // Fetch records when online
+      }
+    });
+
+    fetchMoneyRecords(); // Initial fetch
+    return () => unsubscribe();
   }, [selectedBranch, userId]);
 
   const fetchTotalBalance = async () => {
@@ -78,14 +93,18 @@ const MoneyInScreen = ({ route }) => {
   };
 
   const handleRefresh = async () => {
-  setRefreshing(true);
-  await fetchTotalBalance();
-  await fetchMoneyRecords();
-  setRefreshing(false);
-};
+    setRefreshing(true);
+    await fetchMoneyRecords();
+    setRefreshing(false);
+  };
 
 
   const fetchMoneyRecords = async () => {
+    const recordsRef = collection(firestore, 'moneyRecords');
+    const snapshot = await getDocs(recordsRef);
+    const records = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    setMoneyRecords(records);
+    calculateTotalBalance(records);
     try {
       const moneyInPath = selectedBranch === 'Main Farm'
         ? `users/${userId}/farmBranches/Main Farm/moneyInRecords`
@@ -118,42 +137,28 @@ const MoneyInScreen = ({ route }) => {
   
 
   const handleAddMoney = async () => {
-    if (!amount) {
-      Alert.alert('Error', 'Please enter an amount.');
+    if (!amount || !remarks) {
+      Alert.alert('Please fill in all fields');
       return;
     }
-  
-    const selectedCategory = category === 'other' ? otherCategory : category;
-  
+
+    const newRecord = {
+      amount: parseFloat(amount),
+      remarks,
+      date: new Date().toISOString(),
+    };
+
     try {
-      const moneyRecord = {
-        amount: parseFloat(amount),
-        remarks,
-        date: date.toISOString().split('T')[0], // Store date in YYYY-MM-DD format
-        time: time.toISOString().split('T')[1].substring(0, 5), // Store time in HH:MM format
-        category: selectedCategory,
-      };
-  
-      const path = selectedBranch === 'Main Farm'
-        ? `users/${userId}/farmBranches/Main Farm/moneyInRecords`
-        : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyInRecords`;
-  
-      const moneyInRecordsRef = collection(firestore, path);
-      await addDoc(moneyInRecordsRef, moneyRecord);
-  
-      Alert.alert('Success', 'Money added successfully!');
-      fetchTotalBalance();
-      fetchMoneyRecords();
+      await addDoc(collection(firestore, 'moneyRecords'), newRecord);
+      setMoneyRecords(prev => [...prev, newRecord]);
+      calculateTotalBalance([...moneyRecords, newRecord]);
       setAmount('');
       setRemarks('');
-      setCategory('salary');
-      setOtherCategory('');
-      setModalVisible(false);
     } catch (error) {
-      console.error('Error adding money record:', error);
-      Alert.alert('Error', 'Failed to add money. Please try again.');
+      console.error('Error adding document: ', error);
     }
   };
+
   
   
 
