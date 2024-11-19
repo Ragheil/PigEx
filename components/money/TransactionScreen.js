@@ -63,31 +63,31 @@ const [error, setError] = useState(null);
       }
     });
   };
- useEffect(() => {
+  useEffect(() => {
     const fetchFarmBranchName = async () => {
-      try {
-        if (selectedBranch === 'Main Farm') {
-          setFarmBranchName('Main Farm');
-        } else {
-          const branchDocRef = doc(firestore, `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}`);
-          const branchDoc = await getDoc(branchDocRef);
+        try {
+            if (selectedBranch === 'Main Farm') {
+                setFarmBranchName('Main Farm');
+            } else {
+                const branchDocRef = doc(firestore, `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}`);
+                const branchDoc = await getDoc(branchDocRef);
 
-          if (branchDoc.exists()) {
-            const branchData = branchDoc.data();
-            setFarmBranchName(branchData.farmName || 'Unknown Branch');
-          } else {
-            console.error('No such branch found.');
-            setFarmBranchName('Unknown Branch');
-          }
+                if (branchDoc.exists()) {
+                    const branchData = branchDoc.data();
+                    setFarmBranchName(branchData.farmName || 'Unknown Branch'); // Update this line
+                } else {
+                    console.error('No such branch found.');
+                    setFarmBranchName('Unknown Branch');
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching branch name:', error);
+            Alert.alert('Error', 'Unable to fetch branch name.');
         }
-      } catch (error) {
-        console.error('Error fetching branch name:', error);
-        Alert.alert('Error', 'Unable to fetch branch name.');
-      }
     };
 
     fetchFarmBranchName();
-  }, [selectedBranch, userId]);
+}, [selectedBranch, userId]);
 
   
   useEffect(() => {
@@ -256,26 +256,29 @@ const [error, setError] = useState(null);
         return d.toLocaleDateString(undefined, options); // Format the date to words
     };
 
-    // Format the date range in words
-    const formatDateRange = (start, end) => {
-        if (start === end) {
-            return `As of ${formatDateToWords(end)}`;
+    // Helper function to format the time
+    const formatTime = (date) => {
+        const d = new Date(date);
+        if (isNaN(d.getTime())) {
+            return 'Invalid Time'; // Handle invalid dates
         }
-        return `${formatDateToWords(start)} - ${formatDateToWords(end)}`;
+        const options = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+        return d.toLocaleTimeString(undefined, options); // Format the time
     };
 
-    // Get the actual start and end dates from the picker
-    const dateRange = formatDateRange(startDate, endDate);
-
-    // Determine the branch name
-    const branchFarmName = selectedBranch === 'Main Farm' ? 'Main Farm' : farmBranchName; // Fetch the branch name
+    // Get the current date and time
+    const currentDate = new Date();
+    const formattedCurrentDate = formatDateToWords(currentDate);
+    const formattedCurrentTime = formatTime(currentDate);
 
     // Start building the HTML content for the PDF
+    //  <h3 style="text-align: left;">As of: ${formattedCurrentDate} at ${formattedCurrentTime}</h3>
     let htmlContent = `
         <div style="margin: 20px;">
             <h1 style="text-align: center;">PigEx Transaction Report</h1>
-            <h3 style="text-align: left;">As of: ${dateRange}</h3>
-            <h2 style="text-align: left;">Branch Name: ${branchFarmName}</h2>
+           
+            <h3 style="text-align: left;">Time Requested: ${formattedCurrentTime}</h3>
+            <h2 style="text-align: left;">Branch Name: ${farmBranchName}</h2> <!-- Use farmBranchName here -->
             <h3 style="text-align: left;">Total Balance: ₱${totalBalance.toFixed(2)}</h3>
             <h3 style="text-align: left;">Total Income: ₱${totalIncome.toFixed(2)}</h3>
             <h3 style="text-align: left;">Total Expense: ₱${totalExpense.toFixed(2)}</h3>
@@ -324,7 +327,7 @@ const [error, setError] = useState(null);
                     <td style="padding: 8px; text-align: center;">${formattedTime}</td>
                     <td style="padding : 8px; text-align: center;">${transaction.category || 'N/A'}</td>
                     <td style="padding: 8px; text-align: center;">${transaction.type}</td>
-                    <td style="color: ${amountColor}; text-align: center; padding: 8px;">${formattedAmount}</td>
+                    <td style="color : ${amountColor}; text-align: center; padding: 8px;">${formattedAmount}</td>
                     <td style="padding: 8px; text-align: center;">${transaction.remarks || 'No remarks provided.'}</td>
                 </tr>
             `;
