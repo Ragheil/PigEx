@@ -11,7 +11,8 @@ import {
   TouchableWithoutFeedback,
   Dimensions,
   ScrollView,
-  RefreshControl
+  RefreshControl,
+  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Divider } from 'react-native-paper';
@@ -25,6 +26,7 @@ import { updateEmail, reauthenticateWithCredential, EmailAuthProvider } from 'fi
 import { sendEmailVerification } from 'firebase/auth';
 import { fonts } from 'react-native-elements/dist/config';
 import { BarChart } from 'react-native-chart-kit'; // Import the bar chart component
+
 
 export default function DashboardScreen({ firstName, lastName, farmName, onLogout }) {
   // State variables
@@ -452,15 +454,19 @@ useEffect(() => {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#FDE9EA', '#869F77', '#588061']}
+        // colors={['#FDE9EA', '#869F77', '#588061']}
+        colors={['#F5F5F5', '#F5F5F5']}
         style={styles.gradient}
       >
         <View style={styles.mainheader}>
-          <Text style={styles.appname}>PigEx</Text>
-          <Text style={{fontSize: 12,fontWeight:'800', textTransform: 'uppercase' }}>Dashboard</Text>
+          {/* <Text style={styles.appname}>PigEx</Text> */}
+          <View style={styles.piglogobox}>
+            <Image source={require('../assets/images/LOGO.png')} style={styles.pigLogo} />
+          </View>
+          {/* <Text style={{fontSize: 12,fontWeight:'800', textTransform: 'uppercase' }}>Dashboard</Text> */}
           <View style={styles.subheader}>
             <View style={styles.subbox1}>
-              <Text style={{fontWeight:'500', textTransform: 'uppercase' }}>{farmName}</Text>
+              {/* <Text style={{fontWeight:'600', textTransform: 'uppercase', fontSize: 20, }}>{farmName}</Text> */}
             </View>
           </View>
         </View>
@@ -502,31 +508,32 @@ useEffect(() => {
 
 
 <View style={{ flex: 1, padding: 16 }}>
-      <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Transaction Preview</Text>
+      <Text style={{ fontSize: 24, fontWeight: '500' }}>Transaction Preview</Text>
       <ScrollView
         refreshControl={
           <RefreshControl refreshing={false} onRefresh={() => {}} />
         }
       >
-        <View style={{ alignItems: 'center', marginVertical: 20 }}>
+        <View style={{ alignItems: 'center', marginVertical: 20}}>
           <BarChart
             data={barChartData}
             width={screenWidth - 30} // Define your screen width
             height={220}
+            yLabelsOffset={-2}
             chartConfig={{
-              backgroundColor: '#94E334FF',
-              backgroundGradientFrom: '#9ED74AFF',
-              backgroundGradientTo: '#FFFFFFFF',
+              // backgroundColor: '#869f77FF',
+              backgroundGradientFrom: '#C1CFA1FF',
+              backgroundGradientTo: '#566F4880',
               decimalPlaces: 2,
               color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
               labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
               style: {
-                borderRadius: 16,
+                borderRadius: 10,
               },
             }}
             style={{
-              marginVertical: 8,
-              borderRadius: 16,
+              // marginVertical: 20,
+              // borderRadius: 40,
             }}
           />
         </View>

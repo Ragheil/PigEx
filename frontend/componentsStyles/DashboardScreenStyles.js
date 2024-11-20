@@ -1,6 +1,9 @@
 
 import { StyleSheet, Dimensions } from 'react-native';
 
+
+const { width } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -17,7 +20,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: '#869f77',
     paddingTop: 30,
-    paddingBottom: 10,
+    paddingBottom: 5,
     paddingHorizontal: 16,
     alignItems: 'center',
   },
@@ -44,26 +47,50 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     // fontFamily:
   },
+  piglogobox: {
+    // backgroundColor: 'lightblue',
+    // flex: 1,
+    // flexWrap: 'wrap',
+    // height: '20%',
+    // width: '100%',
+    // height: 150,
+    // width: 150,
+    // height: width * 0.5,
+    // width: width * 0.5,
+    marginVertical: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    
+  },
+  pigLogo: {
+    // flex: 1,
+    // width: '100%',
+    // height: '100%',
+    // backgroundColor: 'lightgreen',
+    height: 60,
+    width: 150,
+    resizeMode: 'contain',
+  },
   title: {
     // backgroundColor: 'red',
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: '500',
     marginBottom: 20,
     // marginTop: 60,
     textAlign: 'center',
   },
-  pigGroupSummary: {
-    padding: 15,
-    marginVertical: 10,
-    marginRight: 10,
-    backgroundColor: '#ffffff',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    alignItems: 'center',
-    flexDirection: 'row',
-    minWidth: 150,
-  },
+  // pigGroupSummary: {
+  //   padding: 15,
+  //   marginVertical: 10,
+  //   marginRight: 10,
+  //   backgroundColor: '#ffffff',
+  //   borderWidth: 1,
+  //   borderColor: '#ccc',
+  //   borderRadius: 8,
+  //   alignItems: 'center',
+  //   flexDirection: 'row',
+  //   minWidth: 150,
+  // },
   pigGroupText: {
     fontSize: 18,
     color: '#333',
@@ -76,16 +103,22 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   flatListContent: {
-    paddingHorizontal: 10, // Add horizontal padding to the list
+    paddingHorizontal: 5, // Add horizontal padding to the list
   },
   pigGroupSummary: {
     width: 150, // Set a fixed width for each item
     marginRight: 10, // Spacing between items
     alignItems: 'center', // Center items horizontally
     justifyContent: 'center', // Center items vertically
-    backgroundColor: '#f0f0f0', // Background color for each item
-    borderRadius: 10, // Rounded corners
+    backgroundColor: '#F5F5F5', // Background color for each item
+    borderRadius: 13, // Rounded corners
     padding: 10, // Padding inside each item
+    borderColor: '#566F48',
+    borderWidth: 4,
+    shadowColor: '#869f77',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: .9,
+    elevation: 10,
   },
   pigGroupText: {
     fontSize: 16,
@@ -102,15 +135,16 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   flatList: {
+    // backgroundColor: 'lightblue',
     flexGrow: 0, 
-    
+    paddingVertical: 8,
   },
   seeAllButton: {
     marginBottom: 20, 
     paddingVertical: 10,
     paddingHorizontal: 20,
     backgroundColor: '#869F77',
-    borderRadius: 5,
+    borderRadius: 13,
     alignItems: 'center',
     zIndex: 1, 
     elevation: 2, 

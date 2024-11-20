@@ -280,11 +280,14 @@ const fetchPigGroups = () => {
   return (
     <View style={styles.container1}>
       <View style={styles.mainheader}>
-          <Text style={styles.appname}>PigEx</Text>
-          <Text style={{fontSize: 12,fontWeight:'800', textTransform: 'uppercase' }}>Pig Groups</Text>
+          {/* <Text style={styles.appname}>PigEx</Text> */}
+          <View style={styles.piglogobox}>
+            <Image source={require('../../assets/images/LOGO.png')} style={styles.pigLogo} />
+          </View>
+          {/* <Text style={{fontSize: 12,fontWeight:'800', textTransform: 'uppercase' }}>Pig Groups</Text> */}
           <View style={styles.subheader}>
             <View style={styles.subbox1}>
-              <Text style={{fontWeight:'500', textTransform: 'uppercase' }}>{farmName}</Text>
+              {/* <Text style={{fontWeight:'500', textTransform: 'uppercase' }}>{farmName}</Text> */}
             </View>
           </View>
         </View>
@@ -317,23 +320,23 @@ const fetchPigGroups = () => {
 </ScrollView>
       {/* Modal for adding or editing pig group */}
       <Modal isVisible={isAddEditModalVisible} onBackdropPress={closeModal}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>{editPigGroupId ? 'Edit Pig Group' : 'Add Pig Group'}</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter Pig Group Name"
-            value={name}
-            onChangeText={setName}
-          />
-          <Button title="Save" onPress={addOrUpdatePigGroup} color="#4CAF50" />
-          <Button title="Cancel" onPress={closeModal} color="#F44336" />
-        </View>
+        <Text style={styles.modalTitle}>{editPigGroupId ? 'Edit Pig Group' : 'Add Pig Group'}</Text>
+          <View style={styles.modalContent}>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter Pig Group Name"
+              value={name}
+              onChangeText={setName}
+            />
+            <Button title="Save" onPress={addOrUpdatePigGroup} color="#4CAF50" />
+            <Button title="Cancel" onPress={closeModal} color="#F44336" />
+          </View>
       </Modal>
 
       {/* Modal for confirming deletion */}
       <Modal isVisible={isDeleteModalVisible} onBackdropPress={closeModal}>
+      <Text style={styles.modalTitle}>Confirm Deletion</Text>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Confirm Deletion</Text>
           <Text>
             <Text style={styles.boldText}>Warning:</Text> Deleting this group will remove all pig information within it. Are you sure you want to delete this group? Type "<Text style={styles.boldText}>{currentPigGroupName}</Text>" to confirm:
           </Text>
