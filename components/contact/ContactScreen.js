@@ -187,7 +187,7 @@ const ContactScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Button title="Add Contact" onPress={openAddContactModal} color="#4CAF50" />
+        <Button title="Add Contact" onPress={openAddContactModal} color="#566F48"/>
         <TextInput
           style={styles.searchInput}
           placeholder="Search by name or number"

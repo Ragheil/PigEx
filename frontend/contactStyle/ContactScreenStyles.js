@@ -8,9 +8,11 @@ export default StyleSheet.create({
       },
       headerContainer: {
         flexDirection: 'row',
-        alignItems: 'center',
+        // alignItems: 'center',
+        justifyContent: 'space-between',
         marginBottom: 16,
         marginTop: 60,
+        columnGap: 5,
       },
       searchInput: {
         flex: 1,
