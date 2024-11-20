@@ -10,7 +10,7 @@ export default function WelcomeScreen({ onStart }) {
       colors={['#576b4c', '#869F77', '#F5F5F5']} // Gradient colors
       start={{ x: 0, y: 0 }} // Start at the top-left corner
       end={{ x: 0, y: 1 }}   // End at the bottom-right corner
-      locations={[0.2, 0.4, 0.6]} // Adjust the gradient stop points
+      locations={[0.28, 0.42, 0.6]} // Adjust the gradient stop points
       style={styles.gradient}
     >
       <View style={styles.container}>
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   title: {
-    marginTop: 100,
+    marginTop: 70,
     fontSize: 40,
     fontWeight: '500',
     color: '#161c12',
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     paddingVertical: 17,
     paddingHorizontal: 135,
     borderRadius: 8,
-    marginTop: 110,
+    marginTop: 150,
   },
   startButtonText: {
     color: '#fff',
