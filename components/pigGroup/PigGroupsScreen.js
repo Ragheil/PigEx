@@ -8,6 +8,8 @@ import pigImage from '../../assets/images/pigIcon.png';
 import editIcon from '../../assets/images/buttons/editIcon.png';
 import deleteIcon from '../../assets/images/buttons/deleteIcon.png';
 import styles from '../../frontend/pigGroupStyles/PigGroupsScreenStyles';
+import NetInfo from '@react-native-community/netinfo';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const PigGroupsScreen = ({ navigation, route }) => {
@@ -26,6 +28,7 @@ const PigGroupsScreen = ({ navigation, route }) => {
   const { selectedBranch, farmName: initialFarmName } = route.params; // Destructure farmName as initialFarmName
   const [farmName, setFarmName] = useState(initialFarmName); // Rename the
   const [refreshing, setRefreshing] = useState(false); // New state for refreshing
+  const [offlineDeletions, setOfflineDeletions] = useState([]);
 
   useEffect(() => {
     if (user) {
@@ -161,43 +164,75 @@ const fetchPigGroups = () => {
     setIsDeleteModalVisible(true);
   };
 
-  const deletePigGroup = async () => {
-    if (deleteConfirmation !== currentPigGroupName) {
-      Alert.alert('Validation Error', 'Pig group name does not match.');
-      return;
-    }
-  
-    try {
-      if (!user) return;
-  
-      // Determine the correct collection path based on the selected branch
-      const pigGroupsCollectionPath = selectedBranch === 'Main Farm'
-        ? `users/${user.uid}/farmBranches/Main Farm/pigGroups`
-        : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups`;
-  
-      // Create a reference to the document to delete
-      const docRef = doc(firestore, pigGroupsCollectionPath, editPigGroupId);
-      console.log('Deleting document at:', docRef.path); // Log the document path
-  
-      // Delete all subcollections
+ // Function to delete a pig group
+const deletePigGroup = async () => {
+  if (deleteConfirmation !== currentPigGroupName) {
+    Alert.alert('Validation Error', 'Pig group name does not match.');
+    return;
+  }
+
+  try {
+    if (!user) return;
+
+    const pigGroupsCollectionPath = selectedBranch === 'Main Farm'
+      ? `users/${user.uid}/farmBranches/Main Farm/pigGroups`
+      : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups`;
+
+    const docRef = doc(firestore, pigGroupsCollectionPath, editPigGroupId);
+
+    // Check network connectivity
+    const state = await NetInfo.fetch();
+    if (state.isConnected) {
+      // Online: Delete immediately
       await deleteSubcollections(docRef);
-  
-      // Now delete the main document
       await deleteDoc(docRef);
       console.log('Pig group deleted:', currentPigGroupName);
-      
-      // Close the modal and reset confirmation
-      setIsDeleteModalVisible(false);
-      setDeleteConfirmation('');
-      
-      // Refresh the list of pig groups
-      fetchPigGroups(); // Refresh the list after deletion
-    } catch (error) {
-      console.error('Error deleting pig group:', error);
-      Alert.alert('Error', 'Failed to delete pig group. Please try again.');
+      // Update state to remove the deleted pig group
+      setPigGroups(prev => prev.filter(group => group.id !== editPigGroupId));
+    } else {
+      // Offline: Queue deletion
+      const newOfflineDeletions = [...offlineDeletions, { id: editPigGroupId, name: currentPigGroupName }];
+      setOfflineDeletions(newOfflineDeletions);
+      await AsyncStorage.setItem('offlineDeletions', JSON.stringify(newOfflineDeletions));
+      console.log('Pig group deletion queued for offline:', currentPigGroupName);
+      // Update state to reflect the deletion in the UI
+      setPigGroups(prev => prev.filter(group => group.id !== editPigGroupId));
+    }
+
+    setIsDeleteModalVisible(false);
+    setDeleteConfirmation('');
+  } catch (error) {
+    console.error('Error deleting pig group:', error);
+    Alert.alert('Error', 'Failed to delete pig group. Please try again.');
+  }
+};
+  const processOfflineDeletions = async () => {
+    const storedDeletions = await AsyncStorage.getItem('offlineDeletions');
+    if (storedDeletions) {
+      const deletions = JSON.parse(storedDeletions);
+      for (const deletion of deletions) {
+        const pigGroupsCollectionPath = selectedBranch === 'Main Farm'
+          ? `users/${user.uid}/farmBranches/Main Farm/pigGroups`
+          : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups`;
+  
+        const docRef = doc(firestore, pigGroupsCollectionPath, deletion.id);
+        await deleteSubcollections(docRef);
+        await deleteDoc(docRef);
+        console.log('Processed offline deletion:', deletion.name);
+      }
+      // Clear offline deletions after processing
+      await AsyncStorage.removeItem('offlineDeletions');
     }
   };
-  
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      if (state.isConnected) {
+        processOfflineDeletions(); // Process deletions when back online
+      }
+    });
+    return () => unsubscribe();
+  }, []);
   // Function to delete all subcollections of a document
   const deleteSubcollections = async (docRef) => {
     const subcollections = await getDocs(collection(docRef, 'pigs')); // Adjust the subcollection name as needed
