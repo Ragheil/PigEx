@@ -165,7 +165,7 @@ const fetchPigGroups = () => {
   };
 
  // Function to delete a pig group
-const deletePigGroup = async () => {
+ const deletePigGroup = async () => {
   if (deleteConfirmation !== currentPigGroupName) {
     Alert.alert('Validation Error', 'Pig group name does not match.');
     return;
@@ -189,6 +189,7 @@ const deletePigGroup = async () => {
       console.log('Pig group deleted:', currentPigGroupName);
       // Update state to remove the deleted pig group
       setPigGroups(prev => prev.filter(group => group.id !== editPigGroupId));
+      Alert.alert('Success', `The pig group "${currentPigGroupName}" has been deleted.`);
     } else {
       // Offline: Queue deletion
       const newOfflineDeletions = [...offlineDeletions, { id: editPigGroupId, name: currentPigGroupName }];
@@ -197,6 +198,7 @@ const deletePigGroup = async () => {
       console.log('Pig group deletion queued for offline:', currentPigGroupName);
       // Update state to reflect the deletion in the UI
       setPigGroups(prev => prev.filter(group => group.id !== editPigGroupId));
+      Alert.alert('Success', `The pig group "${currentPigGroupName}" has been queued for deletion.`);
     }
 
     setIsDeleteModalVisible(false);
@@ -206,6 +208,7 @@ const deletePigGroup = async () => {
     Alert.alert('Error', 'Failed to delete pig group. Please try again.');
   }
 };
+
   const processOfflineDeletions = async () => {
     const storedDeletions = await AsyncStorage.getItem('offlineDeletions');
     if (storedDeletions) {
