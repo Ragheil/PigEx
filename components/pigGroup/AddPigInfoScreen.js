@@ -11,6 +11,8 @@ import styles from '../../frontend/pigGroupStyles/AddPigInfoScreenStyles';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 import { useFocusEffect } from '@react-navigation/native'; // Import the useFocusEffect
+import NetInfo from '@react-native-community/netinfo'; // Make sure to import NetInfo
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
 
 export default function AddPigInfoScreen({ route }) {
@@ -161,30 +163,53 @@ useEffect(() => {
 
   // Add Pig
   const handleAddPig = async () => {
+    // Validate input fields
     if (!pigName.trim() || !tagNumber.trim() || !gender || !race.trim()) {
       Alert.alert('Validation Error', 'All fields are required.');
       return;
     }
   
+    // Determine the collection path based on the selected branch
     const pigCollectionPath = selectedBranch === 'Main Farm'
       ? `users/${user.uid}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs`
       : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs`;
   
-    try {
-      await addDoc(collection(firestore, pigCollectionPath), {
-        pigName,
-        tagNumber,
-        gender,
-        race,
-        dateOfBirth,
-        vitality: isDeceased ? 'deceased' : 'alive',
-        ...(isDeceased && { causeOfDeath, dateOfDeath }),
-        createdAt: new Date(),
-        motherId: selectedFemalePigId || null,       // Store mother pig's ID
-        motherName: motherName || ""                 // Store mother pig's name
-      });
+    const newPig = {
+      pigName,
+      tagNumber,
+      gender,
+      race,
+      dateOfBirth,
+      vitality: isDeceased ? 'deceased' : 'alive',
+      ...(isDeceased && { causeOfDeath, dateOfDeath }),
+      createdAt: new Date(),
+      motherId: selectedFemalePigId || null,
+      motherName: motherName || ""
+    };
   
-      Alert.alert('Success', 'Pig added successfully!');
+    try {
+      // Check network connectivity
+      const state = await NetInfo.fetch();
+      if (state.isConnected) {
+        // Online: Add pig immediately
+        await addDoc(collection(firestore, pigCollectionPath), newPig);
+  
+        // Alert after adding pig
+        Alert.alert('Success', 'Pig added successfully!');
+      } else {
+        // Offline: Queue the addition
+        const offlinePigs = JSON.parse(await AsyncStorage.getItem('offlinePigs')) || [];
+        offlinePigs.push(newPig);
+        await AsyncStorage.setItem('offlinePigs', JSON.stringify(offlinePigs));
+  
+        // Alert for offline queue
+        Alert.alert('Success', 'Pig addition queued for offline use!');
+      }
+  
+      // Update the state to include the new pig
+      setPigs((prevPigs) => [...prevPigs, { id: Date.now().toString(), ...newPig }]); // Add a temporary ID for the new pig
+  
+      // Reset fields and close modal
       resetFields();
       setModalVisible(false);
     } catch (error) {
@@ -192,7 +217,6 @@ useEffect(() => {
       Alert.alert('Error', 'There was a problem adding the pig.');
     }
   };
-  
 
   // Edit Pig
   const handleEditPig = async () => {
@@ -308,29 +332,30 @@ const updateMotherRecordsInAllFarmBranches = async (db, userId, pigId, newPigNam
 
 
    // Delete Pig
-   const handleDeletePig = (pigId) => {
-    Alert.alert(
-      'Confirm Deletion',
-      'Are you sure you want to delete this pig?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', style: 'destructive', onPress: async () => {
-            try {
-              const pigCollectionPath = selectedBranch === 'Main Farm'
-                ? `users/${user.uid}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${pigId}`
-                : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${pigId}`;
-              await deleteDoc(doc(firestore, pigCollectionPath));
-              Alert.alert('Success', 'Pig deleted successfully!');
-            } catch (error) {
-              console.error('Error deleting pig:', error);
-              Alert.alert('Error', 'There was a problem deleting the pig.');
-            }
+ // Delete Pig
+const handleDeletePig = (pigId) => {
+  Alert.alert(
+    'Confirm Deletion',
+    'Are you sure you want to delete this pig?',
+    [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: async () => {
+          try {
+            const pigCollectionPath = selectedBranch === 'Main Farm'
+              ? `users/${user.uid}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${pigId}`
+              : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${pigId}`;
+            await deleteDoc(doc(firestore, pigCollectionPath));
+            Alert.alert('Success', 'Pig deleted successfully!'); // Alert after deletion
+          } catch (error) {
+            console.error('Error deleting pig:', error);
+            Alert.alert('Error', 'There was a problem deleting the pig.');
           }
-        },
-      ],
-      { cancelable: true }
-    );
-  };
+        }
+      },
+    ],
+    { cancelable: true }
+  );
+};
 
   const resetFields = () => {
     setPigName('');
