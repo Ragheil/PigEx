@@ -373,38 +373,38 @@ const handleDeletePig = (pigId) => {
   // Filter Pigs
   const filteredPigs = pigs.filter(pig => pig.pigName.toLowerCase().includes(searchQuery.toLowerCase()));
 
-  // Render Pig Item
-  const renderPig = ({ item }) => (
-    <View style={styles.pigContainer}>
-      <View style={styles.pigInfo}>
-        <Text style={styles.pigText}>Tag Number: {item.tagNumber}</Text>
-        <Text style={styles.pigText}>Pig Name: {item.pigName}</Text>
-      </View>
-      <View style={styles.actionsContainer}>
-        <TouchableOpacity onPress={() => {
-          setSelectedPig(item);
-          setDetailModalVisible(true);
-        }}>
-          <Image source={viewIcon} style={styles.iview} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => {
-          setPigName(item.pigName);
-          setTagNumber(item.tagNumber);
-          setGender(item.gender);
-          setRace(item.race);
-          setCurrentPigId(item.id);
-          setVitality(item.vitality); // Set vitality when editing
-          setIsEditing(true);
-          setModalVisible(true);
-        }}>
-          <Image source={editIcon} style={styles.iedit} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleDeletePig(item.id)}>
-          <Image source={deleteIcon} style={styles.idelete} />
-        </TouchableOpacity>
-      </View>
+// Render Pig Item
+const renderPig = ({ item }) => (
+  <View style={styles.pigContainer}>
+    <View style={styles.pigInfo}>
+      <Text style={styles.pigText}>Tag Number: {item.tagNumber}</Text>
+      <Text style={styles.pigText}>Pig Name: {item.pigName}</Text>
     </View>
-  );
+    <View style={styles.actionsContainer}>
+      <TouchableOpacity onPress={() => {
+        setSelectedPig(item); // Set selected pig
+        setDetailModalVisible(true);
+      }}>
+        <Image source={viewIcon} style={styles.iview} />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => {
+        setPigName(item.pigName);
+        setTagNumber(item.tagNumber);
+        setGender(item.gender);
+        setRace(item.race);
+        setCurrentPigId(item.id);
+        setVitality(item.vitality); // Set vitality when editing
+        setIsEditing(true);
+        setModalVisible(true);
+      }}>
+        <Image source={editIcon} style={styles.iedit} />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => handleDeletePig(item.id)}>
+        <Image source={deleteIcon} style={styles.idelete} />
+      </TouchableOpacity>
+    </View>
+  </View>
+);
 
   return (
     <View style={styles.container}>
@@ -556,35 +556,26 @@ const handleDeletePig = (pigId) => {
 
       {/* Pig Detail Modal */}
       <Modal
-        visible={detailModalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setDetailModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-        <Text style={styles.modalTitle}>Pig Details</Text>
-          <View style={styles.modalContent}>
-            {selectedPig && (
-              <>
-                <Text style={styles.detailText}>Name: {selectedPig.pigName}</Text>
-                <Text style={styles.detailText}>Tag Number: {selectedPig.tagNumber}</Text>
-                <Text style={styles.detailText}>Gender: {selectedPig.gender}</Text>
-                <Text style={styles.detailText}>Race: {selectedPig.race}</Text>
-                <Text style={styles.detailText}>Date of Birth: {selectedPig.dateOfBirth.toDate().toDateString()}</Text>
-                <Text style={styles.detailText}>Vitality: {selectedPig.vitality}</Text>
-                 {/* View Medical Records Button 
-                <Text style={styles.detailText}>
-                  Mother Name: {
-                    selectedFemalePigId
-                      ? femalePigs.find(pig => pig.id === selectedFemalePigId)?.pigName || 'N/A'
-                      : 'N/A'
-                  }
-                </Text>
-                            */}
+  visible={detailModalVisible}
+  transparent={true}
+  animationType="slide"
+  onRequestClose={() => setDetailModalVisible(false)}
+>
+  <View style={styles.modalContainer}>
+    <Text style={styles.modalTitle}>Pig Details</Text>
+    <View style={styles.modalContent}>
+      {selectedPig && (
+        <>
+          <Text style={styles.detailText}>Name: {selectedPig.pigName}</Text>
+          <Text style={styles.detailText}>Tag Number: {selectedPig.tagNumber}</Text>
+          <Text style={styles.detailText}>Gender: {selectedPig.gender}</Text>
+          <Text style={styles.detailText}>Race: {selectedPig.race}</Text>
+          <Text style={styles.detailText}>Date of Birth: {selectedPig.dateOfBirth.toDate().toDateString()}</Text>
+          <Text style={styles.detailText}>Vitality: {selectedPig.vitality}</Text>
+          {/* Add more details as necessary */}
 
-                            
-                  {/* View Medical Records Button */}
-                  <Button
+                            {/* View Medical Records Button */}
+                            <Button
                     title="View Medical Records"
                     onPress={() => {
                       if (selectedPig) {
@@ -601,16 +592,16 @@ const handleDeletePig = (pigId) => {
                     }}
                     color="#000000FF"
                   />
-              </>
-            )}
-            <Button
-              title="Close"
-              onPress={() => setDetailModalVisible(false)}
-              color="#f44336"
-            />
-          </View>
-        </View>
-      </Modal>
+        </>
+      )}
+      <Button
+        title="Close"
+        onPress={() => setDetailModalVisible(false)}
+        color="#f44336"
+      />
+    </View>
+  </View>
+</Modal>
 
     </View>
   );
