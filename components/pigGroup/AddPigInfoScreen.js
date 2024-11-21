@@ -203,7 +203,7 @@ useEffect(() => {
         await AsyncStorage.setItem('offlinePigs', JSON.stringify(offlinePigs));
   
         // Alert for offline queue
-        Alert.alert('Success', 'Pig addition queued for offline use!');
+        Alert.alert('Success', 'Pig  added successfully!!');
       }
   
       // Update the state to include the new pig
