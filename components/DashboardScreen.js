@@ -332,7 +332,7 @@ const getUserDetailsFromFirestore = async (uid) => {
       if (error.code === 'auth/requires-recent-login') {
         // Custom message for the 'requires-recent-login' error
         Alert.alert(
-          "Login again",
+          "Email updated successfully",
           "You need to log in with your current email and try this process again."
         );
       } else {
@@ -490,8 +490,9 @@ useEffect(() => {
                   <View style={styles.pigGroupSummary}>
                     <Text style={styles.pigGroupText}>{item.name}</Text>
                     <Text style={styles.pigCountText}>
-                            {/* <Text style={styles.tableHeader}>Pig Groups</Text> */}
-                      <Text style={styles.boldText}>{item.pigCount || 0} Pigs</Text>
+                            {/* <Text style={styles.tableHeader}>Pig Groups</Text>            
+                            <Text style={styles.boldText}>{item.pigCount || 0} Pigs</Text> */}
+                      <Text style={styles.boldText}></Text>
                     </Text>
                   </View>
                 )}
