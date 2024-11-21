@@ -248,7 +248,7 @@ useEffect(() => {
     await updateMotherRecordsInMainFarm(firestore, user.uid, currentPigId, pigName);
     await updateMotherRecordsInAllFarmBranches(firestore, user.uid, currentPigId, pigName);
 
-    Alert.alert('Success', 'Pig name updated across all relevant records!');
+    Alert.alert('Success', 'Pig name updated');
     setIsEditing(false);
     resetFields();
   } catch (error) {
@@ -564,36 +564,40 @@ const renderPig = ({ item }) => (
   <View style={styles.modalContainer}>
     <Text style={styles.modalTitle}>Pig Details</Text>
     <View style={styles.modalContent}>
-      {selectedPig && (
+      {selectedPig ? (
         <>
           <Text style={styles.detailText}>Name: {selectedPig.pigName}</Text>
           <Text style={styles.detailText}>Tag Number: {selectedPig.tagNumber}</Text>
           <Text style={styles.detailText}>Gender: {selectedPig.gender}</Text>
           <Text style={styles.detailText}>Race: {selectedPig.race}</Text>
-          <Text style={styles.detailText}>Date of Birth: {selectedPig.dateOfBirth.toDate().toDateString()}</Text>
+          <Text style={styles.detailText}>
+            Date of Birth: {new Date(selectedPig.dateOfBirth).toDateString()}
+          </Text>
           <Text style={styles.detailText}>Vitality: {selectedPig.vitality}</Text>
-          {/* Add more details as necessary */}
 
-                            {/* View Medical Records Button */}
-                            <Button
-                    title="View Medical Records"
-                    onPress={() => {
-                      if (selectedPig) {
-                        navigation.navigate('MedicalRecordScreen', {
-                          userId: user.uid,
-                          selectedBranch: selectedBranch, // Pass the selected branch
-                          pigGroupId: pigGroupId,         // Pass the pig group ID
-                          pigName: selectedPig.pigName,   // Pass the pig name
-                          selectedPigId: selectedPig.id,   // Pass the selected pig ID
-                        });
-                      } else {
-                        Alert.alert('Error', 'Please select a pig before viewing medical records.');
-                      }
-                    }}
-                    color="#000000FF"
-                  />
+          {/* View Medical Records Button */}
+          <Button
+            title="View Medical Records"
+            onPress={() => {
+              if (selectedPig) {
+                navigation.navigate('MedicalRecordScreen', {
+                  userId: user.uid,
+                  selectedBranch: selectedBranch,
+                  pigGroupId: pigGroupId,
+                  pigName: selectedPig.pigName,
+                  selectedPigId: selectedPig.id,
+                });
+              } else {
+                Alert.alert('Error', 'Please select a pig before viewing medical records.');
+              }
+            }}
+            color="#000000FF"
+          />
         </>
+      ) : (
+        <Text style={styles.detailText}>No pig selected.</Text>
       )}
+
       <Button
         title="Close"
         onPress={() => setDetailModalVisible(false)}
@@ -602,6 +606,7 @@ const renderPig = ({ item }) => (
     </View>
   </View>
 </Modal>
+
 
     </View>
   );
