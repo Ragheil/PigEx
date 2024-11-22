@@ -11,8 +11,6 @@ import styles from '../../frontend/pigGroupStyles/AddPigInfoScreenStyles';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 import { useFocusEffect } from '@react-navigation/native'; // Import the useFocusEffect
-import NetInfo from '@react-native-community/netinfo'; // Make sure to import NetInfo
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
 
 export default function AddPigInfoScreen({ route }) {
@@ -163,53 +161,30 @@ useEffect(() => {
 
   // Add Pig
   const handleAddPig = async () => {
-    // Validate input fields
     if (!pigName.trim() || !tagNumber.trim() || !gender || !race.trim()) {
       Alert.alert('Validation Error', 'All fields are required.');
       return;
     }
   
-    // Determine the collection path based on the selected branch
     const pigCollectionPath = selectedBranch === 'Main Farm'
       ? `users/${user.uid}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs`
       : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs`;
   
-    const newPig = {
-      pigName,
-      tagNumber,
-      gender,
-      race,
-      dateOfBirth,
-      vitality: isDeceased ? 'deceased' : 'alive',
-      ...(isDeceased && { causeOfDeath, dateOfDeath }),
-      createdAt: new Date(),
-      motherId: selectedFemalePigId || null,
-      motherName: motherName || ""
-    };
-  
     try {
-      // Check network connectivity
-      const state = await NetInfo.fetch();
-      if (state.isConnected) {
-        // Online: Add pig immediately
-        await addDoc(collection(firestore, pigCollectionPath), newPig);
+      await addDoc(collection(firestore, pigCollectionPath), {
+        pigName,
+        tagNumber,
+        gender,
+        race,
+        dateOfBirth,
+        vitality: isDeceased ? 'deceased' : 'alive',
+        ...(isDeceased && { causeOfDeath, dateOfDeath }),
+        createdAt: new Date(),
+        motherId: selectedFemalePigId || null,       // Store mother pig's ID
+        motherName: motherName || ""                 // Store mother pig's name
+      });
   
-        // Alert after adding pig
-        Alert.alert('Success', 'Pig added successfully!');
-      } else {
-        // Offline: Queue the addition
-        const offlinePigs = JSON.parse(await AsyncStorage.getItem('offlinePigs')) || [];
-        offlinePigs.push(newPig);
-        await AsyncStorage.setItem('offlinePigs', JSON.stringify(offlinePigs));
-  
-        // Alert for offline queue
-        Alert.alert('Success', 'Pig  added successfully!!');
-      }
-  
-      // Update the state to include the new pig
-      setPigs((prevPigs) => [...prevPigs, { id: Date.now().toString(), ...newPig }]); // Add a temporary ID for the new pig
-  
-      // Reset fields and close modal
+      Alert.alert('Success', 'Pig added successfully!');
       resetFields();
       setModalVisible(false);
     } catch (error) {
@@ -217,6 +192,7 @@ useEffect(() => {
       Alert.alert('Error', 'There was a problem adding the pig.');
     }
   };
+  
 
   // Edit Pig
   const handleEditPig = async () => {
@@ -248,7 +224,7 @@ useEffect(() => {
     await updateMotherRecordsInMainFarm(firestore, user.uid, currentPigId, pigName);
     await updateMotherRecordsInAllFarmBranches(firestore, user.uid, currentPigId, pigName);
 
-    Alert.alert('Success', 'Pig name updated');
+    Alert.alert('Success', 'Pig name updated across all relevant records!');
     setIsEditing(false);
     resetFields();
   } catch (error) {
@@ -332,30 +308,29 @@ const updateMotherRecordsInAllFarmBranches = async (db, userId, pigId, newPigNam
 
 
    // Delete Pig
- // Delete Pig
-const handleDeletePig = (pigId) => {
-  Alert.alert(
-    'Confirm Deletion',
-    'Are you sure you want to delete this pig?',
-    [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: async () => {
-          try {
-            const pigCollectionPath = selectedBranch === 'Main Farm'
-              ? `users/${user.uid}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${pigId}`
-              : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${pigId}`;
-            await deleteDoc(doc(firestore, pigCollectionPath));
-            Alert.alert('Success', 'Pig deleted successfully!'); // Alert after deletion
-          } catch (error) {
-            console.error('Error deleting pig:', error);
-            Alert.alert('Error', 'There was a problem deleting the pig.');
+   const handleDeletePig = (pigId) => {
+    Alert.alert(
+      'Confirm Deletion',
+      'Are you sure you want to delete this pig?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: async () => {
+            try {
+              const pigCollectionPath = selectedBranch === 'Main Farm'
+                ? `users/${user.uid}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${pigId}`
+                : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${pigId}`;
+              await deleteDoc(doc(firestore, pigCollectionPath));
+              Alert.alert('Success', 'Pig deleted successfully!');
+            } catch (error) {
+              console.error('Error deleting pig:', error);
+              Alert.alert('Error', 'There was a problem deleting the pig.');
+            }
           }
-        }
-      },
-    ],
-    { cancelable: true }
-  );
-};
+        },
+      ],
+      { cancelable: true }
+    );
+  };
 
   const resetFields = () => {
     setPigName('');
@@ -373,38 +348,38 @@ const handleDeletePig = (pigId) => {
   // Filter Pigs
   const filteredPigs = pigs.filter(pig => pig.pigName.toLowerCase().includes(searchQuery.toLowerCase()));
 
-// Render Pig Item
-const renderPig = ({ item }) => (
-  <View style={styles.pigContainer}>
-    <View style={styles.pigInfo}>
-      <Text style={styles.pigText}>Tag Number: {item.tagNumber}</Text>
-      <Text style={styles.pigText}>Pig Name: {item.pigName}</Text>
+  // Render Pig Item
+  const renderPig = ({ item }) => (
+    <View style={styles.pigContainer}>
+      <View style={styles.pigInfo}>
+        <Text style={styles.pigText}>Tag Number: {item.tagNumber}</Text>
+        <Text style={styles.pigText}>Pig Name: {item.pigName}</Text>
+      </View>
+      <View style={styles.actionsContainer}>
+        <TouchableOpacity onPress={() => {
+          setSelectedPig(item);
+          setDetailModalVisible(true);
+        }}>
+          <Image source={viewIcon} style={styles.iview} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => {
+          setPigName(item.pigName);
+          setTagNumber(item.tagNumber);
+          setGender(item.gender);
+          setRace(item.race);
+          setCurrentPigId(item.id);
+          setVitality(item.vitality); // Set vitality when editing
+          setIsEditing(true);
+          setModalVisible(true);
+        }}>
+          <Image source={editIcon} style={styles.iedit} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => handleDeletePig(item.id)}>
+          <Image source={deleteIcon} style={styles.idelete} />
+        </TouchableOpacity>
+      </View>
     </View>
-    <View style={styles.actionsContainer}>
-      <TouchableOpacity onPress={() => {
-        setSelectedPig(item); // Set selected pig
-        setDetailModalVisible(true);
-      }}>
-        <Image source={viewIcon} style={styles.iview} />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => {
-        setPigName(item.pigName);
-        setTagNumber(item.tagNumber);
-        setGender(item.gender);
-        setRace(item.race);
-        setCurrentPigId(item.id);
-        setVitality(item.vitality); // Set vitality when editing
-        setIsEditing(true);
-        setModalVisible(true);
-      }}>
-        <Image source={editIcon} style={styles.iedit} />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => handleDeletePig(item.id)}>
-        <Image source={deleteIcon} style={styles.idelete} />
-      </TouchableOpacity>
-    </View>
-  </View>
-);
+  );
 
   return (
     <View style={styles.container}>
@@ -556,58 +531,62 @@ const renderPig = ({ item }) => (
 
       {/* Pig Detail Modal */}
       <Modal
-  visible={detailModalVisible}
-  transparent={true}
-  animationType="slide"
-  onRequestClose={() => setDetailModalVisible(false)}
->
-  <View style={styles.modalContainer}>
-    <Text style={styles.modalTitle}>Pig Details</Text>
-    <View style={styles.modalContent}>
-      {selectedPig ? (
-        <>
-          <Text style={styles.detailText}>Name: {selectedPig.pigName}</Text>
-          <Text style={styles.detailText}>Tag Number: {selectedPig.tagNumber}</Text>
-          <Text style={styles.detailText}>Gender: {selectedPig.gender}</Text>
-          <Text style={styles.detailText}>Race: {selectedPig.race}</Text>
-          <Text style={styles.detailText}>
-            Date of Birth: {new Date(selectedPig.dateOfBirth).toDateString()}
-          </Text>
-          <Text style={styles.detailText}>Vitality: {selectedPig.vitality}</Text>
+        visible={detailModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setDetailModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+        <Text style={styles.modalTitle}>Pig Details</Text>
+          <View style={styles.modalContent}>
+            {selectedPig && (
+              <>
+                <Text style={styles.detailText}>Name: {selectedPig.pigName}</Text>
+                <Text style={styles.detailText}>Tag Number: {selectedPig.tagNumber}</Text>
+                <Text style={styles.detailText}>Gender: {selectedPig.gender}</Text>
+                <Text style={styles.detailText}>Race: {selectedPig.race}</Text>
+                <Text style={styles.detailText}>Date of Birth: {selectedPig.dateOfBirth.toDate().toDateString()}</Text>
+                <Text style={styles.detailText}>Vitality: {selectedPig.vitality}</Text>
+                 {/* View Medical Records Button 
+                <Text style={styles.detailText}>
+                  Mother Name: {
+                    selectedFemalePigId
+                      ? femalePigs.find(pig => pig.id === selectedFemalePigId)?.pigName || 'N/A'
+                      : 'N/A'
+                  }
+                </Text>
+                            */}
 
-          {/* View Medical Records Button */}
-          <Button
-            title="View Medical Records"
-            onPress={() => {
-              if (selectedPig) {
-                navigation.navigate('MedicalRecordScreen', {
-                  userId: user.uid,
-                  selectedBranch: selectedBranch,
-                  pigGroupId: pigGroupId,
-                  pigName: selectedPig.pigName,
-                  selectedPigId: selectedPig.id,
-                });
-              } else {
-                Alert.alert('Error', 'Please select a pig before viewing medical records.');
-              }
-            }}
-            color="#000000FF"
-          />
-        </>
-      ) : (
-        <Text style={styles.detailText}>No pig selected.</Text>
-      )}
-
-      <Button
-        title="Close"
-        onPress={() => setDetailModalVisible(false)}
-        color="#f44336"
-      />
-    </View>
-  </View>
-</Modal>
-
+                            
+                  {/* View Medical Records Button */}
+                  <Button
+                    title="View Medical Records"
+                    onPress={() => {
+                      if (selectedPig) {
+                        navigation.navigate('MedicalRecordScreen', {
+                          userId: user.uid,
+                          selectedBranch: selectedBranch, // Pass the selected branch
+                          pigGroupId: pigGroupId,         // Pass the pig group ID
+                          pigName: selectedPig.pigName,   // Pass the pig name
+                          selectedPigId: selectedPig.id,   // Pass the selected pig ID
+                        });
+                      } else {
+                        Alert.alert('Error', 'Please select a pig before viewing medical records.');
+                      }
+                    }}
+                    color="#000000FF"
+                  />
+              </>
+            )}
+            <Button
+              title="Close"
+              onPress={() => setDetailModalVisible(false)}
+              color="#f44336"
+            />
+          </View>
+        </View>
+      </Modal>
 
     </View>
   );
-} 
+}
