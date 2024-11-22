@@ -5,7 +5,8 @@ import { collection, getDocs, doc, getDoc,updateDoc,setDoc,addDoc } from 'fireba
 import viewIcon from '../../assets/images/buttons/viewIcon.png';
 import PregnancyRecordsStyles from '../../frontend/Pregnancy/PregnancyRecordsStyles';
 import DateTimePicker from '@react-native-community/datetimepicker'; // Import DateTimePicker
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import NetInfo from '@react-native-community/netinfo';
 const PregnancyRecords = ({ route, navigation }) => {
   const { selectedBranch, user } = route.params || {};
 
@@ -90,43 +91,95 @@ const PregnancyRecords = ({ route, navigation }) => {
       alert('Please select a breeding date.');
       return;
     }
-
-    try {
-      const pregnancyRecordPath = `users/${user.uid}/farmBranches/${selectedBranch === 'Main Farm' ? 'Main Farm' : `Farm Branch/Branches/${selectedBranch}`}/pregnancyRecords/${selectedPigId}`;
-      const pregnancyRecordRef = doc(firestore, pregnancyRecordPath);
-      const pregnancyRecordDoc = await getDoc(pregnancyRecordRef);
-      if (!pregnancyRecordDoc.exists()) {
-        await setDoc(pregnancyRecordRef, {
-          motherRecords: {
-            pigId: selectedPigId,
-            pigName: selectedPigName,
-          },
-        });
+  
+    const breedingData = {
+      breedingDate: breedingDate,
+      remarks: remarks,
+      addedAt: new Date(),
+    };
+  
+    const isConnected = await checkInternetConnection();
+  
+    if (isConnected) {
+      try {
+        const pregnancyRecordPath = `users/${user.uid}/farmBranches/${selectedBranch === 'Main Farm' ? 'Main Farm' : `Farm Branch/Branches/${selectedBranch}`}/pregnancyRecords/${selectedPigId}`;
+        const breedingDatesRef = collection(firestore, `${pregnancyRecordPath}/breedingDates`);
+        await addDoc(breedingDatesRef, breedingData);
+        alert('Breeding date added successfully');
+        setModalVisible(false);
+      } catch (error) {
+        console.error('Error adding breeding date: ', error);
+        alert('Failed to add breeding date');
       }
-      const breedingDatesRef = collection(firestore, `${pregnancyRecordPath}/breedingDates`);
-      await addDoc(breedingDatesRef, {
-        breedingDate: breedingDate,
-        remarks: remarks, // Add remarks to the record
-        addedAt: new Date(),
-      });
-      alert('Breeding date added successfully');
-      setModalVisible(false); // Close modal
-    } catch (error) {
-      console.error('Error adding breeding date: ', error);
-      alert('Failed to add breeding date');
+    } else {
+      // Store breeding data locally
+      try {
+        const localBreedingData = await AsyncStorage.getItem('localBreedingData') || '[]';
+        const localBreedingArray = JSON.parse(localBreedingData);
+        localBreedingArray.push({ ...breedingData, pigId: selectedPigId, pigName: selectedPigName });
+        await AsyncStorage.setItem('localBreedingData', JSON.stringify(localBreedingArray));
+        alert('Breeding date stored locally. It will sync when online.');
+        setModalVisible(false);
+      } catch (error) {
+        console.error('Error storing breeding date locally: ', error);
+      }
+    }
+  };
+  
+  const checkInternetConnection = async () => {
+    const state = await NetInfo.fetch();
+    return state.isConnected;
+  };
+  
+  const syncLocalBreedingData = async () => {
+    const localBreedingData = await AsyncStorage.getItem('localBreedingData');
+    if (localBreedingData) {
+      const breedingArray = JSON.parse(localBreedingData);
+      for (const breeding of breedingArray) {
+        try {
+          const pregnancyRecordPath = `users/${user.uid}/farmBranches/${selectedBranch === 'Main Farm' ? 'Main Farm' : `Farm Branch/Branches/${selectedBranch}`}/pregnancyRecords/${breeding.pigId}`;
+          const breedingDatesRef = collection(firestore, `${pregnancyRecordPath}/breedingDates`);
+          await addDoc(breedingDatesRef, breeding);
+        } catch (error) {
+          console.error('Error syncing local breeding data: ', error);
+        }
+      }
+      // Clear local storage after syncing
+      await AsyncStorage.removeItem('localBreedingData');
     }
   };
   
   
+  
   const fetchBreedingHistory = async () => {
+    const breedingHistoryArray = [];
+  
+    // Fetch from Firestore
     try {
-      const breedingDatesRef = collection(firestore, `users/${user.uid}/farmBranches/${selectedBranch === 'Main Farm' ? 'Main Farm' : `Farm Branch/Branches/${selectedBranch}`}/pregnancyRecords/${selectedPigId}/breedingDates`);
-      const breedingSnapshot = await getDocs(breedingDatesRef);
-      const history = breedingSnapshot.docs.map(doc => doc.data());
-      setBreedingHistory(history);
+      const pregnancyRecordPath = `users/${user.uid}/farmBranches/${selectedBranch === 'Main Farm' ? 'Main Farm' : `Farm Branch/Branches/${selectedBranch}`}/pregnancyRecords/${selectedPigId}/breedingDates`;
+      const breedingDatesRef = collection(firestore, pregnancyRecordPath);
+      const snapshot = await getDocs(breedingDatesRef);
+      
+      snapshot.forEach(doc => {
+        breedingHistoryArray.push({ id: doc.id, ...doc.data() });
+      });
     } catch (error) {
-      console.error("Error fetching breeding history: ", error);
+      console.error('Error fetching breeding history from Firestore: ', error);
     }
+  
+    // Fetch from AsyncStorage
+    try {
+      const localBreedingData = await AsyncStorage.getItem('localBreedingData');
+      if (localBreedingData) {
+        const localBreedingArray = JSON.parse(localBreedingData);
+        const offlineBreedingData = localBreedingArray.filter(item => item.pigId === selectedPigId);
+        breedingHistoryArray.push(...offlineBreedingData);
+      }
+    } catch (error) {
+      console.error('Error fetching local breeding data: ', error);
+    }
+  
+    setBreedingHistory(breedingHistoryArray);
   };
   
   
@@ -157,9 +210,19 @@ const PregnancyRecords = ({ route, navigation }) => {
       console.error("Error fetching piglets: ", error);
     }
   };
-
+  useEffect(() => {
+    if (breedingHistoryVisible) {
+      fetchBreedingHistory();
+    }
+  }, [breedingHistoryVisible]);
   useEffect(() => {
     fetchFemalePigs();
+    const unsubscribe = NetInfo.addEventListener(state => {
+      if (state.isConnected) {
+        syncLocalBreedingData();
+      }
+    });
+    return () => unsubscribe();
   }, [selectedBranch, user]);
 
   if (loading) {
@@ -307,7 +370,7 @@ const PregnancyRecords = ({ route, navigation }) => {
       ) : (
         <FlatList
           data={breedingHistory}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item) => item.id ? item.id : item.breedingDate} // Use id if available, else fallback to breedingDate
           renderItem={({ item }) => (
             <View style={PregnancyRecordsStyles.breedingHistoryItem}>
               <View style={PregnancyRecordsStyles.breedingHistoryTextContainer}>
