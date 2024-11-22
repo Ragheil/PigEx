@@ -77,20 +77,21 @@ useEffect(() => {
       Alert.alert('Validation Error', 'All fields must be filled.');
       return;
     }
-
+  
     const recordsPath = selectedBranch === 'Main Farm'
       ? `users/${userId}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${selectedPigId}/medicalRecords`
       : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${selectedPigId}/medicalRecords`;
-
+  
     try {
       await addDoc(collection(firestore, recordsPath), {
         name,
         date,
         remarks,
-        createdAt: new Date(), // This should be a Firestore Timestamp
+        createdAt: new Date(),
       });
       resetFields();
       setModalVisible(false);
+      // Show alert when a record is added
       Alert.alert('Success', 'Medical record added successfully!');
     } catch (error) {
       console.error('Error adding record:', error);
@@ -104,11 +105,11 @@ useEffect(() => {
       Alert.alert('Validation Error', 'All fields must be filled.');
       return;
     }
-
+  
     const recordsPath = selectedBranch === 'Main Farm'
       ? `users/${userId}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${selectedPigId}/medicalRecords/${recordId}`
       : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${selectedPigId}/medicalRecords/${recordId}`;
-
+  
     try {
       await updateDoc(doc(firestore, recordsPath), {
         name,
@@ -118,10 +119,10 @@ useEffect(() => {
       resetFields();
       setEditRecordId(null);
       setModalVisible(false);
-      Alert.alert('Success', 'Medical record updated successfully!');
+      Alert.alert('Success', 'Medical record updated successfully!'); // Success alert
     } catch (error) {
       console.error('Error updating record:', error);
-      Alert.alert(' Error', 'There was a problem updating the record.');
+      Alert.alert('Error', 'There was a problem updating the record.');
     }
   };
 
@@ -143,7 +144,7 @@ useEffect(() => {
               : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${selectedPigId}/medicalRecords/${recordId}`;
             try {
               await deleteDoc(doc(firestore, recordsPath));
-              Alert.alert('Success', 'Medical record deleted successfully!');
+              Alert.alert('Success', 'Medical record deleted successfully!'); // Success alert
             } catch (error) {
               console.error('Error deleting record:', error);
               Alert.alert('Error', 'There was a problem deleting the record.');
