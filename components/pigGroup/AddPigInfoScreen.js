@@ -610,4 +610,4 @@ const renderPig = ({ item }) => (
 
     </View>
   );
-}
+} 
