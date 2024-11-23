@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "baboypig",
+    "name": "PigEx",
     "slug": "baboypig",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -20,7 +20,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/images/LOGO.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.pigex.app"
@@ -35,8 +35,9 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "096d6d15-d5ac-49f9-825c-875b2487eb09"
+        "projectId": "726ea9dc-9498-4560-b149-1b64e4469874"
       }
-    }
+    },
+    "owner": "2021302638"
   }
 }
