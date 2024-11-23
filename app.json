@@ -4,10 +4,10 @@
     "slug": "baboypig",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/images/LOGO.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/images/LOGO.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
