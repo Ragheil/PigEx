@@ -58,7 +58,8 @@
     "react-native-svg": "15.8.0",
     "react-native-tab-view": "^3.5.2",
     "react-native-toast-message": "^2.2.0",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "vercel": "^39.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0"
