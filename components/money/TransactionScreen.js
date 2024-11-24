@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, RefreshControl, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, RefreshControl, Alert, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { collection, getDocs, doc, onSnapshot, getDoc } from 'firebase/firestore';
 import { firestore } from '../../firebase/config2'; // Adjust the path to your Firebase config
@@ -374,81 +374,91 @@ const [error, setError] = useState(null);
 
   
   
-  const generateBarChartData = () => {
-    const data = {
-      labels: [],
+const generateBarChartData = () => {
+  const data = {
+      labels: [], // Labels will depend on the selected period
       datasets: [
-        {
-          label: 'Money In',
-          data: [],
-          color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`, // Green for income
-        },
-        {
-          label: 'Money Out',
-          data: [],
-          color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`, // Red for expenses
-        },
+          {
+              label: 'Money In',
+              data: [], // Initialize with zeros for each period
+              color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`, // Green for income
+          },
+          {
+              label: 'Money Out',
+              data: [], // Initialize with zeros for each period
+              color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`, // Red for expenses
+          },
       ],
-    };
-
-    const incomeData = {};
-    const expenseData = {};
-
-    filteredTransactions.forEach(transaction => {
-      const date = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
-      let key;
-
-      switch (selectedPeriod) {
-        case 'year':
-          key = date.getFullYear();
-          break;
-        case 'month':
-          key = `${date.getFullYear()}-${date.getMonth() + 1}`;
-          break;
-        case 'week':
-          const weekNumber = Math.ceil((date.getDate() + new Date(date.getFullYear(), date.getMonth(), 1).getDay()) / 7);
-          key = `${date.getFullYear()}-W${weekNumber}`;
-          break;
-        case 'day':
-          key = date.toLocaleDateString();
-          break;
-        default:
-          key = date.toLocaleDateString();
-          break;
-      }
-
-      if (!incomeData[key]) {
-        incomeData[key] = 0;
-      }
-      if (!expenseData[key]) {
-        expenseData[key] = 0;
-      }
-
-      if (transaction.type === 'in') {
-        incomeData[key] += parseFloat(transaction.amount);
-      } else {
-        expenseData[key] += parseFloat(transaction.amount);
-      }
-    });
-
-    Object.keys(incomeData).forEach(key => {
-      data.labels.push(key);
-      data.datasets[0].data.push(incomeData[key]); // Money In
-      data.datasets[1].data.push(expenseData[key] || 0); // Money Out
-    });
-
-    return data;
   };
 
-  useEffect(() => {
-    const chartData = generateBarChartData();
-    setBarChartData(chartData); // Update state with generated data
-  }, [filteredTransactions, selectedPeriod]); // Update chart data when transactions or period change
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth();
+  const startOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay()));
+  const selectedDateRange = selectedPeriod || 'week'; // Default to 'week' if not set
 
-  useEffect(() => {
-    const chartData = generateBarChartData();
-    setBarChartData(chartData); // Update state with generated data
-  }, [filteredTransactions, selectedPeriod]); // Update chart data when transactions or period change
+  if (selectedDateRange === 'week') {
+      // Weekly: 7 days of the current week
+      data.labels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      data.datasets[0].data = Array(7).fill(0); // Money In
+      data.datasets[1].data = Array(7).fill(0); // Money Out
+
+      filteredTransactions.forEach(transaction => {
+          const date = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
+          if (date >= startOfWeek && date <= currentDate) {
+              const dayIndex = date.getDay();
+              if (transaction.type === 'in') {
+                  data.datasets[0].data[dayIndex] += parseFloat(transaction.amount) || 0;
+              } else {
+                  data.datasets[1].data[dayIndex] += parseFloat(transaction.amount) || 0;
+              }
+          }
+      });
+  } else if (selectedDateRange === 'month') {
+      // Monthly: 4 weeks of the current month
+      data.labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+      data.datasets[0].data = Array(4).fill(0);
+      data.datasets[1].data = Array(4).fill(0);
+
+      filteredTransactions.forEach(transaction => {
+          const date = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
+          if (date.getFullYear() === currentYear && date.getMonth() === currentMonth) {
+              const weekNumber = Math.floor((date.getDate() - 1) / 7);
+              if (transaction.type === 'in') {
+                  data.datasets[0].data[weekNumber] += parseFloat(transaction.amount) || 0;
+              } else {
+                  data.datasets[1].data[weekNumber] += parseFloat(transaction.amount) || 0;
+              }
+          }
+      });
+  } else if (selectedDateRange === 'year') {
+      // Yearly: 12 months of the current year
+      data.labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      data.datasets[0].data = Array(12).fill(0);
+      data.datasets[1].data = Array(12).fill(0);
+
+      filteredTransactions.forEach(transaction => {
+          const date = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
+          if (date.getFullYear() === currentYear) {
+              const monthIndex = date.getMonth();
+              if (transaction.type === 'in') {
+                  data.datasets[0].data[monthIndex] += parseFloat(transaction.amount) || 0;
+              } else {
+                  data.datasets[1].data[monthIndex] += parseFloat(transaction.amount) || 0;
+              }
+          }
+      });
+  }
+
+  return data;
+};
+
+
+useEffect(() => {
+  const chartData = generateBarChartData();
+  setBarChartData(chartData);
+}, [filteredTransactions, selectedPeriod]);
+
 
    const getSortedTransactions = (transactions) => {
     // Sort by latest date for monthly view
@@ -576,44 +586,48 @@ const [error, setError] = useState(null);
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-     <View style={TransactionScreenStyles.periodSelectionContainer}>
-        <TouchableOpacity onPress={() => setSelectedPeriod('week')} style={TransactionScreenStyles.periodButton}>
-          <Text>Week</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setSelectedPeriod('month')} style={TransactionScreenStyles.periodButton}>
-          <Text>Month</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setSelectedPeriod('year')} style={TransactionScreenStyles.periodButton}>
-          <Text>Year</Text>
-        </TouchableOpacity>
-      </View>
-      {/* Bar Chart */}
-      <View style={{ alignItems: 'center', marginVertical: 20 }}>
-      <BarChart
-        data={barChartData}
-        width={screenWidth - 30} // Define your screen width
-        height={220}
-        chartConfig={{
-          backgroundColor: '#94E334FF',
-          backgroundGradientFrom: '#9ED74AFF',
-          backgroundGradientTo: '#FFFFFFFF',
-          decimalPlaces: 2,
-          color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
-          labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-          style: {
-            borderRadius: 16,
-          },
-        }}
-        style={{
-          marginVertical: 8,
-          borderRadius: 16,
-        }}
-      />
+<View style={{ flexDirection: 'row', justifyContent: 'center', marginVertical: 10 }}>
+    <Button title="Week" onPress={() => setSelectedPeriod('week')} />
+    <Button title="Month" onPress={() => setSelectedPeriod('month')} />
+    <Button title="Year" onPress={() => setSelectedPeriod('year')} />
+</View>
 
 
-        
-        
-      </View>
+
+
+<View style={{ alignItems: 'center', marginVertical: 20 }}>
+    <Text style={{ textAlign: 'center', fontSize: 16, fontWeight: 'bold', marginVertical: 10 }}>
+        {new Date().toLocaleString('default', { month: 'long' })} Transactions
+    </Text>
+    <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false} // Optional: hides the horizontal scrollbar
+        contentContainerStyle={{ flexGrow: 1 }} // Ensures the content adjusts properly
+    >
+        <BarChart
+            data={barChartData}
+            width={Math.max(barChartData.labels.length * 50, screenWidth)} // Adjust width based on the number of labels
+            height={220}
+            chartConfig={{
+                backgroundColor: '#94E334FF',
+                backgroundGradientFrom: '#9ED74AFF',
+                backgroundGradientTo: '#FFFFFFFF',
+                decimalPlaces: 2,
+                color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                style: {
+                    borderRadius: 16,
+                },
+            }}
+            style={{
+                marginVertical: 8,
+                borderRadius: 16,
+            }}
+        />
+    </ScrollView>
+</View>
+
+
       {filteredTransactions.length > 0 ? (
   Object.entries(groupedTransactions).map(([date, transactions]) => (
     <View key={date} style={TransactionScreenStyles.transactionContainer}>
