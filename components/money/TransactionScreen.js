@@ -376,17 +376,17 @@ const [error, setError] = useState(null);
   
 const generateBarChartData = () => {
   const data = {
-      labels: [], // Labels depend on the selected period
+      labels: [], // Labels for the chart
       datasets: [
           {
               label: 'Money In',
-              data: [],
-              color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`,
+              data: [], // Values for Money In
+              color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`, // Green
           },
           {
               label: 'Money Out',
-              data: [],
-              color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`,
+              data: [], // Values for Money Out
+              color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`, // Red
           },
       ],
   };
@@ -422,7 +422,7 @@ const generateBarChartData = () => {
           const date = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
           if (date.getFullYear() === currentYear && date.getMonth() === currentMonth) {
               const weekNumber = Math.floor((date.getDate() - 1) / 7);
-              if (weekNumber >= 0 && weekNumber < 4) { // Ensure week number is valid
+              if (weekNumber >= 0 && weekNumber < 4) {
                   if (transaction.type === 'in') {
                       data.datasets[0].data[weekNumber] += parseFloat(transaction.amount) || 0;
                   } else {
@@ -451,6 +451,7 @@ const generateBarChartData = () => {
 
   return data;
 };
+
 
 
 useEffect(() => {
@@ -595,23 +596,27 @@ useEffect(() => {
 
 
 <View style={{ alignItems: 'center', marginVertical: 20 }}>
+    <ScrollView horizontal>
+    <View style={{ alignItems: 'center', marginVertical: 20 }}>
     <Text style={{ textAlign: 'center', fontSize: 16, fontWeight: 'bold', marginVertical: 10 }}>
-        {new Date().toLocaleString('default', { month: 'long' })} Transactions
-    </Text>
-    <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false} // Optional: hides the horizontal scrollbar
-        contentContainerStyle={{ flexGrow: 1 }} // Ensures the content adjusts properly
-    >
+    {selectedPeriod === 'week'
+        ? 'Weekly Transactions'
+        : selectedPeriod === 'month'
+        ? `${new Date().toLocaleString('default', { month: 'long' })} Transactions`
+        : 'Yearly Transactions'}
+</Text>
+
         <BarChart
             data={barChartData}
-            width={Math.max(barChartData.labels.length * 50, screenWidth)} // Adjust width based on the number of labels
+            width={Math.max(screenWidth, barChartData.labels.length * 60)} // Adjust width for horizontal scrolling
             height={220}
             chartConfig={{
                 backgroundColor: '#94E334FF',
                 backgroundGradientFrom: '#9ED74AFF',
                 backgroundGradientTo: '#FFFFFFFF',
                 decimalPlaces: 2,
+                barPercentage: 0.5, // Reduce bar width to accommodate two bars per label
+                groupBarSpacing: 10, // Add spacing between Money In and Money Out bars
                 color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
                 labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                 style: {
@@ -622,8 +627,11 @@ useEffect(() => {
                 marginVertical: 8,
                 borderRadius: 16,
             }}
+            verticalLabelRotation={30} // Optional: Rotate labels for better readability
         />
-    </ScrollView>
+    </View>
+</ScrollView>
+
 </View>
 
 
