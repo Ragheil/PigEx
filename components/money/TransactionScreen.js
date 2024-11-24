@@ -394,7 +394,17 @@ const generateBarChartData = () => {
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
-  const startOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay()));
+  const currentDay = currentDate.getDay();
+
+  // Calculate the start and end dates of the current week
+  const startOfWeek = new Date(currentDate);
+  startOfWeek.setDate(currentDate.getDate() - currentDay);
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  const endOfWeek = new Date(currentDate);
+  endOfWeek.setDate(startOfWeek.getDate() + 6);
+  endOfWeek.setHours(23, 59, 59, 999);
+
   const selectedDateRange = selectedPeriod || 'week'; // Default to 'week'
 
   if (selectedDateRange === 'week') {
@@ -404,7 +414,7 @@ const generateBarChartData = () => {
 
       filteredTransactions.forEach(transaction => {
           const date = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
-          if (date >= startOfWeek && date <= currentDate) {
+          if (date >= startOfWeek && date <= endOfWeek) {
               const dayIndex = date.getDay();
               if (transaction.type === 'in') {
                   data.datasets[0].data[dayIndex] += parseFloat(transaction.amount) || 0;
@@ -451,6 +461,7 @@ const generateBarChartData = () => {
 
   return data;
 };
+
 
 
 
@@ -596,15 +607,15 @@ useEffect(() => {
 
 
 <View style={{ alignItems: 'center', marginVertical: 20 }}>
-    <ScrollView horizontal>
+<ScrollView horizontal>
     <View style={{ alignItems: 'center', marginVertical: 20 }}>
-    <Text style={{ textAlign: 'center', fontSize: 16, fontWeight: 'bold', marginVertical: 10 }}>
-    {selectedPeriod === 'week'
-        ? 'Weekly Transactions'
-        : selectedPeriod === 'month'
-        ? `${new Date().toLocaleString('default', { month: 'long' })} Transactions`
-        : 'Yearly Transactions'}
-</Text>
+        <Text style={{ textAlign: 'center', fontSize: 16, fontWeight: 'bold', marginVertical: 10 }}>
+            {selectedPeriod === 'week'
+                ? 'Weekly Transactions'
+                : selectedPeriod === 'month'
+                ? `${new Date().toLocaleString('default', { month: 'long' })} Transactions`
+                : 'Yearly Transactions'}
+        </Text>
 
         <BarChart
             data={barChartData}
@@ -631,6 +642,7 @@ useEffect(() => {
         />
     </View>
 </ScrollView>
+
 
 </View>
 
