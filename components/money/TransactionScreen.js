@@ -376,17 +376,17 @@ const [error, setError] = useState(null);
   
 const generateBarChartData = () => {
   const data = {
-      labels: [], // Labels will depend on the selected period
+      labels: [], // Labels depend on the selected period
       datasets: [
           {
               label: 'Money In',
-              data: [], // Initialize with zeros for each period
-              color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`, // Green for income
+              data: [],
+              color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`,
           },
           {
               label: 'Money Out',
-              data: [], // Initialize with zeros for each period
-              color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`, // Red for expenses
+              data: [],
+              color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`,
           },
       ],
   };
@@ -395,13 +395,12 @@ const generateBarChartData = () => {
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
   const startOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay()));
-  const selectedDateRange = selectedPeriod || 'week'; // Default to 'week' if not set
+  const selectedDateRange = selectedPeriod || 'week'; // Default to 'week'
 
   if (selectedDateRange === 'week') {
-      // Weekly: 7 days of the current week
       data.labels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      data.datasets[0].data = Array(7).fill(0); // Money In
-      data.datasets[1].data = Array(7).fill(0); // Money Out
+      data.datasets[0].data = Array(7).fill(0);
+      data.datasets[1].data = Array(7).fill(0);
 
       filteredTransactions.forEach(transaction => {
           const date = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
@@ -415,7 +414,6 @@ const generateBarChartData = () => {
           }
       });
   } else if (selectedDateRange === 'month') {
-      // Monthly: 4 weeks of the current month
       data.labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
       data.datasets[0].data = Array(4).fill(0);
       data.datasets[1].data = Array(4).fill(0);
@@ -424,15 +422,16 @@ const generateBarChartData = () => {
           const date = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
           if (date.getFullYear() === currentYear && date.getMonth() === currentMonth) {
               const weekNumber = Math.floor((date.getDate() - 1) / 7);
-              if (transaction.type === 'in') {
-                  data.datasets[0].data[weekNumber] += parseFloat(transaction.amount) || 0;
-              } else {
-                  data.datasets[1].data[weekNumber] += parseFloat(transaction.amount) || 0;
+              if (weekNumber >= 0 && weekNumber < 4) { // Ensure week number is valid
+                  if (transaction.type === 'in') {
+                      data.datasets[0].data[weekNumber] += parseFloat(transaction.amount) || 0;
+                  } else {
+                      data.datasets[1].data[weekNumber] += parseFloat(transaction.amount) || 0;
+                  }
               }
           }
       });
   } else if (selectedDateRange === 'year') {
-      // Yearly: 12 months of the current year
       data.labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       data.datasets[0].data = Array(12).fill(0);
       data.datasets[1].data = Array(12).fill(0);
