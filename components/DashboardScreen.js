@@ -49,7 +49,9 @@ export default function DashboardScreen({ firstName, lastName, farmName, onLogou
   const [currentPassword, setCurrentPassword] = useState('');
   const [emailModalVisible, setEmailModalVisible] = useState(false);
   const user = auth.currentUser;
-  
+  const [filteredTransactions, setFilteredTransactions] = useState([]);
+  const [selectedPeriod, setSelectedPeriod] = useState('month'); // Default to month
+
   const [transactions, setTransactions] = useState([]);
   const [barChartData, setBarChartData] = useState({
     labels: [],
@@ -97,53 +99,97 @@ export default function DashboardScreen({ firstName, lastName, farmName, onLogou
   }, []);
 
 
-  const generateBarChartData = (transactions) => {
+  const generateBarChartData = () => {
     const data = {
-      labels: [],
-      datasets: [
-        {
-          label: 'Money In',
-          data: [],
-          color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`, // Green for income
-        },
-        {
-          label: 'Money Out',
-          data: [],
-          color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`, // Red for expenses
-        },
-      ],
+        labels: [], // Labels for the chart
+        datasets: [
+            {
+                label: 'Money In',
+                data: [], // Values for Money In
+                color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`, // Green
+            },
+            {
+                label: 'Money Out',
+                data: [], // Values for Money Out
+                color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`, // Red
+            },
+        ],
     };
-
-    const incomeData = {};
-    const expenseData = {};
-
-    transactions.forEach(transaction => {
-      const date = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
-      const key = date.toLocaleDateString(); // Group by date
-
-      if (!incomeData[key]) {
-        incomeData[key] = 0;
-      }
-      if (!expenseData[key]) {
-        expenseData[key] = 0;
-      }
-
-      if (transaction.type === 'in') {
-        incomeData[key] += parseFloat(transaction.amount);
-      } else {
-        expenseData[key] += parseFloat(transaction.amount);
-      }
-    });
-
-    Object.keys(incomeData).forEach(key => {
-      data.labels.push(key);
-      data.datasets[0].data.push(incomeData[key]); // Money In
-      data.datasets[1].data.push(expenseData[key] || 0); // Money Out
-    });
-
-    setBarChartData(data);
+  
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+    const currentDay = currentDate.getDay();
+  
+    // Calculate the start and end dates of the current week
+    const startOfWeek = new Date(currentDate);
+    startOfWeek.setDate(currentDate.getDate() - currentDay);
+    startOfWeek.setHours(0, 0, 0, 0);
+  
+    const endOfWeek = new Date(currentDate);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999);
+  
+    const selectedDateRange = selectedPeriod || 'week'; // Default to 'week'
+  
+    if (selectedDateRange === 'week') {
+        data.labels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        data.datasets[0].data = Array(7).fill(0);
+        data.datasets[1].data = Array(7).fill(0);
+  
+        filteredTransactions.forEach(transaction => {
+            const date = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
+            if (date >= startOfWeek && date <= endOfWeek) {
+                const dayIndex = date.getDay();
+                if (transaction.type === 'in') {
+                    data.datasets[0].data[dayIndex] += parseFloat(transaction.amount) || 0;
+                } else {
+                    data.datasets[1].data[dayIndex] += parseFloat(transaction.amount) || 0;
+                }
+            }
+        });
+    } else if (selectedDateRange === 'month') {
+        data.labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+        data.datasets[0].data = Array(4).fill(0);
+        data.datasets[1].data = Array(4).fill(0);
+  
+        filteredTransactions.forEach(transaction => {
+            const date = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
+            if (date.getFullYear() === currentYear && date.getMonth() === currentMonth) {
+                const weekNumber = Math.floor((date.getDate() - 1) / 7);
+                if (weekNumber >= 0 && weekNumber < 4) {
+                    if (transaction.type === 'in') {
+                        data.datasets[0].data[weekNumber] += parseFloat(transaction.amount) || 0;
+                    } else {
+                        data.datasets[1].data[weekNumber] += parseFloat(transaction.amount) || 0;
+                    }
+                }
+            }
+        });
+    } else if (selectedDateRange === 'year') {
+        data.labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        data.datasets[0].data = Array(12).fill(0);
+        data.datasets[1].data = Array(12).fill(0);
+  
+        filteredTransactions.forEach(transaction => {
+            const date = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
+            if (date.getFullYear() === currentYear) {
+                const monthIndex = date.getMonth();
+                if (transaction.type === 'in') {
+                    data.datasets[0].data[monthIndex] += parseFloat(transaction.amount) || 0;
+                } else {
+                    data.datasets[1].data[monthIndex] += parseFloat(transaction.amount) || 0;
+                }
+            }
+        });
+    }
+  
+    return data;
   };
-
+  useEffect(() => {
+    const chartData = generateBarChartData();
+    setBarChartData(chartData);
+  }, [filteredTransactions, selectedPeriod]);
  // const userId = user ? user.uid : null; // Ensure that userId is defined
   const [userId, setUserId] = useState(null);
 
@@ -471,76 +517,114 @@ useEffect(() => {
           </View>
         </View>
         
-        <View style={styles.contentContainer}>
-              <Text style={styles.title}>Pig Groups Summary</Text>
+        <View style={{ flex: 1, padding: 16 }}>
               
-              <TouchableOpacity
-                style={[styles.seeAllButton, { zIndex: 10, elevation: 5 }]}
-                onPress={() => navigation.navigate('PigGroups', {
-                  selectedBranch: selectedBranch === `Main Farm: ${farmName}` ? 'Main Farm' : selectedBranch,
-                  farmName: farmName // Pass the farm name here
-                })}
-              >
-                <Text style={styles.seeAllText}>See All</Text>
-              </TouchableOpacity>
+      <Text style={{ fontSize: 24, fontWeight: '500', marginBottom: 20, textAlign: 'center' }}>
+        Pig Groups Summary
+      </Text>
 
-              <FlatList
-                data={pigGroups}
-                renderItem={({ item }) => (
-                  <View style={styles.pigGroupSummary}>
-                    <Text style={styles.pigGroupText}>{item.name}</Text>
-                    <Text style={styles.pigCountText}>
-                            {/* <Text style={styles.tableHeader}>Pig Groups</Text>            
-                            <Text style={styles.boldText}>{item.pigCount || 0} Pigs</Text> */}
-                      <Text style={styles.boldText}></Text>
-                    </Text>
-                  </View>
-                )}
-                keyExtractor={(item) => item.id}
-                horizontal
-                showsHorizontalScrollIndicator={true}
-                contentContainerStyle={styles.flatListContent}
-                snapToAlignment="center"
-                snapToInterval={160}
-                decelerationRate="fast"
-                ListEmptyComponent={<Text style={styles.emptyMessage}>No pig groups available.</Text>}
-                style={styles.flatList}
-              />
-
-
-<View style={{ flex: 1, padding: 16 }}>
-      <Text style={{ fontSize: 24, fontWeight: '500' }}>Transaction Preview</Text>
-      <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={false} onRefresh={() => {}} />
-        }
+      <TouchableOpacity
+        style={{
+          marginBottom: 20,
+          paddingVertical: 10,
+          paddingHorizontal: 20,
+          backgroundColor: '#869F77',
+          borderRadius: 13,
+          alignItems: 'center',
+          zIndex: 1, // High zIndex for priority
+          elevation: 5, // High elevation for priority
+        }}
+        onPress={() => navigation.navigate('PigGroups', {
+          selectedBranch: selectedBranch === `Main Farm: ${farmName}` ? 'Main Farm' : selectedBranch,
+          farmName: farmName // Pass the farm name here
+        })}
       >
-        <View style={{ alignItems: 'center', marginVertical: 20}}>
-          <BarChart
-            data={barChartData}
-            width={screenWidth - 30} // Define your screen width
-            height={220}
-            yLabelsOffset={-2}
-            chartConfig={{
-              // backgroundColor: '#869f77FF',
-              backgroundGradientFrom: '#C1CFA1FF',
-              backgroundGradientTo: '#566F4880',
-              decimalPlaces: 2,
-              color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-              style: {
-                borderRadius: 10,
-              },
-            }}
-            style={{
-              // marginVertical: 20,
-              // borderRadius: 40,
-            }}
-          />
-        </View>
-      </ScrollView>
+        <Text style={{ color: '#fff', fontSize: 18 }}>See All</Text>
+      </TouchableOpacity>
+
+      {/* FlatList for Pig Groups */}
+      <FlatList
+        data={pigGroups}
+        renderItem={({ item }) => (
+          <View style={{
+            width: 150,
+            marginRight: 10,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#F5F5F5',
+            borderRadius: 13,
+            padding: 10,
+            borderColor: '#566F48',
+            borderWidth: 4,
+            elevation: 5,
+          }}>
+            <Text style={{ fontSize: 18, color: '#333' }}>{item.name}</Text>
+            <Text style={{ fontSize: 16, color: '#666' }}>
+              <Text style={{ fontWeight: 'bold' }}></Text>
+            </Text>
+          </View>
+        )}
+        keyExtractor={(item) => item.id}
+        horizontal
+        showsHorizontalScrollIndicator={true}
+        contentContainerStyle={{
+          paddingHorizontal: 5,
+        }}
+        snapToAlignment="center"
+        snapToInterval={160}
+        decelerationRate="fast"
+        ListEmptyComponent={<Text style={{ fontSize: 16, color: 'gray', textAlign: 'center', marginTop: 20 }}>No pig groups available.</Text>}
+        style={{
+          width: '100%', // Ensure FlatList takes full width
+          zIndex: 1, // High zIndex for priority
+          elevation: 2, // High elevation for priority
+        }}
+      />
+
+      <View style={{ flex: 1, padding: 16 }}>
+        <Text style={{ fontSize: 24, fontWeight: '500' }}>Transaction Preview</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={true} style={{ width: '100%', zIndex: 1, elevation: 5 }}>
+          <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 20 }}>
+            <Text style={{ textAlign: 'center', fontSize: 16, fontWeight: 'bold', marginVertical: 10 }}>
+              {selectedPeriod === 'week'
+                ? 'Weekly Transactions'
+                : selectedPeriod === 'month'
+                ? `${new Date().toLocaleString('default', { month: 'long' })} Transactions`
+                : 'Yearly Transactions'}
+            </Text>
+
+            <BarChart
+              data={barChartData}
+              width={Math.max(screenWidth, barChartData.labels.length * 60)} // Adjust width for horizontal scrolling
+              height={220}
+              chartConfig={{
+                backgroundColor: '#94E334FF',
+                backgroundGradientFrom: '#9ED74A', // Corrected color without space
+                backgroundGradientTo: '#FFFFFF', // Corrected color
+                decimalPlaces: 2,
+                barPercentage: 0.5, // Reduce bar width to accommodate two bars per label
+                groupBarSpacing: 10, // Add spacing between Money In and Money Out bars
+                color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                style: {
+                  borderRadius: 16,
+                },
+              }}
+              style={{
+                marginVertical: 8,
+                borderRadius: 16,
+              }}
+              verticalLabelRotation={30} // Optional: Rotate labels for better readability
+            />
+          </View>
+        </ScrollView>
+      </View>
     </View>
-        </View>
+
+
+
+
+
 
 
      
