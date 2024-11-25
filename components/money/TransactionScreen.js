@@ -553,16 +553,7 @@ useEffect(() => {
       />
     );
   };
-  const TransactionGraph = ({ transactions, viewType }) => {
-    if (viewType === 'monthly') {
-      return renderMonthlyGraph(transactions);
-    } else if (viewType === 'yearly') {
-      return renderYearlyGraph(transactions);
-    } else {
-      // Default or fallback if needed
-      return null;
-    }
-  };
+
   
   return (
     <View style={TransactionScreenStyles.container}>
