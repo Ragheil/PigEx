@@ -225,7 +225,6 @@ const ContactScreen = ({ navigation }) => {
         />
       </View>
 
-      <Text style={styles.tableHeader}>Contacts</Text>
       <FlatList
         data={filteredContacts}
         keyExtractor={(item) => item.id}

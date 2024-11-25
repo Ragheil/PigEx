@@ -11,7 +11,7 @@ export default StyleSheet.create({
         // alignItems: 'center',
         justifyContent: 'space-between',
         marginBottom: 16,
-        marginTop: 30,
+        marginTop: 15,
         columnGap: 5,
       },
       searchInput: {
@@ -99,7 +99,8 @@ export default StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginTop: 10,
+        marginTop: 5,
+        
       },
       title: {
         fontWeight: 'bold', // Makes the text bold
