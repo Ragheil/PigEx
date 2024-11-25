@@ -169,4 +169,10 @@ export default StyleSheet.create({
         // backgroundColor: 'lightblue',
 
       },
+      deceasedPigContainer: {
+        backgroundColor: '#D3D3D3', // Light gray background for deceased pigs
+      },
+      deceasedText: {
+        color: 'red', // Red color for deceased label
+      },
 });

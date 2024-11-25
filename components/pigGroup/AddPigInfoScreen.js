@@ -349,11 +349,19 @@ const updateMotherRecordsInAllFarmBranches = async (db, userId, pigId, newPigNam
   const filteredPigs = pigs.filter(pig => pig.pigName.toLowerCase().includes(searchQuery.toLowerCase()));
 
   // Render Pig Item
-  const renderPig = ({ item }) => (
-    <View style={styles.pigContainer}>
+// Render Pig Item
+const renderPig = ({ item }) => {
+  const isDeceased = item.vitality === 'deceased'; // Check if the pig is deceased
+
+  return (
+    <View style={[styles.pigContainer, isDeceased ? styles.deceasedPigContainer : null]}>
       <View style={styles.pigInfo}>
-        <Text style={styles.pigText}>Tag Number: {item.tagNumber}</Text>
-        <Text style={styles.pigText}>Pig Name: {item.pigName}</Text>
+        <Text style={[styles.pigText, isDeceased ? styles.deceasedText : null]}>
+          Tag Number: {item.tagNumber}
+        </Text>
+        <Text style={[styles.pigText, isDeceased ? styles.deceasedText : null]}>
+          Pig Name: {isDeceased ? 'Deceased' : item.pigName}
+        </Text>
       </View>
       <View style={styles.actionsContainer}>
         <TouchableOpacity onPress={() => {
@@ -363,6 +371,7 @@ const updateMotherRecordsInAllFarmBranches = async (db, userId, pigId, newPigNam
           <Image source={viewIcon} style={styles.iview} />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => {
+          // Allow editing even if the pig is deceased
           setPigName(item.pigName);
           setTagNumber(item.tagNumber);
           setGender(item.gender);
@@ -380,6 +389,7 @@ const updateMotherRecordsInAllFarmBranches = async (db, userId, pigId, newPigNam
       </View>
     </View>
   );
+};
 
   return (
     <View style={styles.container}>
@@ -407,12 +417,12 @@ const updateMotherRecordsInAllFarmBranches = async (db, userId, pigId, newPigNam
         />
       </View>
       <FlatList
-        data={filteredPigs}
-        renderItem={renderPig}
-        keyExtractor={(item) => item.id}
-        style={styles.list}
-        contentContainerStyle={styles.listContent}
-      />
+      data={filteredPigs}
+      renderItem={renderPig}
+      keyExtractor={(item) => item.id}
+      style={styles.list}
+      contentContainerStyle={styles.listContent}
+    />
       
       {/* Add/Edit Pig Modal */}
       <Modal
