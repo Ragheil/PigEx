@@ -373,28 +373,39 @@ const PregnancyRecords = ({ route, navigation }) => {
       {/* Combined Modal */}
       <Modal visible={modalVisible} transparent={true} animationType="slide">
   <View style={PregnancyRecordsStyles.modalBackground}>
-    <View style={PregnancyRecordsStyles.modalContainer}>
+    <View style={PregnancyRecordsStyles.pigletModalContent}>
       
-      {/* Modal for Viewing Piglets */}
-      {modalType === 'piglets' && (
-        <>
-          <Text style={PregnancyRecordsStyles.modalHeader}>Piglets of {selectedPigName}</Text>
-          {selectedPiglets.length === 0 ? (
-            <Text>No piglets found for this pig.</Text>
-          ) : (
-            selectedPiglets.map(piglet => (
-              // <Text key={piglet.id}>Pig Name: {piglet.pigName} - Group Name: {piglet.group}</Text> group name temporaty removed
-              <Text key={piglet.id}>Pig Name: {piglet.pigName}</Text>
-              
-            ))
-          )}
-          <TouchableOpacity
-            style={PregnancyRecordsStyles.closeButton}
-            onPress={() => setModalVisible(false)}>
-            <Text style={PregnancyRecordsStyles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
-        </>
-      )}
+  {/* Modal for Viewing Piglets */}
+  {modalType === 'piglets' && (
+  <View >
+    <View >
+      <Text style={PregnancyRecordsStyles.pigletModalHeader}>Piglets of {selectedPigName}</Text>
+      <ScrollView 
+        style={PregnancyRecordsStyles.pigletsList} 
+        contentContainerStyle={{ paddingBottom: 20 }} // Adds padding to the end for better spacing
+      >
+        {selectedPiglets.length === 0 ? (
+          <Text style={PregnancyRecordsStyles.noPigletsText}>No piglets found for this pig.</Text>
+        ) : (
+          selectedPiglets.map(piglet => (
+            <Text key={piglet.id} style={PregnancyRecordsStyles.pigletText}>
+              Pig Name: {piglet.pigName}
+            </Text>
+          ))
+        )}
+      </ScrollView>
+      <TouchableOpacity
+        style={PregnancyRecordsStyles.closeButton}
+        onPress={() => setModalVisible(false)}
+      >
+        <Text style={PregnancyRecordsStyles.closeButtonText}>Close</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+)}
+
+
+
 
       {/* Modal for Adding Breeding Date */}
       {modalType === 'breeding' && (

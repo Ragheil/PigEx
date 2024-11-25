@@ -211,6 +211,56 @@ const PregnancyRecordsStyles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
+  pigletModalContent: {
+    width: '85%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 15,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  pigletModalHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#566F48',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  pigletsList: {
+    width: '100%',
+    maxHeight: 200,
+    marginVertical: 10,
+    paddingHorizontal: 10,
+  },
+  pigletText: {
+    fontSize: 16,
+    color: '#333',
+    paddingVertical: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
+  noPigletsText: {
+    fontSize: 16,
+    color: 'gray',
+    textAlign: 'center',
+    paddingVertical: 20,
+  },
+  closeButton: {
+    marginTop: 20,
+    backgroundColor: '#869F77',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+  },
+  closeButtonText: {
+    fontSize: 16,
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
 
 });
 
