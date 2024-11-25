@@ -13,6 +13,7 @@ import {
   ScrollView,
   RefreshControl,
   Image,
+  Button
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Divider } from 'react-native-paper';
@@ -519,7 +520,7 @@ useEffect(() => {
         
         <View style={{ flex: 1, padding: 16 }}>
               
-      <Text style={{ fontSize: 24, fontWeight: '500', marginBottom: 20, textAlign: 'center' }}>
+      <Text style={{ fontSize: 24, fontWeight: '500', marginBottom: 20, textAlign: 'center',flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         Pig Groups Summary
       </Text>
 
@@ -584,7 +585,8 @@ useEffect(() => {
         }}
       />
 
-      <View style={{ flex: 1, padding: 16, paddingTop: 0 }}>
+      <View style={{ flex: 1, padding: 1, paddingTop: 0 }}>
+ 
         <Text style={{ fontSize: 24, fontWeight: '500' }}>Transaction Preview</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={true} style={{ width: '100%', zIndex: 1, elevation: 5 }}>
           <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 20 }}>
