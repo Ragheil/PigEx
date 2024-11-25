@@ -260,7 +260,7 @@ const filteredPigs = allPigs.filter(pig =>
     <View style={PigDetailsScreenStyles.container}>
       <Text style={PigDetailsScreenStyles.title}>Pig Details</Text>
       <Text style={PigDetailsScreenStyles.pigInfo}>Pig Name: {pigName}</Text>
-      <Text style={PigDetailsScreenStyles.pigInfo}>Pig ID: {pigId}</Text>
+       {/*  <Text style={PigDetailsScreenStyles.pigInfo}>Pig ID: {pigId}</Text> */}
 
       <View style={PigDetailsScreenStyles.headerContainer}>
         <Text style={PigDetailsScreenStyles.header}>All Pigs</Text>

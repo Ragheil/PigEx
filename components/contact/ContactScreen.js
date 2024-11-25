@@ -213,6 +213,8 @@ const ContactScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+    <Text style={styles.title}>Contacts</Text>
+
       <View style={styles.headerContainer}>
         <Button title="Add Contact" onPress={openAddContactModal} color="#566F48"/>
         <TextInput

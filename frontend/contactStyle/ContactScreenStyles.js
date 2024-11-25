@@ -11,7 +11,7 @@ export default StyleSheet.create({
         // alignItems: 'center',
         justifyContent: 'space-between',
         marginBottom: 16,
-        marginTop: 60,
+        marginTop: 30,
         columnGap: 5,
       },
       searchInput: {
@@ -24,6 +24,8 @@ export default StyleSheet.create({
       header: {
         fontSize: 24,
         marginBottom: 16,
+        fontWeight: 'bold', // Makes the text bold
+
       },
       input: {
         height: 40,
@@ -97,6 +99,12 @@ export default StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginTop: 20,
+        marginTop: 10,
       },
+      title: {
+        fontWeight: 'bold', // Makes the text bold
+        fontSize: 45, // Adjusts the font size for better visibility
+        textAlign: 'left', // Ensures text alignment is centered
+        marginTop: 60, // Adds some space below the title
+      }, 
 });
