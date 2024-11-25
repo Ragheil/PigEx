@@ -6,7 +6,7 @@ import { Swipeable } from 'react-native-gesture-handler';
 import styles from '../../frontend/contactStyle/ContactScreenStyles'; // Importing the separated styles
 import NetInfo from "@react-native-community/netinfo";
 import { getFirestore, enablePersistence } from "firebase/firestore";
-
+import backImage from '../../assets/images/Back.png'; // Adjust the path as needed
 
 const ContactScreen = ({ navigation }) => {
   const [contacts, setContacts] = useState([]);
@@ -213,7 +213,10 @@ const ContactScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-    <Text style={styles.title}>Contacts</Text>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+    <Image source={backImage} style={styles.backImage} />
+  </TouchableOpacity>
+    <Text style={styles.title}>Contacts </Text>
 
       <View style={styles.headerContainer}>
         <Button title="Add Contact" onPress={openAddContactModal} color="#566F48"/>

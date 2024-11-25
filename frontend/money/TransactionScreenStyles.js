@@ -102,6 +102,7 @@ const TransactionScreenStyles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  
 });
 
 export default TransactionScreenStyles;

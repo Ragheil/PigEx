@@ -22,6 +22,17 @@ export default StyleSheet.create({
         paddingHorizontal: 20,
         alignItems: 'center',
       },
+      backButton: {
+        padding: 10,
+        marginRight: 5, // Space between the back button and the title
+        paddingTop: 45
+
+      },
+      backImage: {
+        width: 50, // Adjust size as needed
+        height: 50, // Adjust size as needed
+        paddingTop: 4
+      },
       subheader: {
         // backgroundColor: 'red',
         flexDirection: 'row',
