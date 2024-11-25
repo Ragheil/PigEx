@@ -375,11 +375,14 @@ const PregnancyRecords = ({ route, navigation }) => {
   <View style={PregnancyRecordsStyles.modalBackground}>
     <View style={PregnancyRecordsStyles.pigletModalContent}>
       
-  {/* Modal for Viewing Piglets */}
-  {modalType === 'piglets' && (
-  <View >
-    <View >
+{/* Modal for Viewing Piglets */}
+{modalType === 'piglets' && (
+  <View>
+    <View>
       <Text style={PregnancyRecordsStyles.pigletModalHeader}>Piglets of {selectedPigName}</Text>
+      <Text style={PregnancyRecordsStyles.pigletCountText}>
+        Total Piglets: {selectedPiglets.length} {/* Display total piglets count */}
+      </Text>
       <ScrollView 
         style={PregnancyRecordsStyles.pigletsList} 
         contentContainerStyle={{ paddingBottom: 20 }} // Adds padding to the end for better spacing

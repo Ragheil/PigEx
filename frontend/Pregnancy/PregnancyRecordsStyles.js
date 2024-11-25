@@ -261,6 +261,12 @@ const PregnancyRecordsStyles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: 'bold',
   },
+  pigletCountText: {
+    fontSize: 16, // Adjust size as needed
+    fontWeight: 'bold', // Make it bold for emphasis
+    marginBottom: 10, // Space below the count
+    color: '#333', // Darker color for better readability
+  },
 
 });
 
