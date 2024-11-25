@@ -531,7 +531,7 @@ useEffect(() => {
           backgroundColor: '#869F77',
           borderRadius: 13,
           alignItems: 'center',
-          zIndex: 1, // High zIndex for priority
+          zIndex: 5, // High zIndex for priority
           elevation: 5, // High elevation for priority
         }}
         onPress={() => navigation.navigate('PigGroups', {
@@ -547,7 +547,7 @@ useEffect(() => {
         data={pigGroups}
         renderItem={({ item }) => (
           <View style={{
-            width: 150,
+            width: 125,
             marginRight: 10,
             alignItems: 'center',
             justifyContent: 'center',
@@ -557,6 +557,7 @@ useEffect(() => {
             borderColor: '#566F48',
             borderWidth: 4,
             elevation: 5,
+            height: 180
           }}>
             <Text style={{ fontSize: 18, color: '#333' }}>{item.name}</Text>
             <Text style={{ fontSize: 16, color: '#666' }}>
@@ -568,20 +569,22 @@ useEffect(() => {
         horizontal
         showsHorizontalScrollIndicator={true}
         contentContainerStyle={{
-          paddingHorizontal: 5,
+          paddingHorizontal: 1,
+          height: 150,
         }}
         snapToAlignment="center"
         snapToInterval={160}
         decelerationRate="fast"
-        ListEmptyComponent={<Text style={{ fontSize: 16, color: 'gray', textAlign: 'center', marginTop: 20 }}>No pig groups available.</Text>}
+        ListEmptyComponent={<Text style={{ fontSize: 16, color: 'gray', textAlign: 'center', marginTop: 20, }}>No pig groups available.</Text>}
         style={{
           width: '100%', // Ensure FlatList takes full width
           zIndex: 1, // High zIndex for priority
           elevation: 2, // High elevation for priority
+            height: 0, //
         }}
       />
 
-      <View style={{ flex: 1, padding: 16 }}>
+      <View style={{ flex: 1, padding: 16, paddingTop: 0 }}>
         <Text style={{ fontSize: 24, fontWeight: '500' }}>Transaction Preview</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={true} style={{ width: '100%', zIndex: 1, elevation: 5 }}>
           <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 20 }}>
@@ -604,15 +607,18 @@ useEffect(() => {
                 decimalPlaces: 2,
                 barPercentage: 0.5, // Reduce bar width to accommodate two bars per label
                 groupBarSpacing: 10, // Add spacing between Money In and Money Out bars
+                
                 color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
                 labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                 style: {
                   borderRadius: 16,
+                  height: 100,
                 },
               }}
               style={{
                 marginVertical: 8,
                 borderRadius: 16,
+                height: 100,
               }}
               verticalLabelRotation={30} // Optional: Rotate labels for better readability
             />
