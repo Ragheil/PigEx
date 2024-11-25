@@ -176,85 +176,81 @@ const PigDetailsScreen = ({ route }) => {
     
     // Path for the pregnancy record document
     const pregnancyRecordPath = selectedBranch === 'Main Farm'
-      ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${pigId}`
-      : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${pigId}`;
+        ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${pigId}`
+        : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${pigId}`;
     const pregnancyDocRef = doc(firestore, pregnancyRecordPath);
     
     // Path for the motherRecords sub-collection
     const motherRecordsPath = selectedBranch === 'Main Farm'
-      ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${pigId}/motherRecords`
-      : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${pigId}/motherRecords`;
+        ? `users/${user.uid}/farmBranches/Main Farm/pregnancyRecords/${pigId}/motherRecords`
+        : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pregnancyRecords/${pigId}/motherRecords`;
   
     try {
-      if (isSelected) {
-        // Show confirmation alert before deselecting
-        Alert.alert(
-          'Confirm Removal',
-         // `Do you want to remove piglet ${pig} from its mother?`,
-          `Do you want to remove this piglet from its mother?`,
-          [
-            {
-              text: 'Cancel',
-              onPress: () => console.log('Removal canceled'),
-              style: 'cancel',
-            },
-            {
-              text: 'Yes',
-              onPress: async () => {
-                // Deselect piglet: remove it from selected piglets
-                setSelectedPiglets(prevSelected => {
-                  const updatedSelected = prevSelected.filter(id => id !== pigletId);
-                  return updatedSelected;
-                });
-  
-                // Fetch the current pregnancy record document
-                const existingRecordSnapshot = await getDoc(pregnancyDocRef);
-                if (existingRecordSnapshot.exists()) {
-                  const existingRecord = existingRecordSnapshot.data();
-  
-                  // Remove the piglet from the piglets array
-                  const updatedPiglets = existingRecord.piglets.filter(p => p.id !== pigletId);
-  
-                  // Update Firestore without the deselected piglet
-                  await setDoc(pregnancyDocRef, { piglets: updatedPiglets }, { merge: true });
-  
-                  // Now, remove the corresponding motherRecords entry where pigId matches pigletId
-                  const querySnapshot = await getDocs(query(collection(firestore, motherRecordsPath), where("pigId", "==", pigletId)));
-  
-                  if (!querySnapshot.empty) {
-                    // If a matching record is found, delete it
-                    querySnapshot.forEach(async (doc) => {
-                      await deleteDoc(doc.ref);
-                      console.log(`Deleted mother record for pigId: ${pigletId}`);
-                    });
-                  } else {
-                    console.error(`No mother record found for pigId: ${pigletId}`);
-                  }
-                }
-              },
-            },
-          ],
-          { cancelable: false }
-        );
-      } else {
-        // Check if the piglet is already selected before adding it
-        if (selectedPiglets.length < 10 && !selectedPiglets.includes(pigletId)) { // Example limit to 10 selections
-          // Select piglet: add it to selected piglets
-          setSelectedPiglets(prevSelected => [...prevSelected, pigletId]);
-        } else {
-          Alert.alert('Selection Limit', 'You cannot select more piglets or this piglet is already selected.');
-        }
-      }
-    } catch (error) {
-      console.error('Error updating selection:', error);
-      Alert.alert('Error', 'Failed to update piglet selection. Please try again.');
-    }
-  };
+        if (isSelected) {
+            // Show confirmation alert before deselecting
+            Alert.alert(
+                'Confirm Removal',
+                `Do you want to remove this piglet from its mother?`,
+                [
+                    {
+                        text: 'Cancel',
+                        onPress: () => console.log('Removal canceled'),
+                        style: 'cancel',
+                    },
+                    {
+                        text: 'Yes',
+                        onPress: async () => {
+                            // Deselect piglet: remove it from selected piglets
+                            setSelectedPiglets(prevSelected => {
+                                const updatedSelected = prevSelected.filter(id => id !== pigletId);
+                                return updatedSelected;
+                            });
 
-  // Filter pigs based on the search query
-  const filteredPigs = allPigs.filter(pig =>
-    pig.pigName.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+                            // Fetch the current pregnancy record document
+                            const existingRecordSnapshot = await getDoc(pregnancyDocRef);
+                            if (existingRecordSnapshot.exists()) {
+                                const existingRecord = existingRecordSnapshot.data();
+
+                                // Remove the piglet from the piglets array
+                                const updatedPiglets = existingRecord.piglets.filter(p => p.id !== pigletId);
+
+                                // Update Firestore without the deselected piglet
+                                await setDoc(pregnancyDocRef, { piglets: updatedPiglets }, { merge: true });
+
+                                // Now, remove the corresponding motherRecords entry where pigId matches pigletId
+                                const querySnapshot = await getDocs(query(collection(firestore, motherRecordsPath), where("pigId", "==", pigletId)));
+
+                                if (!querySnapshot.empty) {
+                                    // If a matching record is found, delete it
+                                    querySnapshot.forEach(async (doc) => {
+                                        await deleteDoc(doc.ref);
+                                        console.log(`Deleted mother record for pigId: ${pigletId}`);
+                                    });
+                                } else {
+                                    console.error(`No mother record found for pigId: ${pigletId}`);
+                                }
+                            }
+                        },
+                    },
+                ],
+                { cancelable: false }
+            );
+        } else {
+            // Select piglet: add it to selected piglets
+            setSelectedPiglets(prevSelected => [...prevSelected, pigletId]);
+        }
+    } catch (error) {
+        console.error('Error updating selection:', error);
+        Alert.alert('Error', 'Failed to update piglet selection. Please try again.');
+    }
+};
+
+// Filter pigs based on the search query
+const filteredPigs = allPigs.filter(pig =>
+  pig.pigName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  pig.groupName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  pig.gender.toLowerCase().includes(searchQuery.toLowerCase())
+);
 
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
@@ -270,7 +266,7 @@ const PigDetailsScreen = ({ route }) => {
         <Text style={PigDetailsScreenStyles.header}>All Pigs</Text>
         <TextInput
           style={PigDetailsScreenStyles.searchInput}
-          placeholder="Search by name"
+          placeholder="Search by name, Group Name, or gender"
           value={searchQuery}
           onChangeText={setSearchQuery}
         />

@@ -11,7 +11,7 @@ const PigDetailsScreenStyles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 5,
     padding: 8,
-    width: '60%',
+    width: '75%',
     marginLeft: 10,
   },
   pigContainer: {
