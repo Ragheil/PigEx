@@ -19,6 +19,7 @@ const ContactScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [viewModalVisible, setViewModalVisible] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
+  const [loading, setLoading] = useState(false);
   const user = auth.currentUser;
 
   useEffect(() => {
@@ -86,6 +87,30 @@ const ContactScreen = ({ navigation }) => {
     try {
         if (!user) return;
 
+        // Fetch existing contacts
+        const userContactsCollection = collection(firestore, `users/${user.uid}/contacts`);
+        const contactsSnapshot = await getDocs(userContactsCollection);
+        const existingContacts = contactsSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+        }));
+
+        // Check for duplicates
+        const isDuplicateNumber = existingContacts.some(contact => contact.contactNumber === contactNumber && contact.id !== editContactId);
+        const isDuplicateName = existingContacts.some(contact => contact.name.toLowerCase() === name.toLowerCase() && contact.id !== editContactId);
+
+        if (isDuplicateNumber) {
+            Alert.alert('Duplicate Error', 'This contact number already exists.');
+            return;
+        }
+
+        if (isDuplicateName) {
+            Alert.alert('Duplicate Error', 'This contact name already exists.');
+            return;
+        }
+
+        setLoading(true); 123
+
         if (editContactId) {
             // Update existing contact
             await updateDoc(doc(firestore, `users/${user.uid}/contacts`, editContactId), {
@@ -115,6 +140,8 @@ const ContactScreen = ({ navigation }) => {
         fetchContacts();
     } catch (error) {
         console.error('Error adding/updating contact:', error);
+    } finally {
+        setLoading(false); 
     }
 };
 
@@ -266,8 +293,8 @@ const ContactScreen = ({ navigation }) => {
             />
             <View style={styles.buttonContainer}>
               <Button title="Cancel" onPress={closeModal} color="#F44336" />
-              <Button title="Save" onPress={addOrUpdateContact} color="#4CAF50" />
-            </View>
+              <Button title="Save" onPress={addOrUpdateContact} color="#4CAF50" disabled={loading} />         
+              </View>
           </View>
         </View>
       </Modal>
