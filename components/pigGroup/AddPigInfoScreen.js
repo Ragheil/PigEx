@@ -12,6 +12,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 import { useFocusEffect } from '@react-navigation/native'; // Import the useFocusEffect
 import backImage from '../../assets/images/Back.png'; // Adjust the path as needed
+import RNPickerSelect from 'react-native-picker-select';
 
 
 export default function AddPigInfoScreen({ route }) {
@@ -475,14 +476,15 @@ const renderPig = ({ item }) => {
               onCancel={() => setOpenDatePicker(false)}
               />
         
-            <Picker
-              selectedValue={gender}
-              onValueChange={setGender}
-              style={styles.picker}
-            >
-              <Picker.Item label="Male" value="male" />
-              <Picker.Item label="Female" value="female" />
-            </Picker>
+                  <RNPickerSelect
+            onValueChange={(value) => setGender(value)} // Update the gender state
+            items={[
+              { label: 'Male', value: 'male' },
+              { label: 'Female', value: 'female' },
+            ]}
+            style={styles.picker} // Ensure you have styles defined for the picker
+            placeholder={{ label: 'Select Gender', value: null }} // Optional placeholder
+          />
             <Text style={styles.titlename}>Race</Text>
             <TextInput
               style={styles.input}

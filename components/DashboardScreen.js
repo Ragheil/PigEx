@@ -28,6 +28,7 @@ import { updateEmail, reauthenticateWithCredential, EmailAuthProvider } from 'fi
 import { sendEmailVerification } from 'firebase/auth';
 import { fonts } from 'react-native-elements/dist/config';
 import { BarChart } from 'react-native-chart-kit'; // Import the bar chart component
+import RNPickerSelect from 'react-native-picker-select';
 
 
 export default function DashboardScreen({ firstName, lastName, farmName, onLogout }) {
@@ -665,20 +666,21 @@ useEffect(() => {
           <Text style={styles.sidebarText}> Farm: <Text style={{ fontWeight: 'bold' }}>{currentFarmName}</Text> </Text>
 
           {/* Branch Picker */}
-          <Picker
-              selectedValue={selectedBranch}
-              onValueChange={handleBranchSwitch}
-              style={styles.picker}
-          >
-              <Picker.Item label="Select a Branch" value="" />
-              {branches.map((branch) => (
-                  <Picker.Item
-                      key={branch.id}
-                      label={branch.name}
-                      value={branch.id}
-                  />
-              ))}
-          </Picker>
+<RNPickerSelect
+    onValueChange={(value) => handleBranchSwitch(value)}
+    items={[
+        { label: 'Select a Branch', value: '' },
+        ...branches.map((branch) => ({
+            label: branch.name,
+            value: branch.id,
+        })),
+    ]}
+    style={{
+        inputIOS: styles.picker, // Styles for iOS
+        inputAndroid: styles.picker, // Styles for Android
+    }}
+  //  placeholder={{ label: 'Select a Branch', value: null }} // Placeholder
+/>
 
 
 

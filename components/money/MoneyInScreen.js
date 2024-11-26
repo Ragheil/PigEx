@@ -300,14 +300,14 @@ const handleDeleteMoney = async (id) => {
               value={remarks}
               onChangeText={(text) => setRemarks(text)}
             />
-            <Picker
+            <RNPickerSelect
               selectedValue={category}
               onValueChange={handleCategoryChange}
             >
               <Picker.Item label="Salary" value="salary" />
               <Picker.Item label="Sales" value="sales" />
               <Picker.Item label="Other" value="other" />
-            </Picker>
+            </RNPickerSelect>
             {showOtherCategoryInput && (
               <TextInput
                 style={styles.input}

@@ -346,11 +346,12 @@ const MoneyOutScreen = ({ route }) => {
             value={remarks}
             onChangeText={setRemarks}
           />
-          <Picker selectedValue={category} onValueChange={handleCategoryChange}>
+          <RNPickerSelect selectedValue={category} onValueChange={handleCategoryChange}>
             <Picker.Item label="Expense" value="expense" />
+            <Picker.Item label="Bill" value="expense" />
             <Picker.Item label="Other" value="other" />
             {/* Add other categories as needed */}
-          </Picker>
+          </RNPickerSelect>
           {showOtherCategoryInput && (
             <TextInput
               style={MoneyOutScreenStyles.input}
