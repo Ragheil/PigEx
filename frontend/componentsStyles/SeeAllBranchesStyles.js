@@ -11,6 +11,7 @@ const styles = StyleSheet.create({
     fontWeight: '700', // Bold font weight for title
     marginBottom: 20,
     color: '#333', // Darker text color for better contrast
+    marginTop: 60,
   },
   branchItem: {
     flexDirection: 'row',
