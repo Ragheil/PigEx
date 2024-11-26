@@ -599,27 +599,35 @@ useEffect(() => {
 
 <View style={{ alignItems: 'center', marginVertical: 20 }}>
 <ScrollView horizontal>
-    <View style={{ alignItems: 'center', marginVertical: 20 }}>
+<View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 20 }}>
+    <View style={{ alignItems: 'center' }}>
         <Text style={{ textAlign: 'center', fontSize: 16, fontWeight: 'bold', marginVertical: 10 }}>
             {selectedPeriod === 'week'
-                ? 'Weekly Transactions'
+                ? 'Weekly Money In'
                 : selectedPeriod === 'month'
-                ? `${new Date().toLocaleString('default', { month: 'long' })} Transactions`
-                : 'Yearly Transactions'}
+                ? `${new Date().toLocaleString('default', { month: 'long' })} Money In`
+                : 'Yearly Money In'}
         </Text>
-
         <BarChart
-            data={barChartData}
-            width={Math.max(screenWidth, barChartData.labels.length * 60)} // Adjust width for horizontal scrolling
+            data={{
+                labels: barChartData.labels,
+                datasets: [
+                    {
+                        label: 'Money In',
+                        data: barChartData.datasets[0].data,
+                        color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`, // Green
+                    },
+                ],
+            }}
+            width={Math.max(screenWidth / 2, barChartData.labels.length * 30)} // Adjust width for horizontal scrolling
             height={220}
             chartConfig={{
                 backgroundColor: '#94E334FF',
                 backgroundGradientFrom: '#9ED74AFF',
                 backgroundGradientTo: '#FFFFFFFF',
                 decimalPlaces: 2,
-                barPercentage: 0.5, // Reduce bar width to accommodate two bars per label
-                groupBarSpacing: 10, // Add spacing between Money In and Money Out bars
-                color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
+                barPercentage: 0.5,
+                color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`, // Green
                 labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                 style: {
                     borderRadius: 16,
@@ -629,9 +637,51 @@ useEffect(() => {
                 marginVertical: 8,
                 borderRadius: 16,
             }}
-            verticalLabelRotation={30} // Optional: Rotate labels for better readability
+            verticalLabelRotation={30}
         />
     </View>
+
+    <View style={{ alignItems: 'center' }}>
+        <Text style={{ textAlign: 'center', fontSize: 16, fontWeight: 'bold', marginVertical: 10 }}>
+            {selectedPeriod === 'week'
+                ? 'Weekly Money Out'
+                : selectedPeriod === 'month'
+                ? `${new Date().toLocaleString('default', { month: 'long' })} Money Out`
+                : 'Yearly Money Out'}
+        </Text>
+        <BarChart
+            data={{
+                labels: barChartData.labels,
+                datasets: [
+                    {
+                        label: 'Money Out',
+                        data: barChartData.datasets[1].data,
+                        color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`, // Red
+                    },
+                ],
+            }}
+            width={Math.max(screenWidth / 2, barChartData.labels.length * 30)} // Adjust width for horizontal scrolling
+            height={220}
+            chartConfig={{
+                backgroundColor: '#94E334FF',
+                backgroundGradientFrom: '#9ED74AFF',
+                backgroundGradientTo: '#FFFFFFFF',
+                decimalPlaces: 2,
+                barPercentage: 0.5,
+                color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`, // Red
+                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                style: {
+                    borderRadius: 16,
+                },
+            }}
+            style={{
+                marginVertical: 8,
+                borderRadius: 16,
+            }}
+            verticalLabelRotation={30}
+        />
+    </View>
+</View>
 </ScrollView>
 
 
