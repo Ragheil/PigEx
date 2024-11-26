@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, RefreshControl, Alert, Button, SafeAreaView, Image } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, RefreshControl, Alert, Button, SafeAreaView, Image, width } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { collection, getDocs, doc, onSnapshot, getDoc } from 'firebase/firestore';
 import { firestore } from '../../firebase/config2'; // Adjust the path to your Firebase config
@@ -580,15 +580,51 @@ useEffect(() => {
           
           <View style={{}}>
             <View style={TransactionScreenStyles.infoHeader}>
-              <View style={{flexDirection: 'column'}}>
-                <TouchableOpacity onPress={() => openDatePicker('start', 'end')}>
-                  <Text style={{fontSize: 15, fontWeight: '500'}}> Start Date:
-                    <Text style={{fontSize: 15, fontWeight: '800'}}> {startDate.toLocaleDateString()}</Text>
+            <View
+                style={{
+                  flexDirection: 'column',
+                  padding: 10,
+                  width: width * 0.9, // 90% of screen width
+                  alignSelf: 'center', // Center the container
+                }}
+              >
+                <TouchableOpacity onPress={() => openDatePicker('start')}>
+                  <Text
+                    style={{
+                      fontSize: width > 320 ? 15 : 14, // Adjust font size for smaller screens
+                      fontWeight: '500',
+                      marginVertical: 1, // Space between items
+                    }}
+                  >
+                    Start Date:{' '}
+                    <Text
+                      style={{
+                        fontSize: width > 320 ? 15 : 14, // Match font size with the label
+                        fontWeight: '800',
+                      }}
+                    >
+                      {startDate.toLocaleDateString()}
+                    </Text>
                   </Text>
                 </TouchableOpacity>
+
                 <TouchableOpacity onPress={() => openDatePicker('end')}>
-                  <Text style={{fontSize: 15, fontWeight: '500'}}> End Date:
-                    <Text style={{fontSize: 15, fontWeight: '800'}}> {endDate.toLocaleDateString()}</Text>
+                  <Text
+                    style={{
+                      fontSize: width > 320 ? 15 : 14,
+                      fontWeight: '500',
+                      marginVertical: 1,
+                    }}
+                  >
+                    End Date:{' '}
+                    <Text
+                      style={{
+                        fontSize: width > 320 ? 15 : 14,
+                        fontWeight: '900',
+                      }}
+                    >
+                      {endDate.toLocaleDateString()}
+                    </Text>
                   </Text>
                 </TouchableOpacity>
               </View>
