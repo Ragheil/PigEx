@@ -736,11 +736,11 @@ useEffect(() => {
               style={styles.input}
             />
             <TouchableOpacity style={styles.updateButton} onPress={handleUpdate}>
-              <Text style={styles.updateButtonText}>Update</Text>
+              <Text style={styles.updateButtonText}>Update Account</Text>
             </TouchableOpacity>
 
             {/* Button to open the email update modal */}
-            <TouchableOpacity style={styles.updateButton} onPress={() => setEmailModalVisible(true)}>
+            <TouchableOpacity style={styles.updateEmailButton} onPress={() => setEmailModalVisible(true)}>
               <Text style={styles.updateButtonText}>Update Email</Text>
             </TouchableOpacity>
 

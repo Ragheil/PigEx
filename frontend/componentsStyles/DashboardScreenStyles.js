@@ -297,8 +297,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 5,
   },
-  cancelButton: {
-    backgroundColor: '#3476BDFF',
+  updateButton: {
+    backgroundColor: '#E5791AFF',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  updateEmailButton: {
+    backgroundColor: '#1417CCFF',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  closeModalButton: {
+    backgroundColor: '#BD4D34FF',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
@@ -308,9 +322,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   closeModalText: {
-    color: 'red',
+    color: '#FFFFFFFF',
     textAlign: 'center',
-    marginTop: 10,
+  },
+  updateButtonText: {
+    color: '#FFFFFFFF',
+    textAlign: 'center',
+    
   },
 });
 
