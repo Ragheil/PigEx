@@ -106,6 +106,17 @@ export default StyleSheet.create({
         fontWeight: 'bold', // Makes the text bold
         fontSize: 45, // Adjusts the font size for better visibility
         textAlign: 'left', // Ensures text alignment is centered
-        marginTop: 60, // Adds some space below the title
+        marginTop: 1, // Adds some space below the title
       }, 
+      backButton: {
+        padding: 10,
+        marginRight: 5, // Space between the back button and the title
+        paddingTop: 45
+
+      },
+      backImage: {
+        width: 50, // Adjust size as needed
+        height: 50, // Adjust size as needed
+        paddingTop: 4
+      },
 });

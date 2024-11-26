@@ -10,6 +10,7 @@ import deleteIcon from '../../assets/images/buttons/deleteIcon.png';
 import styles from '../../frontend/pigGroupStyles/PigGroupsScreenStyles';
 import NetInfo from '@react-native-community/netinfo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import backImage from '../../assets/images/Back.png'; // Adjust the path as needed
 
 
 const PigGroupsScreen = ({ navigation, route }) => {
@@ -318,8 +319,12 @@ const fetchPigGroups = () => {
   return (
     <View style={styles.container1}>
       <View style={styles.mainheader}>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+    <Image source={backImage} style={styles.backImage} />
+  </TouchableOpacity>
           {/* <Text style={styles.appname}>PigEx</Text> */}
           <View style={styles.piglogobox}>
+            
             <Image source={require('../../assets/images/LOGO.png')} style={styles.pigLogo} />
           </View>
           {/* <Text style={{fontSize: 12,fontWeight:'800', textTransform: 'uppercase' }}>Pig Groups</Text> */}
@@ -336,6 +341,7 @@ const fetchPigGroups = () => {
         </Text> */}
         
       <View style={styles.searchAndAddContainer}>
+        
         <Button title="Add Pig Group"  onPress={openAddPigGroupModal} 
         // color="#869F77"
         color="#566F48"

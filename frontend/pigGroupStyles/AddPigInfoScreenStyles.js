@@ -16,7 +16,7 @@ export default StyleSheet.create({
         fontSize: 26,
         fontWeight: 'bold',
         // marginBottom: 10,
-        marginTop: 40,
+        marginTop: 1,
     
       },
       groupName: {
@@ -174,5 +174,16 @@ export default StyleSheet.create({
       },
       deceasedText: {
         color: 'red', // Red color for deceased label
+      },
+      backButton: {
+        padding: 10,
+        marginRight: 5, // Space between the back button and the title
+        paddingTop: 45
+
+      },
+      backImage: {
+        width: 50, // Adjust size as needed
+        height: 50, // Adjust size as needed
+        paddingTop: 4
       },
 });

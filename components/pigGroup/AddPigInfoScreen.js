@@ -11,6 +11,7 @@ import styles from '../../frontend/pigGroupStyles/AddPigInfoScreenStyles';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 import { useFocusEffect } from '@react-navigation/native'; // Import the useFocusEffect
+import backImage from '../../assets/images/Back.png'; // Adjust the path as needed
 
 
 export default function AddPigInfoScreen({ route }) {
@@ -394,6 +395,9 @@ const renderPig = ({ item }) => {
   return (
     <View style={styles.container}>
       <View style={styles.mainheader}>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+    <Image source={backImage} style={styles.backImage} />
+  </TouchableOpacity>
         <Text style={styles.title}>Pig Information</Text>
         <Text style={styles.groupName}>Current Pig Group: {pigGroupName}</Text>
       </View>
