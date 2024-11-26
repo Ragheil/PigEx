@@ -290,8 +290,15 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     paddingHorizontal: 10,
   },
-  button: {
-    backgroundColor: '#007BFF',
+  confirmButton: {
+    backgroundColor: '#3476BDFF',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  cancelButton: {
+    backgroundColor: '#3476BDFF',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',

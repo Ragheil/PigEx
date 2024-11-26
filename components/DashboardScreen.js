@@ -775,18 +775,20 @@ useEffect(() => {
           value={currentPassword}
           onChangeText={setCurrentPassword}
         />
-        <TouchableOpacity
-          style={styles.button}
-          onPress={updateUserEmail} // Corrected line
-        >
-          <Text style={styles.buttonText}>Confirm</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => setEmailModalVisible(false)}
-        >
-          <Text style={styles.buttonText}>Cancel</Text>
-        </TouchableOpacity>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() => setEmailModalVisible(false)}
+          >
+            <Text style={styles.buttonText}>Cancel</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.confirmButton}
+            onPress={updateUserEmail} // Make sure to call the correct function
+          >
+            <Text style={styles.buttonText}>Confirm</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   </TouchableWithoutFeedback>
