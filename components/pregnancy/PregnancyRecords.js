@@ -381,7 +381,7 @@ const PregnancyRecords = ({ route, navigation }) => {
     <View>
       <Text style={PregnancyRecordsStyles.pigletModalHeader}>Piglets of {selectedPigName}</Text>
       <Text style={PregnancyRecordsStyles.pigletCountText}>
-        Total Piglets: {selectedPiglets.length} {/* Display total piglets count */}
+        Number of Piglets: {selectedPiglets.length} {/* Display total piglets count */}
       </Text>
       <ScrollView 
         style={PregnancyRecordsStyles.pigletsList} 
