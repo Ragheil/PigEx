@@ -753,44 +753,44 @@ useEffect(() => {
 
       {/* Email Update Modal */}
       <Modal
-        visible={emailModalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setEmailModalVisible(false)}
-      >
-        <TouchableWithoutFeedback onPress={() => setEmailModalVisible(false)}>
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Update Email</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="New Email"
-                value={updatedEmail}
-                onChangeText={setUpdatedEmail}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Current Password"
-                secureTextEntry
-                value={currentPassword}
-                onChangeText={setCurrentPassword}
-              />
-              <TouchableOpacity
-                style={styles.button}
-                onPress={updateUserEmail}
-              >
-                <Text style={styles.buttonText}>Confirm</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => setEmailModalVisible(false)}
-              >
-                <Text style={styles.buttonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
+  visible={emailModalVisible}
+  animationType="slide"
+  transparent={true}
+  onRequestClose={() => setEmailModalVisible(false)}
+>
+  <TouchableWithoutFeedback onPress={() => setEmailModalVisible(false)}>
+    <View style={styles.modalOverlay}>
+      <View style={styles.modalContent}>
+        <Text style={styles.modalTitle}>Update Email</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="New Email"
+          value={updatedEmail}
+          onChangeText={setUpdatedEmail}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Current Password"
+          secureTextEntry
+          value={currentPassword}
+          onChangeText={setCurrentPassword}
+        />
+        <TouchableOpacity
+          style={styles.button}
+          onPress={updateUserEmail} // Corrected line
+        >
+          <Text style={styles.buttonText}>Confirm</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => setEmailModalVisible(false)}
+        >
+          <Text style={styles.buttonText}>Cancel</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </TouchableWithoutFeedback>
+</Modal>
 
         {/* Add Branch Modal */}
         <Modal visible={branchModalVisible} animationType="slide" transparent>

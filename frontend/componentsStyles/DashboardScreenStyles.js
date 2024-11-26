@@ -192,11 +192,15 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    width: '80%',
-    padding: 20,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    alignItems: 'center',
+    width: '80%', // Width of the modal
+    backgroundColor: 'white', // Background color of the modal
+    borderRadius: 10, // Rounded corners
+    padding: 20, // Padding inside the modal
+    elevation: 5, // Shadow for Android
+    shadowColor: '#000', // Shadow color for iOS
+    shadowOffset: { width: 0, height: 2 }, // Shadow offset for iOS
+    shadowOpacity: 0.3, // Shadow opacity for iOS
+    shadowRadius: 4, // Shadow radius for iOS
   },
   modalTitle: {
     fontSize: 18,
@@ -254,6 +258,52 @@ const styles = StyleSheet.create({
   },
   boldText: {
     fontWeight: 'bold',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+    justifyContent: 'center', // Center vertically
+    alignItems: 'center', // Center horizontally
+  },
+  modalContent: {
+    width: '80%', // Width of the modal
+    backgroundColor: 'white', // Background color of the modal
+    borderRadius: 10, // Rounded corners
+    padding: 20, // Padding inside the modal
+    elevation: 5, // Shadow for Android
+    shadowColor: '#000', // Shadow color for iOS
+    shadowOffset: { width: 0, height: 2 }, // Shadow offset for iOS
+    shadowOpacity: 0.3, // Shadow opacity for iOS
+    shadowRadius: 4, // Shadow radius for iOS
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center', // Center the title text
+  },
+  input: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 15,
+    paddingHorizontal: 10,
+  },
+  button: {
+    backgroundColor: '#007BFF',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  closeModalText: {
+    color: 'red',
+    textAlign: 'center',
+    marginTop: 10,
   },
 });
 
