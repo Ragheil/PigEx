@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, RefreshControl, Alert, Button } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, RefreshControl, Alert, Button, SafeAreaView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { collection, getDocs, doc, onSnapshot, getDoc } from 'firebase/firestore';
 import { firestore } from '../../firebase/config2'; // Adjust the path to your Firebase config
@@ -564,120 +564,160 @@ useEffect(() => {
     }
   };
   
+  const formatBalance = (balance) => {
+    return balance.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+  
+
   return (
-    <View style={TransactionScreenStyles.container}>
-      <Text style={TransactionScreenStyles.headerText}> Transaction </Text>
-      <View style={TransactionScreenStyles.infoContainer}>
-      <Text style={TransactionScreenStyles.infoText}>
-  Farm Name: {farmBranchName}
-</Text>
+    // <ImageBackground
+    //   source={require('../../assets/images/bgimage.png')} // Replace with your image URL
+    //   style={TransactionScreenStyles.background}
+    // >
+    <SafeAreaView style={TransactionScreenStyles.container}>
+      <View style={TransactionScreenStyles.header}>
+        <Text style={TransactionScreenStyles.headerText}>Transaction </Text>
+          
+          <View style={{}}>
+            <View style={TransactionScreenStyles.infoHeader}>
+              <View style={{flexDirection: 'column'}}>
+                <TouchableOpacity onPress={() => openDatePicker('start', 'end')}>
+                  <Text style={{fontSize: 15, fontWeight: '500'}}> Start Date:
+                    <Text style={{fontSize: 15, fontWeight: '800'}}> {startDate.toLocaleDateString()}</Text>
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => openDatePicker('end')}>
+                  <Text style={{fontSize: 15, fontWeight: '500'}}> End Date:
+                    <Text style={{fontSize: 15, fontWeight: '800'}}> {endDate.toLocaleDateString()}</Text>
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
-        <Text style={TransactionScreenStyles.subHeaderText}>
-          Total Balance: <Text style={TransactionScreenStyles.totalBalanceText}>₱{totalBalance.toFixed(2)}</Text>
-        </Text>
-        <Text style={TransactionScreenStyles.subHeaderText}>
-          Total Income: <Text style={TransactionScreenStyles.totalIncomeText}>₱{totalIncome.toFixed(2)}</Text>
-        </Text>
-        <Text style={TransactionScreenStyles.subHeaderText}>
-          Total Expense: <Text style={TransactionScreenStyles.totalExpenseText}>₱{totalExpense.toFixed(2)}</Text>
-        </Text>
+              <View style={{ 
+                flexDirection: 'row', 
+                justifyContent: 'center', 
+                columnGap: 5,
+              }}>
+                <Button color='#566F48' title="Week" onPress={() => setSelectedPeriod('week')} />
+                <Button color='#566F48' title="Month" onPress={() => setSelectedPeriod('month')} />
+                <Button color='#566F48' title="Year" onPress={() => setSelectedPeriod('year')} />
+              </View>
+
+            </View>
+            <ScrollView
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
+            >
+              <View style={TransactionScreenStyles.infoContainer}>
+                <Text style={TransactionScreenStyles.infoText}>
+                  Farm Name: {farmBranchName}
+                </Text>
+                  
+                  <View style={{gap: 3, flexDirection: 'column'}}>
+                    
+                    <View style={{marginTop:3, marginBottom: 5, width: 180}}>
+                      <Text style={TransactionScreenStyles.subHeaderText}>Total Balance: </Text>
+                      <Text style={TransactionScreenStyles.totalBalanceText}>PHP {formatBalance(totalBalance)}</Text>
+                    </View>
+
+                    <View style={{flexDirection: 'row',}}>
+                      <View style={{flex:1.25}}>
+                        <Text style={TransactionScreenStyles.subHeaderText}>Total Income:</Text>
+                        <Text style={TransactionScreenStyles.totalIncomeText}>PHP {formatBalance(totalIncome)}</Text>
+                      </View>
+
+                      <View style={{flex:1}}>
+                        <Text style={TransactionScreenStyles.subHeaderText}>Total Expense:</Text>
+                        <Text style={TransactionScreenStyles.totalExpenseText}>PHP {formatBalance(totalExpense)}</Text>
+                      </View>
+                    </View>
+
+                  </View>
+              </View>
+            </ScrollView>
+          </View>
       </View>
 
-      <View>
-        <TouchableOpacity onPress={() => openDatePicker('start')}>
-          <Text>Select Start Date: {startDate.toLocaleDateString()}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => openDatePicker('end')}>
-          <Text>Select End Date: {endDate.toLocaleDateString()}</Text>
-        </TouchableOpacity>
-      </View>
-
-      <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-<View style={{ flexDirection: 'row', justifyContent: 'center', marginVertical: 10 }}>
-    <Button title="Week" onPress={() => setSelectedPeriod('week')} />
-    <Button title="Month" onPress={() => setSelectedPeriod('month')} />
-    <Button title="Year" onPress={() => setSelectedPeriod('year')} />
-</View>
-
-
-
-
-<View style={{ alignItems: 'center', marginVertical: 20 }}>
-<ScrollView horizontal>
-    <View style={{ alignItems: 'center', marginVertical: 20 }}>
-        <Text style={{ textAlign: 'center', fontSize: 16, fontWeight: 'bold', marginVertical: 10 }}>
-            {selectedPeriod === 'week'
-                ? 'Weekly Transactions'
-                : selectedPeriod === 'month'
-                ? `${new Date().toLocaleString('default', { month: 'long' })} Transactions`
-                : 'Yearly Transactions'}
-        </Text>
-
-        <BarChart
-            data={barChartData}
-            width={Math.max(screenWidth, barChartData.labels.length * 60)} // Adjust width for horizontal scrolling
-            height={220}
-            chartConfig={{
-                backgroundColor: '#94E334FF',
-                backgroundGradientFrom: '#9ED74AFF',
-                backgroundGradientTo: '#FFFFFFFF',
-                decimalPlaces: 2,
-                barPercentage: 0.5, // Reduce bar width to accommodate two bars per label
-                groupBarSpacing: 10, // Add spacing between Money In and Money Out bars
-                color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
-                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                style: {
-                    borderRadius: 16,
-                },
-            }}
-            style={{
-                marginVertical: 8,
-                borderRadius: 16,
-            }}
-            verticalLabelRotation={30} // Optional: Rotate labels for better readability
-        />
-    </View>
-</ScrollView>
+      
+        
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+        <View style={TransactionScreenStyles.body}>
+            <View style={{ alignItems: 'center', marginBottom: 20}}>
+              <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>
+                          {selectedPeriod === 'week'
+                              ? 'Weekly Transactions'
+                              : selectedPeriod === 'month'
+                              ? `${new Date().toLocaleString('default', { month: 'long' })} Transactions`
+                              : 'Yearly Transactions'}
+                      </Text>
+                <ScrollView horizontal style={{borderRadius: 12,}}>
+                <View style={{ alignItems: 'center', marginVertical: 0}}>
+                    <BarChart
+                        data={barChartData}
+                        width={Math.max(screenWidth, barChartData.labels.length * 60)} // Adjust width for horizontal scrolling
+                        height={220}
+                        chartConfig={{
+                            backgroundColor: '#94E334FF',
+                            backgroundGradientFrom: '#9ED74AFF',
+                            backgroundGradientTo: '#FFFFFFFF',
+                            decimalPlaces: 2,
+                            barPercentage: 0.5, // Reduce bar width to accommodate two bars per label
+                            groupBarSpacing: 10, // Add spacing between Money In and Money Out bars
+                            color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
+                            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                            style: {
+                                // borderRadius: 16,
+                            },
+                        }}
+                        verticalLabelRotation={30} // Optional: Rotate labels for better readability
+                    />
+                </View>
+              </ScrollView>
+            </View>
 
 
-</View>
+            {filteredTransactions.length > 0 ? (
+              Object.entries(groupedTransactions).map(([date, transactions]) => (
+                <View key={date} style={TransactionScreenStyles.transactionContainer}>
+                  <Text style={TransactionScreenStyles.dateText}>{date}</Text>
+                  {transactions.map((transaction) => (
+                    <View key={transaction.id} style={TransactionScreenStyles.transactionItem}>
+                      <Text style={TransactionScreenStyles.transactionLabel}>
+                        <Text style={TransactionScreenStyles.categoryText}>{transaction.category || 'N/A'}</Text>:
+                        <Text style={transaction.type === 'in' ? TransactionScreenStyles.income : TransactionScreenStyles.expense}>
+                          ₱{parseFloat(transaction.amount).toFixed(2)}
+                        </Text>
+                      </Text>
+                      <Text style={TransactionScreenStyles.remarksText}>
+                        Remarks: {transaction.remarks || 'No remarks provided.'}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              ))
+            ) : (
+              <Text style={TransactionScreenStyles.noTransactionsText}>No transactions found.</Text>
+            )}
+          </View>
+          </ScrollView>
+          
+          <View style={{paddingHorizontal: 20, marginBottom: 15}}>
+            <TouchableOpacity style={TransactionScreenStyles.pdfButton} onPress={generatePDF}>
+              <Text style={TransactionScreenStyles.pdfButtonText}>Generate PDF</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={TransactionScreenStyles.backButton} onPress={handleGoBack}>
+              <Text style={TransactionScreenStyles.backButtonText}>Back</Text>
+            </TouchableOpacity>
+          </View>
 
-
-      {filteredTransactions.length > 0 ? (
-  Object.entries(groupedTransactions).map(([date, transactions]) => (
-    <View key={date} style={TransactionScreenStyles.transactionContainer}>
-      <Text style={TransactionScreenStyles.dateText}>{date}</Text>
-      {transactions.map((transaction) => (
-        <View key={transaction.id} style={TransactionScreenStyles.transactionItem}>
-          <Text style={TransactionScreenStyles.transactionLabel}>
-            <Text style={TransactionScreenStyles.categoryText}>{transaction.category || 'N/A'}</Text>:
-            <Text style={transaction.type === 'in' ? TransactionScreenStyles.income : TransactionScreenStyles.expense}>
-              ₱{parseFloat(transaction.amount).toFixed(2)}
-            </Text>
-          </Text>
-          <Text style={TransactionScreenStyles.remarksText}>
-            Remarks: {transaction.remarks || 'No remarks provided.'}
-          </Text>
-        </View>
-      ))}
-    </View>
-  ))
-) : (
-  <Text style={TransactionScreenStyles.noTransactionsText}>No transactions found.</Text>
-)}
-      </ScrollView>
- 
-      <TouchableOpacity style={TransactionScreenStyles.pdfButton} onPress={generatePDF}>
-        <Text style={TransactionScreenStyles.pdfButtonText}>Generate PDF</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={TransactionScreenStyles.backButton} onPress={handleGoBack}>
-        <Text style={TransactionScreenStyles.backButtonText}>Back</Text>
-      </TouchableOpacity>
-    </View>
+      
+    </SafeAreaView>
+    // </ImageBackground>
   );
 };
 

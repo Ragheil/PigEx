@@ -6,6 +6,9 @@
  - root
  - search
 
+#a7c796
+ - backgroundcolor
+
 #869f77
  - mainheader
 

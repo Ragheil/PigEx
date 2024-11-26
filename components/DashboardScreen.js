@@ -13,7 +13,8 @@ import {
   ScrollView,
   RefreshControl,
   Image,
-  Button
+  Button,
+  SafeAreaView
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Divider } from 'react-native-paper';
@@ -499,7 +500,7 @@ useEffect(() => {
 }, [user, selectedBranch]); // Add selectedBranch to dependencies
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <LinearGradient
         // colors={['#FDE9EA', '#869F77', '#588061']}
         colors={['#F5F5F5', '#F5F5F5']}
@@ -812,6 +813,6 @@ useEffect(() => {
           </View>
         </Modal>
       </LinearGradient>
-    </View>
+    </SafeAreaView>
   );
 }

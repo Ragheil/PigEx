@@ -1,46 +1,92 @@
 import { StyleSheet } from 'react-native';
+import { auth } from '../../firebase/config2';
 
 const TransactionScreenStyles = StyleSheet.create({
+  // background: {
+  //   flex: 1,
+  //   resizeMode: 'cover', // optional, can also be 'contain', 'stretch', etc.
+  //   justifyContent: 'center',
+  // },
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#f0f0f0',
+    // height: 20,
+    // padding: 20,
+    // backgroundColor: '#869f77',
+    backgroundColor: '#a7c796',
+    // backgroundColor: 'red',
+  },
+  header: {
+    // flex: 1,
+    paddingTop: 30,
+    paddingHorizontal: 13,
+    paddingBottom: 12,
+    backgroundColor: '#869f77',
   },
   headerText: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 20,
-    marginTop: 60,
+    marginBottom: 10,
+    marginTop: 5,
+    // backgroundColor: 'lightblue',
+  },
+  infoHeader: {
+    flexDirection: 'row',
+    // flexWrap: 'wrap',
+    backgroundColor: '#F5F5F5',
+    // paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderTopStartRadius: 5,
+    borderTopEndRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 18,
+    borderBottomColor: 'lightgray',
+    borderBottomWidth: 2,
   },
   infoContainer: {
-    marginBottom: 20,
+    // marginBottom: 20,
     padding: 10,
-    backgroundColor: '#fff',
-    borderRadius: 8,
+    paddingHorizontal: 20,
+    backgroundColor: '#F5F5F5',
+    // borderRadius: 5,
+    borderBottomStartRadius:5,
+    borderBottomEndRadius: 5,
     elevation: 3,
+  },
+  body: {
+    flex: 1,
+    paddingTop: 10,
+    paddingHorizontal: 20,
+    // backgroundColor: 'lightgreen',
   },
   infoText: {
     fontSize: 16,
+    marginBottom: 3,
   },
   subHeaderText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 10,
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#000000CC',
+    // marginTop: 10,
   },
   totalBalanceText: {
-    fontSize: 16,
-    color: 'green',
+    fontSize: 25,
+    fontWeight: '900',
+    color: 'black',
+    // width: 100
   },
   totalIncomeText: {
     fontSize: 16,
-    color: 'blue',
+    fontWeight: '500',
+    color: 'green',
   },
   totalExpenseText: {
     fontSize: 16,
+    fontWeight: '500',
     color: 'red',
   },
   transactionContainer: {
-    marginBottom: 20,
+    marginBottom: 10,
   },
   dateText: {
     fontSize: 20,
