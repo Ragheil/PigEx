@@ -5,6 +5,7 @@ import { firestore } from '../../firebase/config2'; // Adjust path as needed
 import { Picker } from '@react-native-picker/picker'; // Ensure this package is installed
 import DateTimePicker from '@react-native-community/datetimepicker'; // For picking the date
 import styles from '../../frontend/money/MoneyInScreenStyles';
+import RNPickerSelect from 'react-native-picker-select';
 
 const MoneyInScreen = ({ route }) => {
   const { farmName, selectedBranch, userId } = route.params; // Get farmName, selectedBranch, and userId from route params
@@ -300,14 +301,19 @@ const handleDeleteMoney = async (id) => {
               value={remarks}
               onChangeText={(text) => setRemarks(text)}
             />
-            <RNPickerSelect
-              selectedValue={category}
-              onValueChange={handleCategoryChange}
-            >
-              <Picker.Item label="Salary" value="salary" />
-              <Picker.Item label="Sales" value="sales" />
-              <Picker.Item label="Other" value="other" />
-            </RNPickerSelect>
+          <RNPickerSelect
+            onValueChange={handleCategoryChange}
+            items={[
+              { label: 'Salary', value: 'salary' },
+              { label: 'Sales', value: 'sales' },
+              { label: 'Other', value: 'other' },
+            ]}
+            placeholder={{ label: 'Select a category', value: null }} // Optional placeholder
+            style={{
+              inputIOS: styles.input,
+              inputAndroid: styles.input,
+            }}
+          />
             {showOtherCategoryInput && (
               <TextInput
                 style={styles.input}

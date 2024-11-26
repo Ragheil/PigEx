@@ -6,6 +6,7 @@ import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import MoneyOutScreenStyles from '../../frontend/money/MoneyOutScreenStyles'; // Import the styles
 import NetInfo from '@react-native-community/netinfo'; // For network status
+import RNPickerSelect from 'react-native-picker-select';
 
 const MoneyOutScreen = ({ route }) => {
   const { farmName, selectedBranch, userId } = route.params;
@@ -346,12 +347,19 @@ const MoneyOutScreen = ({ route }) => {
             value={remarks}
             onChangeText={setRemarks}
           />
-          <RNPickerSelect selectedValue={category} onValueChange={handleCategoryChange}>
-            <Picker.Item label="Expense" value="expense" />
-            <Picker.Item label="Bill" value="expense" />
-            <Picker.Item label="Other" value="other" />
-            {/* Add other categories as needed */}
-          </RNPickerSelect>
+          <RNPickerSelect
+            onValueChange={handleCategoryChange}
+            items={[
+              { label: 'Expense', value: 'expense' },
+              { label: 'Bill', value: 'bill' },
+              { label: 'Other', value: 'other' },
+            ]}
+            placeholder={{ label: 'Select a category', value: null }} // Optional placeholder
+            style={{
+              inputIOS: MoneyOutScreenStyles.input,
+              inputAndroid: MoneyOutScreenStyles.input,
+            }}
+          />
           {showOtherCategoryInput && (
             <TextInput
               style={MoneyOutScreenStyles.input}
