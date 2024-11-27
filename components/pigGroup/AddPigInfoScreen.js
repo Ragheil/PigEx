@@ -30,7 +30,9 @@ export default function AddPigInfoScreen({ route }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [selectedPig, setSelectedPig] = useState(null);
-  const [dateOfBirth, setDateOfBirth] = useState(new Date());  // Date of birth state
+ // const [dateOfBirth, setDateOfBirth] = useState(new Date());  // Date of birth state
+  const [dateOfBirth, setDateOfBirth] = useState(null);
+
   const [openDatePicker, setOpenDatePicker] = useState(false); // Corrected
   const [vitality, setVitality] = useState('alive'); // Vitality state (alive/disabled)
   const [isVitalityEditable, setIsVitalityEditable] = useState(false); // Controls the picker state
@@ -48,8 +50,29 @@ export default function AddPigInfoScreen({ route }) {
   const [loading, setLoading] = useState(true);
   const [motherName, setMotherName] = useState("");
   const [selectedPiglets, setSelectedPiglets] = useState([]); // Add this line to your state initialization
+  const [showDatePicker, setShowDatePicker] = useState(false); // State to control DatePicker visibility
+
   
-  
+  const handleConfirm = (date) => {
+    if (date instanceof Date && !isNaN(date)) {
+        setDateOfBirth(date);
+    } else {
+        console.warn("Invalid date selected");
+    }
+    setOpenDatePicker(false);
+};
+
+const handleConfirmBirthDate = (date) => {
+  setDateOfBirth(date);
+  setOpenDatePicker(false);
+};
+
+const handleConfirmDeathDate = (date) => {
+  setDateOfDeath(date);
+  setOpenDeathDatePicker(false);
+};
+
+
   const handleOpenDatePicker = () => {
     setOpenDatePicker(true);
   };
@@ -226,7 +249,7 @@ useEffect(() => {
     await updateMotherRecordsInMainFarm(firestore, user.uid, currentPigId, pigName);
     await updateMotherRecordsInAllFarmBranches(firestore, user.uid, currentPigId, pigName);
 
-    Alert.alert('Success', 'Pig name updated across all relevant records!');
+    Alert.alert('Success', 'Pig updated successfully!');
     setIsEditing(false);
     resetFields();
   } catch (error) {
@@ -461,20 +484,29 @@ const renderPig = ({ item }) => {
               keyboardType="phone-pad"
             />
                        {/* Date of Birth Picker */}
-            <TouchableOpacity onPress={handleOpenDatePicker}>
-              <Text>Select Date of Birth</Text>
-            </TouchableOpacity>
+                       <TouchableOpacity 
+        onPress={handleOpenDatePicker} 
+        style={styles.datePickerButton}
+      >
+<Text style={styles.datePickerText}>
+    {dateOfBirth ? dateOfBirth.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    }) : 'Select Date of Birth'}
+</Text>
+      </TouchableOpacity>
 
-            <DateTimePickerModal
-                 isVisible={openDatePicker}
-                mode="date"
-                date={dateOfBirth}
-                onConfirm={(date) => {
-                  setDateOfBirth(date);
-                  setOpenDatePicker(false);
-             }}
-              onCancel={() => setOpenDatePicker(false)}
-              />
+
+      <DateTimePickerModal
+    isVisible={openDatePicker}
+    mode="date"
+    date={dateOfBirth || new Date()} // Ensure date is never null
+    onConfirm={handleConfirmBirthDate} // Use the birth date handler
+    onCancel={() => setOpenDatePicker(false)}
+/>
+
+
         
                   <RNPickerSelect
             onValueChange={(value) => setGender(value)} // Update the gender state
@@ -506,29 +538,35 @@ const renderPig = ({ item }) => {
 
 
           {/* Show cause of death and date of death only if editing and the pig is deceased */}
-          {isEditing && isDeceased && (
-            <>
-              <TextInput
-                style={styles.input}
-                placeholder="Cause of Death"
-                value={causeOfDeath}
-                onChangeText={setCauseOfDeath}
-              />
-              <TouchableOpacity onPress={handleOpenDeathDatePicker}>
-                <Text>Select Date of Death</Text>
-              </TouchableOpacity>
-              <DateTimePickerModal
-                isVisible={openDeathDatePicker}
-                mode="date"
-                date={dateOfDeath}
-                onConfirm={(date) => {
-                  setDateOfDeath(date);
-                  setOpenDeathDatePicker(false);
-                }}
-                onCancel={() => setOpenDeathDatePicker(false)}
-              />
-            </>
-          )}
+{isEditing && isDeceased && (
+    <>
+        <TextInput
+            style={styles.input}
+            placeholder="Cause of Death"
+            value={causeOfDeath}
+            onChangeText={setCauseOfDeath}
+        />
+        <TouchableOpacity onPress={handleOpenDeathDatePicker}>
+            <Text>
+                {dateOfDeath ? dateOfDeath.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                }) : 'Select Date of Death'}
+            </Text>
+        </TouchableOpacity>
+        <DateTimePickerModal
+            isVisible={openDeathDatePicker}
+            mode="date"
+            date={dateOfDeath || new Date()} // Ensure date is never null
+            onConfirm={(date) => {
+                setDateOfDeath(date);
+                setOpenDeathDatePicker(false);
+            }}
+            onCancel={() => setOpenDeathDatePicker(false)}
+        />
+    </>
+)}
             <View style={styles.modalsavecancel}>
               <Button
                 title={isEditing ? 'Update Pig' : 'Add Pig'}
