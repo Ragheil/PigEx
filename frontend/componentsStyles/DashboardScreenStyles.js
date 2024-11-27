@@ -297,6 +297,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 5,
   },
+  cancelButton: {
+    backgroundColor: '#3476BDFF',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 5,
+  },
   updateButton: {
     backgroundColor: '#E5791AFF',
     padding: 10,
@@ -318,7 +325,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    color: 'white',
+    color: '#FAFAFAFF',
     fontWeight: 'bold',
   },
   closeModalText: {
