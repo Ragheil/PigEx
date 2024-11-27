@@ -214,7 +214,8 @@ useEffect(() => {
       const userData = doc.data();
       const farmName = userData?.farmName || ''; 
       setCurrentFarmName(`${farmName}`); 
-      // Setting the selected branch to reflect the Main Farm's name
+      
+      // Set selectedBranch to a valid initial value
       setSelectedBranch(`Main Farm: ${farmName}`); 
 
       const q = query(collection(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches`));
@@ -254,21 +255,7 @@ const handleSeeAllBranches = () => {
   navigation.navigate('SeeAllBranches'); // Navigate to the new screen
 };
 
-const getUserDetailsFromFirestore = async (uid) => {
-  try {
-    const userDocRef = doc(firestore, `users/${uid}`);
-    const userDoc = await getDoc(userDocRef);
-    if (userDoc.exists()) {
-      return userDoc.data();
-    } else {
-      console.log('No such document!');
-      return null;
-    }
-  } catch (error) {
-    console.error('Error fetching user details:', error);
-    throw error; // re-throw the error to handle it later if needed
-  }
-};
+
 
   
   useEffect(() => {
@@ -418,28 +405,29 @@ const getUserDetailsFromFirestore = async (uid) => {
   };
 
 
-const handleBranchSwitch = (branchName) => {
-  const selectedBranchObj = branches.find(branch => branch.id === branchName);
-
-  if (branchName !== selectedBranch) {
-      Alert.alert(
-          "Switch Branch",
-          `Do you want to switch to the ${selectedBranchObj?.name || branchName} branch?`,
-          [
-              { text: "Cancel", style: "cancel" },
-              {
-                  text: "Yes",
-                  onPress: () => {
-                      setSelectedBranch(branchName);
-                      setCurrentFarmName(selectedBranchObj?.name || branchName);
-                      console.log(`Switched to ${selectedBranchObj?.name || branchName} branch.`);
-                  },
-              },
-          ],
-          { cancelable: true }
-      );
-  }
-};
+  const handleBranchSwitch = (branchName) => {
+    if (branchName && branchName !== selectedBranch) {
+        const selectedBranchObj = branches.find(branch => branch.id === branchName);
+        Alert.alert(
+            "Switch Branch",
+            `Do you want to switch to the ${selectedBranchObj?.name || branchName} branch?`,
+            [
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "Yes",
+                    onPress: () => {
+                        setSelectedBranch(branchName);
+                        setCurrentFarmName(selectedBranchObj?.name || branchName);
+                        console.log(`Switched to ${selectedBranchObj?.name || branchName} branch.`);
+                    },
+                },
+            ],
+            { cancelable: true }
+        );
+    } else if (!branchName) {
+        console.log("Branch name is null or same as current. No action taken.");
+    }
+  };
 
   
 
@@ -632,14 +620,6 @@ useEffect(() => {
     </View>
 
 
-
-
-
-
-
-     
-
-
         <FooterScreen 
           firstName={firstName} 
           lastName={lastName} 
@@ -713,7 +693,6 @@ useEffect(() => {
           </TouchableOpacity>
         </Animated.View>
 
-        {/* Account Modal */}
    {/* Account Update Modal */}
         <Modal visible={modalVisible} animationType="slide" transparent>
         <View style={styles.modalContainer}>
