@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
   modalBackground: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.5)', // dim background
+    backgroundColor: 'transparent', // dim background
   },
   modalContent: {
     flexDirection: 'row',
