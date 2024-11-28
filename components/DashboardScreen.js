@@ -454,7 +454,7 @@ useEffect(() => {
     <SafeAreaView style={styles.container}>
       <LinearGradient
         // colors={['#FDE9EA', '#869F77', '#588061']}
-        colors={['#F5F5F5', '#F5F5F5']}
+        colors={['#a7c796', '#a7c796']}
         style={styles.gradient}
       >
         <View style={styles.mainheader}>
@@ -489,7 +489,7 @@ useEffect(() => {
           marginBottom: 20,
           paddingVertical: 10,
           paddingHorizontal: 20,
-          backgroundColor: '#869F77',
+          backgroundColor: '#F5F5F5',
           borderRadius: 13,
           alignItems: 'center',
           zIndex: 5, // High zIndex for priority
@@ -500,7 +500,7 @@ useEffect(() => {
           farmName: farmName // Pass the farm name here
         })}
       >
-        <Text style={{ color: '#fff', fontSize: 22, fontWeight: '700' }}>See All</Text>
+        <Text style={{ color: '#47663B', fontSize: 22, fontWeight: '700' }}>See All</Text>
       </TouchableOpacity>
 
       {/* FlatList for Pig Groups */}
