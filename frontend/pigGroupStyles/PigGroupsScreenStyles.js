@@ -14,6 +14,7 @@ export default StyleSheet.create({
         alignItems: 'center',
         borderBottomRightRadius: 25,
         borderBottomLeftRadius: 25,
+        elevation: 10,
       },
       navibackButton: {
         // padding: 10,

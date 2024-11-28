@@ -4,38 +4,51 @@ import { StyleSheet } from 'react-native';
 export default StyleSheet.create({
     container: {
       flex: 1,
-      paddingHorizontal: 16,
       backgroundColor: '#a7c796',
     },
     navheader: {
-      flexDirection: 'row',
-      marginBottom: 15,
-      // backgroundColor: 'lightblue',
+      // flex: 1,
+      flexDirection: 'column',
+      paddingBottom: 10,
+      marginBottom: 10,
+      paddingHorizontal: 15,
+      backgroundColor: '#869f77',
+      borderBottomLeftRadius: 25,
+      borderBottomRightRadius: 25,
+      elevation: 10
     },
     headerContainer: {
+      // flex: 1,
       flexDirection: 'row',
-      // alignItems: 'center',
-      justifyContent: 'space-between',
-      marginBottom: 25,
-      columnGap: 5,
+      // justifyContent: 'space-between',
+      marginBottom: 5,
+      // columnGap: 5,
     },
-    searchcontainer: {
-      flex: 1,
-      flexDirection: 'row', // Align items in a row
-      alignItems: 'center', // Center items vertically
-      borderWidth: 1,
-      borderColor: '#ccc',
-      borderRadius: 5,
-      // margin: 10,
-      backgroundColor: 'lightblue',
+    searchAndAddContainer: {
+      alignSelf: 'center',
+      // backgroundColor: 'lightblue',
+      flexDirection: 'row',
+      columnGap: 10,
+      width: '95%',
     },
     searchInput: {
-      height: 40,
+      // flex: 1,
       width: '100%',
-      // borderColor: '#ddd',
-      // borderWidth: 1,
-      paddingLeft: '15%',
-      backgroundColor: '#F5F5F5',
+      borderColor: '#ccc',
+      backgroundColor: '#fff',
+      borderWidth: 1,
+      borderRadius: 15,
+      // padding: 8,
+      paddingLeft: 30,
+    },
+    iconsearch: {
+      width: 25, // Set your icon width
+      height: 25, // Set your icon height
+      position: 'absolute', // Position the icon absolutely
+      zIndex: 1,
+      marginLeft: 5,
+      opacity: .5,
+      alignSelf: 'center',
     },
     input: {
       height: 40,
@@ -157,6 +170,36 @@ export default StyleSheet.create({
       marginTop: 5,
       
     },
+    addbuttonContainer: {
+      // flex: 1,
+      height: 50,
+      width: '90%',
+      alignSelf: 'center',
+      // backgroundColor: 'red',
+      // height: 70,
+      // marginBottom: 20,
+      // marginHorizontal: 10,
+      // position: 'relative',
+      bottom: 5,
+      // justifyContent: 'flex-end',
+      // paddingHorizontal: 20,
+      // paddingBottom: 20,
+    },
+    addButton: {
+      flex: 1,
+      justifyContent: 'center',
+      backgroundColor: '#566F48',
+      borderRadius: 20,
+      paddingHorizontal: 3,
+      insetBlockStart: -10,
+    },
+    buttonText: {
+      textAlign: 'center',
+      fontSize: 20,
+      fontWeight: '600',
+      color: '#F5F5F5',
+      textTransform: 'uppercase',
+    },
     title: {
       flex: 1.90,
       fontWeight: 'bold',
@@ -171,14 +214,6 @@ export default StyleSheet.create({
     },
 
     //icon & images
-    iconsearch: {
-      width: 25, // Set your icon width
-      height: 25, // Set your icon height
-      position: 'absolute', // Position the icon absolutely
-      zIndex: 1,
-      marginLeft: 5,
-      opacity: .5,
-    },
     backImage: {
       width: 30, // Adjust size as needed
       height: 20, // Adjust size as needed

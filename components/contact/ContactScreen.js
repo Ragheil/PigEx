@@ -230,19 +230,18 @@ const ContactScreen = ({ navigation }) => {
   };
   
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.navheader}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Image source={backImage} style={styles.backImage} />
-        </TouchableOpacity>
-        <Text style={styles.title}>Contacts </Text>
-      </View>
-      <View style={styles.headerContainer}>
-        <Button title="Add Contact" onPress={openAddContactModal} color="#566F48"/>
-        <View style={styles.searchcontainer}>
+    <View style={styles.container}>
+      <SafeAreaView style={styles.navheader}>
+        <View style={styles.headerContainer}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Image source={backImage} style={styles.backImage} />
+          </TouchableOpacity>
+          <Text style={styles.title}>Contacts </Text>
+        </View>
+        <View style={styles.searchAndAddContainer}>
           <Image 
-            source={require('../../assets/images/search.png')} // Replace with your icon path
-            style={styles.iconsearch}
+                source={require('../../assets/images/search.png')}
+                style={styles.iconsearch}
           />
           <TextInput
             style={styles.searchInput}
@@ -251,9 +250,12 @@ const ContactScreen = ({ navigation }) => {
             onChangeText={setSearchQuery}
           />
         </View>
-      </View>
+      </SafeAreaView>
+        
+      
 
       <FlatList
+        style={{paddingHorizontal: 18}}
         data={filteredContacts}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
@@ -365,7 +367,15 @@ const ContactScreen = ({ navigation }) => {
           </View>
         </Modal>
       )}
-    </SafeAreaView>
+      <View style={styles.addbuttonContainer}>
+        <TouchableOpacity
+          onPress={openAddContactModal}
+          style={styles.addButton}
+        >
+          <Text style={styles.buttonText}>Add Contact</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 
