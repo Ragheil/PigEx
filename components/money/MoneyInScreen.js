@@ -226,33 +226,40 @@ const handleDeleteMoney = async (id) => {
   };
 
   const renderMoneyRecord = ({ item }) => (
-    <View style={styles.dateGroup}>
-      <Text style={styles.dateHeader}>{item.date}</Text>
-      {item.records.map((record) => (
-        <View key={record.id} style={styles.record}>
-          <Text style={[styles.recordText && styles.recordTextAmount]}>Amount PHP: {record.amount.toFixed(2)}</Text>
-          <Text style={styles.recordText}>Category: {record.category}</Text>
-          <Text style={styles.recordText}>Remarks: {record.remarks}</Text>
-          <View style={styles.recordButtons}>
-            <Pressable
-              style={styles.editButton}
-              onPress={() => {
-                setAmount(record.amount.toString());
-                setRemarks(record.remarks);
-                setCategory(record.category);
-                setCurrentRecordId(record.id);
-                setModalVisible(true);
-                setIsEditing(true);
-              }}
-            >
-              <Text style={styles.buttonText}>Edit</Text>
-            </Pressable>
-            <Pressable style={[styles.button && styles.deleteButton]} onPress={() => handleDeleteMoney(record.id)}>
-              <Text style={styles.buttonText}>Delete</Text>
-            </Pressable>
+    <View style={{
+      // backgroundColor: 'red',
+      paddingBottom: 15,
+      // rowGap: 10,
+      // columnGap: 10,
+    }}>
+      <View style={styles.dateGroup}>
+        <Text style={styles.dateHeader}>{item.date}</Text>
+        {item.records.map((record) => (
+          <View key={record.id} style={styles.record}>
+            <Text style={[styles.recordText && styles.recordTextAmount]}>Amount PHP: {record.amount.toFixed(2)}</Text>
+            <Text style={styles.recordText}>Category: {record.category}</Text>
+            <Text style={styles.recordText}>Remarks: {record.remarks}</Text>
+            <View style={styles.recordButtons}>
+              <Pressable
+                style={styles.editButton}
+                onPress={() => {
+                  setAmount(record.amount.toString());
+                  setRemarks(record.remarks);
+                  setCategory(record.category);
+                  setCurrentRecordId(record.id);
+                  setModalVisible(true);
+                  setIsEditing(true);
+                }}
+              >
+                <Text style={styles.buttonText}>Edit</Text>
+              </Pressable>
+              <Pressable style={styles.deleteButton} onPress={() => handleDeleteMoney(record.id)}>
+                <Text style={styles.buttonText}>Delete</Text>
+              </Pressable>
+            </View>
           </View>
-        </View>
-      ))}
+        ))}
+      </View>
     </View>
   );
 

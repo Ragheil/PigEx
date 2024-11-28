@@ -22,15 +22,11 @@ export default StyleSheet.create({
     letterSpacing: 1.5,
   },
   dateGroup: {
-    // marginVertical: 10,
-    paddingTop: 10,
-    marginBottom: 5,
+    // backgroundColor: 'red',
     paddingHorizontal: 20,
-    // backgroundColor: '#e9ecef', // Light grey background for date groups
-    // borderRadius: 25,
   },
   dateHeader: {
-    paddingTop: 5,
+    // paddingTop: 5,
     fontSize: 20,
     fontWeight: 'bold',
     color: '#000',
@@ -39,7 +35,7 @@ export default StyleSheet.create({
     padding: 15,
     backgroundColor: '#ffffff',
     borderRadius: 8,
-    marginVertical: 5,
+    // marginVertical: 5,
     borderWidth: 1,
     borderColor: '#ced4da',
     // borderRadius: 25,
@@ -63,8 +59,6 @@ export default StyleSheet.create({
     // justifyContent: 'space-between',
     marginTop: 10,
     columnGap: 5,
-  },
-  button: {
   },
   editButton: {
     flex: 1,
@@ -132,15 +126,8 @@ export default StyleSheet.create({
     height: 50,
     width: '90%',
     alignSelf: 'center',
-    // backgroundColor: 'red',
-    // height: 70,
-    // marginBottom: 20,
-    // marginHorizontal: 10,
-    // position: 'relative',
+    marginTop: 5,
     bottom: 5,
-    // justifyContent: 'flex-end',
-    // paddingHorizontal: 20,
-    // paddingBottom: 20,
   },
   addMoneyButton: {
     flex: 1,
@@ -214,5 +201,6 @@ export default StyleSheet.create({
     textAlign: 'center',
     fontStyle: 'italic',  // Italicize to add a subtle style
     // backgroundColor: 'red'
+    marginBottom: 10,
   },
 });

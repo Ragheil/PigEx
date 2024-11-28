@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, Modal, Pressable, FlatList, RefreshControl } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, Modal, Pressable, FlatList, RefreshControl, TouchableOpacity } from 'react-native';
 import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore';
 import { firestore } from '../../firebase/config2'; 
 import { Picker } from '@react-native-picker/picker';
@@ -7,6 +7,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import MoneyOutScreenStyles from '../../frontend/money/MoneyOutScreenStyles'; // Import the styles
 import NetInfo from '@react-native-community/netinfo'; // For network status
 import RNPickerSelect from 'react-native-picker-select';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const MoneyOutScreen = ({ route }) => {
   const { farmName, selectedBranch, userId } = route.params;
@@ -264,58 +265,69 @@ const MoneyOutScreen = ({ route }) => {
   
   console.log(formattedDate);
   const renderMoneyRecord = ({ item }) => (
-    <View style={MoneyOutScreenStyles.dateGroup}>
-      <Text style={MoneyOutScreenStyles.flatListItemText}>{item.date}</Text>
-      {item.records.map(record => (
-        <View style={MoneyOutScreenStyles.record} key={record.id}>
-          <Text style={MoneyOutScreenStyles.recordText}>Amount PHP: {record.amount.toFixed(2)}</Text>
-          <Text style={MoneyOutScreenStyles.recordText}>Category: {record.category}</Text>
-          <Text style={MoneyOutScreenStyles.recordText}>Remarks: {record.remarks}</Text>
-          <Text style={MoneyOutScreenStyles.recordText}>Time: {record.time || 'Not set'}</Text> 
-          <View style={MoneyOutScreenStyles.recordButtons}>
-            <Pressable style={MoneyOutScreenStyles.editButton} onPress={() => {
-              setAmount(record.amount.toString());
-              setRemarks(record.remarks);
-              setCategory(record.category);
-              setCurrentRecordId(record.id);
-              setModalVisible(true);
-              setIsEditing(true);
-  
-              // Check if record.time is defined before splitting
-              if (record.time) {
-                const [hours, minutes] = record.time.split(':');
-                const [parsedHours, period] = hours.split(' '); // Split to get AM/PM
-                let hour = parseInt(parsedHours, 10);
-                if (period === 'PM' && hour < 12) {
-                  hour += 12; // Convert PM hour to 24-hour format
-                } else if (period === 'AM' && hour === 12) {
-                  hour = 0; // Convert 12 AM to 0 hours
+    <View style={{
+      // backgroundColor: 'red',
+      paddingBottom: 15,
+      // rowGap: 10,
+      // columnGap: 10,
+    }}>
+      <View style={MoneyOutScreenStyles.dateGroup}>
+        <Text style={MoneyOutScreenStyles.flatListItemText}>{item.date}</Text>
+        {item.records.map(record => (
+          <View style={MoneyOutScreenStyles.record} key={record.id}>
+            <Text style={[MoneyOutScreenStyles.recordText && MoneyOutScreenStyles.recordTextAmount]}>Amount PHP: {record.amount.toFixed(2)}</Text>
+            <Text style={MoneyOutScreenStyles.recordText}>Category: {record.category}</Text>
+            <Text style={MoneyOutScreenStyles.recordText}>Remarks: {record.remarks}</Text>
+            <Text style={MoneyOutScreenStyles.recordText}>Time: {record.time || 'Not set'}</Text> 
+            <View style={MoneyOutScreenStyles.recordButtons}>
+              <Pressable style={MoneyOutScreenStyles.editButton} onPress={() => {
+                setAmount(record.amount.toString());
+                setRemarks(record.remarks);
+                setCategory(record.category);
+                setCurrentRecordId(record.id);
+                setModalVisible(true);
+                setIsEditing(true);
+    
+                // Check if record.time is defined before splitting
+                if (record.time) {
+                  const [hours, minutes] = record.time.split(':');
+                  const [parsedHours, period] = hours.split(' '); // Split to get AM/PM
+                  let hour = parseInt(parsedHours, 10);
+                  if (period === 'PM' && hour < 12) {
+                    hour += 12; // Convert PM hour to 24-hour format
+                  } else if (period === 'AM' && hour === 12) {
+                    hour = 0; // Convert 12 AM to 0 hours
+                  }
+    
+                  const newTime = new Date();
+                  newTime.setHours(hour);
+                  newTime.setMinutes(parseInt(minutes, 10));
+                  setTime(newTime); // Set the time for editing
+                } else {
+                  // If time is not set, you can set a default time (e.g., current time)
+                  setTime(new Date()); // Set to current time or any default time
                 }
-  
-                const newTime = new Date();
-                newTime.setHours(hour);
-                newTime.setMinutes(parseInt(minutes, 10));
-                setTime(newTime); // Set the time for editing
-              } else {
-                // If time is not set, you can set a default time (e.g., current time)
-                setTime(new Date()); // Set to current time or any default time
-              }
-            }}>
-              <Text style={MoneyOutScreenStyles.buttonText}>Edit</Text>
-            </Pressable>
-            <Pressable style={MoneyOutScreenStyles.deleteButton} onPress={() => handleDeleteMoney(record.id)}>
-              <Text style={MoneyOutScreenStyles.buttonText}>Delete</Text>
-            </Pressable>
+              }}>
+                <Text style={MoneyOutScreenStyles.buttonText}>Edit</Text>
+              </Pressable>
+              <Pressable style={MoneyOutScreenStyles.deleteButton} onPress={() => handleDeleteMoney(record.id)}>
+                <Text style={MoneyOutScreenStyles.buttonText}>Delete</Text>
+              </Pressable>
+            </View>
           </View>
-        </View>
-      ))}
+        ))}
+      </View>
     </View>
   );
 
   return (
     <View style={MoneyOutScreenStyles.container}>
+      <SafeAreaView style={MoneyOutScreenStyles.headercontainer}>
+      <Text style={MoneyOutScreenStyles.balanceNumber}>₱ {totalBalance.toFixed(2)}</Text>
+      <Text style={MoneyOutScreenStyles.balance}>Total Balance:</Text>
+      </SafeAreaView>
+      
       <Text style={MoneyOutScreenStyles.title}>Money Out Records</Text>
-      <Text style={MoneyOutScreenStyles.balance}>Total Balance: PHP {totalBalance.toFixed(2)}</Text>
       <Text style={MoneyOutScreenStyles.farmName}>Current Branch: {farmBranchName || 'No branch selected'}</Text>
 
       <FlatList
@@ -327,9 +339,15 @@ const MoneyOutScreen = ({ route }) => {
         }
       />
 
-      <Pressable style={MoneyOutScreenStyles.addButton} onPress={() => setModalVisible(true)}>
-        <Text style={MoneyOutScreenStyles.buttonText}>Add Money Out</Text>
-      </Pressable>
+      <View style={MoneyOutScreenStyles.addbuttonContainer}>
+        <TouchableOpacity
+          onPress={() => setModalVisible(true)}
+          // onPress={openAddContactModal}
+          style={MoneyOutScreenStyles.addMoneyButton}
+        >
+          <Text style={MoneyOutScreenStyles.addMoneyButtonText}>Add Money Out</Text>
+        </TouchableOpacity>
+      </View>
 
       <Modal visible={isModalVisible} animationType="slide">
         <View style={MoneyOutScreenStyles.modalContent}>
