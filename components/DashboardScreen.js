@@ -470,138 +470,137 @@ useEffect(() => {
           </View>
         </View>
         
-        <View style={{ flex: 1, padding: 16 }}>
+      <View style={{ flex: 1, padding: 16 }}>
               
-      <Text style={{ 
-        fontSize: 24, 
-        fontWeight: '700', 
-        marginBottom: 10, 
-        // textAlign: 'center',
-        flexDirection: 'row', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-      }}>
-        Pig Groups Summary
-      </Text>
-
-      <TouchableOpacity
-        style={{
-          marginBottom: 20,
-          paddingVertical: 10,
-          paddingHorizontal: 20,
-          backgroundColor: '#F5F5F5',
-          borderRadius: 13,
+        <Text style={{ 
+          fontSize: 24, 
+          fontWeight: '700', 
+          marginBottom: 10, 
+          // textAlign: 'center',
+          flexDirection: 'row', 
+          justifyContent: 'space-between', 
           alignItems: 'center',
-          zIndex: 5, // High zIndex for priority
-          elevation: 5, // High elevation for priority
-        }}
-        onPress={() => navigation.navigate('PigGroups', {
-          selectedBranch: selectedBranch === `Main Farm: ${farmName}` ? 'Main Farm' : selectedBranch,
-          farmName: farmName // Pass the farm name here
-        })}
-      >
-        <Text style={{ color: '#47663B', fontSize: 22, fontWeight: '700' }}>See All</Text>
-      </TouchableOpacity>
+        }}>
+          Pig Groups Summary
+        </Text>
 
-      {/* FlatList for Pig Groups */}
-      <FlatList
-        data={pigGroups}
-        renderItem={({ item }) => (
-          <View style={{
-            width: 125,
-            marginRight: 10,
-            alignItems: 'center',
-            justifyContent: 'space-between',
+        <TouchableOpacity
+          style={{
+            marginBottom: 20,
+            paddingVertical: 10,
+            paddingHorizontal: 20,
             backgroundColor: '#F5F5F5',
             borderRadius: 13,
-            padding: 10,
-            borderColor: '#566F48',
-            borderWidth: 4,
-            elevation: 5,
+            alignItems: 'center',
+            zIndex: 5, // High zIndex for priority
+            elevation: 5, // High elevation for priority
+          }}
+          onPress={() => navigation.navigate('PigGroups', {
+            selectedBranch: selectedBranch === `Main Farm: ${farmName}` ? 'Main Farm' : selectedBranch,
+            farmName: farmName // Pass the farm name here
+          })}
+        >
+          <Text style={{ color: '#47663B', fontSize: 22, fontWeight: '700' }}>See All</Text>
+        </TouchableOpacity>
+
+        {/* FlatList for Pig Groups */}
+        <FlatList
+          data={pigGroups}
+          renderItem={({ item }) => (
+            <View style={{
+              width: 125,
+              marginRight: 10,
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              backgroundColor: '#F5F5F5',
+              borderRadius: 13,
+              padding: 10,
+              borderColor: '#566F48',
+              borderWidth: 4,
+              elevation: 5,
+              height: 180,
+              
+            }}>
+              <Image source={require('../assets/images/pigIcon.png')} style={styles.pigIcon} />
+              <Text style={{ fontSize: 18, color: '#333' }}>{item.name}</Text>
+              <Text style={{ fontSize: 16, color: '#666' }}>
+                <Text style={{ fontWeight: 'bold' }}></Text>
+              </Text>
+            </View>
+          )}
+          keyExtractor={(item) => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={true}
+          contentContainerStyle={{
+            // backgroundColor: 'red',
+            paddingHorizontal: 0,
             height: 180,
             
-          }}>
-            <Image source={require('../assets/images/pigIcon.png')} style={styles.pigIcon} />
-            <Text style={{ fontSize: 18, color: '#333' }}>{item.name}</Text>
-            <Text style={{ fontSize: 16, color: '#666' }}>
-              <Text style={{ fontWeight: 'bold' }}></Text>
-            </Text>
-          </View>
-        )}
-        keyExtractor={(item) => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={true}
-        contentContainerStyle={{
-          // backgroundColor: 'red',
-          paddingHorizontal: 0,
-          height: 180,
-          
-        }}
-        snapToAlignment="center"
-        snapToInterval={160}
-        decelerationRate="fast"
-        ListEmptyComponent={<Text 
-        style={{ 
-          fontSize: 16, 
-          color: 'gray', 
-          textAlign: 'center', 
-          marginTop: 20, 
-        }}>No pig groups available.</Text>}
-        style={{
-          // alignSelf: 'center',
-          width: '100%', // Ensure FlatList takes full width
-          zIndex: 1, // High zIndex for priority
-          elevation: 2, // High elevation for priority
-            height: 0, //
-        }}
-      />
+          }}
+          snapToAlignment="center"
+          snapToInterval={160}
+          decelerationRate="fast"
+          ListEmptyComponent={<Text 
+          style={{ 
+            fontSize: 16, 
+            color: 'gray', 
+            textAlign: 'center', 
+            marginTop: 20, 
+          }}>No pig groups available.</Text>}
+          style={{
+            // alignSelf: 'center',
+            width: '100%', // Ensure FlatList takes full width
+            zIndex: 1, // High zIndex for priority
+            elevation: 2, // High elevation for priority
+              height: 0, //
+          }}
+        />
 
-      <View style={{ flex: 1, padding: 1, paddingTop: 0 }}>
- 
-        <Text style={{ fontSize: 24, fontWeight: '500' }}>Transaction Preview</Text>
-        <Text style={{ textAlign: 'center', fontSize: 16, fontWeight: 'bold', marginTop: 10, }}>
+        <View style={{
+          // backgroundColor: 'red', 
+          // elevation: 1
+          height: 280
+        }}>
+          <Text style={{ fontSize: 24, fontWeight: '500' }}>Transaction Preview</Text>
+            <Text style={{ textAlign: 'center', fontSize: 16, fontWeight: 'bold', marginTop: 10, }}>
               {selectedPeriod === 'week'
                 ? 'Weekly Transactions'
                 : selectedPeriod === 'month'
                 ? `${new Date().toLocaleString('default', { month: 'long' })} Transactions`
                 : 'Yearly Transactions'}
             </Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={true} style={{ width: '100%', zIndex: 1, elevation: 5 }}>
-          <View style={{ flexDirection: 'column', alignItems: 'center', marginTop: 5 }}>
-            
-
-            <BarChart
-              data={barChartData}
-              width={Math.max(screenWidth, barChartData.labels.length * 60)} // Adjust width for horizontal scrolling
-              height={220}
-              chartConfig={{
-                backgroundColor: '#94E334FF',
-                backgroundGradientFrom: '#9ED74A', // Corrected color without space
-                backgroundGradientTo: '#FFFFFF', // Corrected color
-                decimalPlaces: 2,
-                barPercentage: 0.5, // Reduce bar width to accommodate two bars per label
-                groupBarSpacing: 10, // Add spacing between Money In and Money Out bars
-                
-                color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
-                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                style: {
-                  borderRadius: 16,
-                  height: 100,
-                },
-              }}
-              style={{
-                marginVertical: 8,
-                borderRadius: 16,
-                height: 100,
-              }}
-              verticalLabelRotation={30} // Optional: Rotate labels for better readability
-            />
+            <ScrollView
+              showsHorizontalScrollIndicator={false}
+              horizontal
+              style={{borderRadius: 15}}
+            >
+                <BarChart
+                  data={barChartData}
+                  width={Math.max(screenWidth, barChartData.labels.length * 30)} // Adjust width for horizontal scrolling
+                  height={200}
+                  chartConfig={{
+                    backgroundColor: '#ffffff',
+                    backgroundGradientFrom: '#ffffff',
+                    backgroundGradientTo: '#ffffff',
+                    decimalPlaces: 2,
+                    barPercentage: 1, // Reduce bar width to accommodate two bars per label
+                    groupBarSpacing: 5, // Add spacing between Money In and Money Out bars
+                    color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
+                    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                    style: {
+                      // Add any additional styles if needed
+                    },
+                  }}
+                  style={{
+                    // marginVertical: 8,
+                    // Add any additional styles if needed
+                  }}
+                  verticalLabelRotation={30} // Optional: Rotate labels for better readability
+                />
+            </ScrollView>
           </View>
-        </ScrollView>
-      </View>
-    </View>
-
-
+        </View>
+          
         <FooterScreen 
           firstName={firstName} 
           lastName={lastName} 
@@ -610,9 +609,6 @@ useEffect(() => {
           toggleSidebar={toggleSidebar} 
           userId={userId} 
         />
-
-
-
 
         <TouchableWithoutFeedback onPress={closeSidebar}>
           <Animated.View style={[styles.sidebarOverlay, { opacity: sidebarVisible ? 0.5 : 0 }]} />

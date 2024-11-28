@@ -735,54 +735,55 @@ useEffect(() => {
         <View style={TransactionScreenStyles.body}>
             <View style={{ alignItems: 'center', marginBottom: 20,}}>
               <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: 'bold', marginBottom: 10,}}>
-                          {selectedPeriod === 'week'
-                              ? 'Weekly Transactions'
-                              : selectedPeriod === 'month'
-                              ? `${new Date().toLocaleString('default', { month: 'long' })} Transactions`
-                              : 'Yearly Transactions'}
-                      </Text>
-                <ScrollView horizontal  showsHorizontalScrollIndicator={false} style={{borderRadius: 12,}}>
-                <View style={{ alignItems: 'center', marginVertical: 0, paddingVertical: 0}}>
-                <BarChart
-  data={{
-    labels: barChartData.labels, // Always show labels
-    datasets: 
-      showMoneyIn && showMoneyOut
-        ? barChartData.datasets // Show both datasets
-        : showMoneyIn
-        ? [barChartData.datasets[0]] // Show only Money In
-        : [barChartData.datasets[1]], // Show only Money Out
-  }}
-  width={Dimensions.get('window').width}
-  height={222}
-  chartConfig={{
-    backgroundColor: '#ffffff',
-    backgroundGradientFrom: '#ffffff',
-    backgroundGradientTo: '#ffffff',
-    decimalPlaces: 2,
-    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    style: {
-      borderRadius: 16,
-    },
-    propsForDots: {
-      r: '6',
-      strokeWidth: '2',
-      stroke: '#ffa726',
-    },
-  }}
-  style={{
-    marginVertical: 8,
-    borderRadius: 16,
-  }}
-  barPercentage={0.4}
-  groupBarsPercentage={0.8}
-  withInnerLines={false}
-/>
-
-
-                </View>
-              </ScrollView>
+                  {selectedPeriod === 'week'
+                      ? 'Weekly Transactions'
+                      : selectedPeriod === 'month'
+                      ? `${new Date().toLocaleString('default', { month: 'long' })} Transactions`
+                      : 'Yearly Transactions'}
+              </Text>
+                <ScrollView 
+                horizontal
+                showsHorizontalScrollIndicator={false} 
+                style={{borderRadius: 12,}}>
+                  <View style={{ alignItems: 'center', marginVertical: 0, paddingVertical: 0}}>
+                    <BarChart
+                      data={{
+                        labels: barChartData.labels, // Always show labels
+                        datasets: 
+                          showMoneyIn && showMoneyOut
+                            ? barChartData.datasets // Show both datasets
+                            : showMoneyIn
+                            ? [barChartData.datasets[0]] // Show only Money In
+                            : [barChartData.datasets[1]], // Show only Money Out
+                      }}
+                      width={Dimensions.get('window').width}
+                      height={222}
+                      chartConfig={{
+                        backgroundColor: '#ffffff',
+                        backgroundGradientFrom: '#ffffff',
+                        backgroundGradientTo: '#ffffff',
+                        decimalPlaces: 2,
+                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        style: {
+                          borderRadius: 16,
+                        },
+                        propsForDots: {
+                          r: '6',
+                          strokeWidth: '2',
+                          stroke: '#ffa726',
+                        },
+                      }}
+                      style={{
+                        marginVertical: 8,
+                        borderRadius: 16,
+                      }}
+                      barPercentage={0.4}
+                      groupBarsPercentage={0.8}
+                      withInnerLines={false}
+                    />
+                  </View>
+                </ScrollView>
             </View>
 
 
