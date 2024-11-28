@@ -48,6 +48,16 @@ export default StyleSheet.create({
       fontSize: 20,
       marginVertical: 16,
     },
+    contactheader: {
+      backgroundColor: '#869f77',
+      width: '100%',
+      padding: 5,
+      paddingLeft: 10,
+      fontSize: 20,
+      fontWeight: '500',
+      borderTopLeftRadius: 10,
+      borderTopRightRadius: 10,
+    },
     contactItem: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -74,6 +84,9 @@ export default StyleSheet.create({
     contactName: {
       fontSize: 16,
       color: '#555',
+    },
+    contactText: {
+
     },
     actions: {
       flexDirection: 'row',
@@ -131,11 +144,14 @@ export default StyleSheet.create({
       shadowOpacity: 0.25,
       shadowRadius: 4,
       elevation: 5,
+      rowGap: 5,
     },
     buttonContainer: {
       flexDirection: 'row',
       // justifyContent: 'space-between',
       // alignItems: 'center',
+      // backgroundColor: 'lightblue',
+      justifyContent: 'flex-end',
       columnGap: 10,
       width: '100%',
       marginTop: 5,

@@ -347,19 +347,19 @@ const ContactScreen = ({ navigation }) => {
           onRequestClose={closeViewModal}
         >
           <View style={styles.modalContainer}>
+            <Text style={styles.contactheader}>Contact Details</Text>
             <View style={styles.modalView}>
-              <Text style={styles.header}>Contact Details</Text>
               <Text style={styles.contactNumber}>Contact #: {selectedContact.contactNumber}</Text>
               <Text style={styles.contactName}>Name: {selectedContact.name}</Text>
               <Text style={styles.contactText}>Address: {selectedContact.address}</Text>
               <View style={styles.buttonContainer}>
-                <Button title="Close" onPress={closeViewModal} color="#007BFF" />
                 <TouchableOpacity onPress={() => startEditContact(selectedContact)}>
                   <Image
                     source={require('../../assets/images/contacts/editIcon.png')}
                     style={styles.actionIcon}
                   />
                 </TouchableOpacity>
+                <Button title="Close" onPress={closeViewModal} color="#007BFF" />
               </View>
             </View>
           </View>

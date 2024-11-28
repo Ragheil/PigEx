@@ -66,14 +66,18 @@ export default StyleSheet.create({
         
       },
       groupNametext: {
-        flex: 2
+        flex: 3,
+        // alignContent: 'center',
+        // alignItems: 'center',
+        alignSelf: 'center',
+        justifyContent: 'center',
         // backgroundColor: 'red'
       },
       groupNamevalue: {
         // alignContent: 'center',
         // alignSelf: 'center',
         // alignItems: 'center',
-        // justifyContent: 'center'
+        textAlign: 'center',
         // backgroundColor: 'red'
       },
       searchContainer: {
