@@ -23,3 +23,6 @@
 #399918/#DCFFB7
  - save
  - okay
+
+#B7B7B7
+ - cancel grey

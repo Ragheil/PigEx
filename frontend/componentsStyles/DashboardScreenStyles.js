@@ -108,6 +108,19 @@ const styles = StyleSheet.create({
     width: '100%', // Ensure FlatList takes full width
 
   },
+  button: {
+    backgroundColor: '#566F48',
+    borderRadius: 10, // Adjust the radius as needed
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    margin: 5, // Optional: add some margin between buttons
+    alignItems: 'center',
+},
+buttonText: {
+    color: '#FFFFFF', // Text color
+    fontSize: 16, // Adjust font size as needed
+    fontWeight: '500',
+},
   seeAllButton: {
     marginBottom: 20, 
     paddingVertical: 10,

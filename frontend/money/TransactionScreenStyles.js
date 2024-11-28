@@ -9,11 +9,25 @@ const TransactionScreenStyles = StyleSheet.create({
   // },
   container: {
     flex: 1,
-    // height: 20,
-    // padding: 20,
-    // backgroundColor: '#869f77',
     backgroundColor: '#a7c796',
-    // backgroundColor: 'red',
+  },
+  navheader: {
+    flexDirection: 'row',
+    marginBottom: 15,
+    // backgroundColor: 'lightblue',
+  },
+  navibackButton: {
+    // padding: 10,
+    // marginRight: 5, // Space between the back button and the title
+    // paddingTop: 45,
+    flex: 1,
+    justifyContent: 'center',
+
+  },
+  backImage: {
+    width: 30, // Adjust size as needed
+    height: 30, // Adjust size as needed
+    
   },
   header: {
     // flex: 1,
@@ -21,12 +35,16 @@ const TransactionScreenStyles = StyleSheet.create({
     paddingHorizontal: 13,
     paddingBottom: 12,
     backgroundColor: '#869f77',
+    borderStartEndRadius: 25,
+    borderEndEndRadius: 25,
   },
   headerText: {
+    flex: 2.25,
     fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 10,
-    marginTop: 5,
+    alignSelf: 'center'
+    // marginBottom: 10,
+    // marginTop: 5,
     // backgroundColor: 'lightblue',
   },
   infoHeader: {
@@ -34,9 +52,9 @@ const TransactionScreenStyles = StyleSheet.create({
     // flexWrap: 'wrap',
     backgroundColor: '#F5F5F5',
     // paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderTopStartRadius: 5,
-    borderTopEndRadius: 5,
+    paddingVertical: 10,
+    borderTopStartRadius: 12,
+    borderTopEndRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 18,
@@ -49,9 +67,8 @@ const TransactionScreenStyles = StyleSheet.create({
     paddingHorizontal: 20,
     backgroundColor: '#F5F5F5',
     // borderRadius: 5,
-    borderBottomStartRadius:5,
-    borderBottomEndRadius: 5,
-    elevation: 3,
+    borderStartEndRadius:12,
+    borderEndEndRadius: 12,
   },
   body: {
     flex: 1,

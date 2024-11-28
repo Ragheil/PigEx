@@ -372,8 +372,14 @@ const fetchPigGroups = () => {
               value={name}
               onChangeText={setName}
             />
-            <Button title="Save" onPress={addOrUpdatePigGroup} color="#4CAF50" />
-            <Button title="Cancel" onPress={closeModal} color="#F44336" />
+            <View style={{flexDirection: 'row', columnGap: 10}}>
+              <View style={{flex: 1}}>
+                <Button title="Save" onPress={addOrUpdatePigGroup} color="#4CAF50" />
+              </View>
+              <View style={{flex: 1}}>
+                <Button title="Cancel" onPress={closeModal} color="#F44336" />    
+              </View>
+            </View>
           </View>
       </Modal>
 
@@ -390,8 +396,14 @@ const fetchPigGroups = () => {
             value={deleteConfirmation}
             onChangeText={setDeleteConfirmation}
           />
-          <Button title="Delete" onPress={deletePigGroup} color="#F44336" />
-          <Button title="Cancel" onPress={closeModal} color="#4CAF50" />
+          <View style={{flexDirection: 'row', columnGap: 10}}>
+            <View style={{flex: 1}}>
+              <Button title="Cancel" onPress={closeModal} color="#B7B7B7" />
+            </View>
+            <View style={{flex: 1}}>
+              <Button title="Delete" onPress={deletePigGroup} color="#F44336" />  
+            </View>
+          </View>
         </View>
       </Modal>
       </View>

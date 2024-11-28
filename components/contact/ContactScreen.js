@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, FlatList, TouchableOpacity, Alert, Linking, Modal, Image } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, FlatList, TouchableOpacity, Alert, Linking, Modal, Image, } from 'react-native';
 import { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc, onSnapshot  } from 'firebase/firestore';
 import { auth, firestore } from '../../firebase/config2'; // Adjust the path as needed
 import { Swipeable } from 'react-native-gesture-handler';
 import styles from '../../frontend/contactStyle/ContactScreenStyles'; // Importing the separated styles
 import NetInfo from "@react-native-community/netinfo";
 import { getFirestore, enablePersistence } from "firebase/firestore";
-import backImage from '../../assets/images/Back.png'; // Adjust the path as needed
+import backImage from '../../assets/images/buttons/backbutton.png'; // Adjust the path as needed
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const ContactScreen = ({ navigation }) => {
   const [contacts, setContacts] = useState([]);
@@ -20,6 +21,7 @@ const ContactScreen = ({ navigation }) => {
   const [viewModalVisible, setViewModalVisible] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [swipedItemIds, setSwipedItemIds] = useState(new Set());
   const user = auth.currentUser;
 
   useEffect(() => {
@@ -202,39 +204,67 @@ const ContactScreen = ({ navigation }) => {
     setSelectedContact(null);
   };
 
-  const renderRightActions = (contactId) => (
+
+  const renderRightActions = (id) => (
     <TouchableOpacity
-      style={styles.deleteButton}
-      onPress={() => confirmDeleteContact(contactId)}
+      style={[styles.deleteButton, 
+        // swipedItemId === item.id && styles.deleteButtonSwiped
+      ]}
+      onPress={() => confirmDeleteContact(id)}
     >
       <Text style={styles.deleteButtonText}>Delete</Text>
     </TouchableOpacity>
   );
 
-  return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-    <Image source={backImage} style={styles.backImage} />
-  </TouchableOpacity>
-    <Text style={styles.title}>Contacts </Text>
 
+  const handleSwipeableOpen = (id) => {
+    setSwipedItemIds((prev) => new Set(prev).add(id)); // Add the swiped item ID
+  };
+
+  const handleSwipeableClose = (id) => {
+    setSwipedItemIds((prev) => {
+      const updatedSet = new Set(prev);
+      updatedSet.delete(id); // Remove the swiped item ID
+      return updatedSet;
+    });
+  };
+  
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.navheader}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Image source={backImage} style={styles.backImage} />
+        </TouchableOpacity>
+        <Text style={styles.title}>Contacts </Text>
+      </View>
       <View style={styles.headerContainer}>
         <Button title="Add Contact" onPress={openAddContactModal} color="#566F48"/>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search by name or number"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
+        <View style={styles.searchcontainer}>
+          <Image 
+            source={require('../../assets/images/search.png')} // Replace with your icon path
+            style={styles.iconsearch}
+          />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search by name or number"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+        </View>
       </View>
 
       <FlatList
         data={filteredContacts}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <Swipeable renderRightActions={() => renderRightActions(item.id)}>
+          <Swipeable
+            renderRightActions={() => renderRightActions(item.id)}
+            onSwipeableWillOpen={() => handleSwipeableOpen(item.id)}
+            onSwipeableWillClose={() => handleSwipeableClose(item.id)}
+          >
             <TouchableOpacity onPress={() => openViewModal(item)}>
-              <View style={styles.contactItem}>
+              <View style={{ marginBottom: 15}}>
+              <View style={[styles.contactItem, swipedItemIds.has(item.id) && styles.contactItemSwiped]}>
                 <View style={styles.contactInfo}>
                   <Text style={styles.contactNumber}>{item.contactNumber}</Text>
                   <Text style={styles.contactName}>{item.name}</Text>
@@ -247,7 +277,7 @@ const ContactScreen = ({ navigation }) => {
                     />
                   </TouchableOpacity>
 
-      {/* Modal for confirming deletion 
+                  {/* Modal for confirming deletion 
 
 
                   <TouchableOpacity onPress={() => confirmDeleteContact(item.id)}>
@@ -259,6 +289,7 @@ const ContactScreen = ({ navigation }) => {
                   */}
                   
                 </View>
+              </View>
               </View>
             </TouchableOpacity>
           </Swipeable>
@@ -272,9 +303,9 @@ const ContactScreen = ({ navigation }) => {
         visible={modalVisible}
         onRequestClose={closeModal}
       >
-        <View style={styles.modalContainer}>
+        <SafeAreaView style={styles.modalContainer}>
+          <Text style={styles.modalheader}>{editContactId ? 'Edit Contact Information' : 'Add New Contact'}</Text>
           <View style={styles.modalView}>
-            <Text style={styles.header}>{editContactId ? 'Edit Contact Information' : 'Add New Contact'}</Text>
             <TextInput
               style={styles.input}
               placeholder="Name"
@@ -296,11 +327,15 @@ const ContactScreen = ({ navigation }) => {
               maxLength={11}
             />
             <View style={styles.buttonContainer}>
-              <Button title="Cancel" onPress={closeModal} color="#F44336" />
-              <Button title="Save" onPress={addOrUpdateContact} color="#4CAF50" disabled={loading} />         
+              <View style={{flex: 1}}>
+                <Button title="Save" onPress={addOrUpdateContact} color="#4CAF50" disabled={loading} />
               </View>
+              <View style={{flex: 1}}>
+                <Button title="Cancel" onPress={closeModal} color="#F44336" />
+              </View>
+            </View>
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
 
       {/* Modal for viewing contact details */}
@@ -330,7 +365,7 @@ const ContactScreen = ({ navigation }) => {
           </View>
         </Modal>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 

@@ -11,6 +11,7 @@ import TransactionScreenStyles from '../../frontend/money/TransactionScreenStyle
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker'; // Import date picker
 import { BarChart } from 'react-native-chart-kit'; // Import the bar chart component
 import { Dimensions } from 'react-native';
+import backImage from '../../assets/images/buttons/backbutton.png'; // Adjust the path as needed
 const TransactionScreen = ({ route }) => {
   const { selectedBranch, userId } = route.params;
   const navigation = useNavigation();
@@ -568,65 +569,71 @@ useEffect(() => {
     return balance.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
   
+  const periods = [
+    { title: "Week", value: "week" },
+    { title: "Month", value: "month" },
+    { title: "Year", value: "year" },
+  ];
+  const navbuttonColor = '#566F48';
 
   return (
-    // <ImageBackground
-    //   source={require('../../assets/images/bgimage.png')} // Replace with your image URL
-    //   style={TransactionScreenStyles.background}
-    // >
     <SafeAreaView style={TransactionScreenStyles.container}>
       <View style={TransactionScreenStyles.header}>
+        <View style={TransactionScreenStyles.navheader}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={TransactionScreenStyles.navibackButton}>
+            <Image source={backImage} style={TransactionScreenStyles.backImage} />
+          </TouchableOpacity>
         <Text style={TransactionScreenStyles.headerText}>Transaction </Text>
-          
+        </View>
           <View style={{}}>
             <View style={TransactionScreenStyles.infoHeader}>
-            <View
-                style={{
-                  flexDirection: 'column',
-                  padding: 10,
-                  width: width * 0.9, // 90% of screen width
-                  alignSelf: 'center', // Center the container
-                }}
-              >
-                <TouchableOpacity onPress={() => openDatePicker('start')}>
-                  <Text
-                    style={{
-                      fontSize: width > 320 ? 15 : 14, // Adjust font size for smaller screens
-                      fontWeight: '500',
-                      marginVertical: 1, // Space between items
-                    }}
-                  >
-                    Start Date:{' '}
+              <View
+                  style={{
+                    flexDirection: 'column',
+                    // padding: 10,
+                    width: width * 0.9, // 90% of screen width
+                    alignSelf: 'center', // Center the container
+                  }}
+                >
+                  <TouchableOpacity onPress={() => openDatePicker('start')}>
                     <Text
                       style={{
-                        fontSize: width > 320 ? 15 : 14, // Match font size with the label
-                        fontWeight: '800',
+                        fontSize: width > 320 ? 15 : 14, // Adjust font size for smaller screens
+                        fontWeight: '500',
+                        marginVertical: 1, // Space between items
                       }}
                     >
-                      {startDate.toLocaleDateString()}
+                      Start Date:{' '}
+                      <Text
+                        style={{
+                          fontSize: width > 320 ? 15 : 14, // Match font size with the label
+                          fontWeight: '800',
+                        }}
+                      >
+                        {startDate.toLocaleDateString()}
+                      </Text>
                     </Text>
-                  </Text>
-                </TouchableOpacity>
+                  </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => openDatePicker('end')}>
-                  <Text
-                    style={{
-                      fontSize: width > 320 ? 15 : 14,
-                      fontWeight: '500',
-                      marginVertical: 1,
-                    }}
-                  >
-                    End Date:{' '}
+                  <TouchableOpacity onPress={() => openDatePicker('end')}>
                     <Text
                       style={{
                         fontSize: width > 320 ? 15 : 14,
-                        fontWeight: '900',
+                        fontWeight: '500',
+                        marginVertical: 1,
                       }}
                     >
-                      {endDate.toLocaleDateString()}
+                      End Date:{' '}
+                      <Text
+                        style={{
+                          fontSize: width > 320 ? 15 : 14,
+                          fontWeight: '900',
+                        }}
+                      >
+                        {endDate.toLocaleDateString()}
+                      </Text>
                     </Text>
-                  </Text>
-                </TouchableOpacity>
+                  </TouchableOpacity>
               </View>
 
               <View style={{ 
@@ -634,9 +641,17 @@ useEffect(() => {
                 justifyContent: 'center', 
                 columnGap: 5,
               }}>
-                <Button color='#566F48' title="Week" onPress={() => setSelectedPeriod('week')} />
+                {/* <Button color='#566F48' title="Week" onPress={() => setSelectedPeriod('week')} />
                 <Button color='#566F48' title="Month" onPress={() => setSelectedPeriod('month')} />
-                <Button color='#566F48' title="Year" onPress={() => setSelectedPeriod('year')} />
+                <Button color='#566F48' title="Year" onPress={() => setSelectedPeriod('year')} /> */}
+                {periods.map(period => (
+                    <Button 
+                        key={period.value} 
+                        color={navbuttonColor} 
+                        title={period.title}
+                        onPress={() => setSelectedPeriod(period.value)} 
+                    />
+                ))}
               </View>
 
             </View>
@@ -683,8 +698,8 @@ useEffect(() => {
           }
         >
         <View style={TransactionScreenStyles.body}>
-            <View style={{ alignItems: 'center', marginBottom: 20}}>
-              <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>
+            <View style={{ alignItems: 'center', marginBottom: 20,}}>
+              <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: 'bold', marginBottom: 10,}}>
                           {selectedPeriod === 'week'
                               ? 'Weekly Transactions'
                               : selectedPeriod === 'month'
@@ -692,23 +707,26 @@ useEffect(() => {
                               : 'Yearly Transactions'}
                       </Text>
                 <ScrollView horizontal style={{borderRadius: 12,}}>
-                <View style={{ alignItems: 'center', marginVertical: 0}}>
+                <View style={{ alignItems: 'center', marginVertical: 0, paddingVertical: 0}}>
                     <BarChart
                         data={barChartData}
-                        width={Math.max(screenWidth, barChartData.labels.length * 60)} // Adjust width for horizontal scrolling
+                        width={Math.max(screenWidth, barChartData.labels.length * 50)} // Adjust width for horizontal scrolling
                         height={220}
                         chartConfig={{
-                            backgroundColor: '#94E334FF',
-                            backgroundGradientFrom: '#9ED74AFF',
+                            // backgroundColor: '#94E334FF',
+                            backgroundGradientFrom: '#FBFBFB',
                             backgroundGradientTo: '#FFFFFFFF',
                             decimalPlaces: 2,
                             barPercentage: 0.5, // Reduce bar width to accommodate two bars per label
                             groupBarSpacing: 10, // Add spacing between Money In and Money Out bars
-                            color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
+                            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                             labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                             style: {
                                 // borderRadius: 16,
+                                paddingTop: 20
                             },
+                        }}
+                        style={{
                         }}
                         verticalLabelRotation={30} // Optional: Rotate labels for better readability
                     />
@@ -753,7 +771,6 @@ useEffect(() => {
 
       
     </SafeAreaView>
-    // </ImageBackground>
   );
 };
 
