@@ -127,6 +127,11 @@ buttonText: {
     fontSize: 16, // Adjust font size as needed
     fontWeight: '500',
 },
+addButtonText: {
+  fontWeight: '500',
+  textAlign: 'center',
+  color: '#F5F5F5',
+},
   seeAllButton: {
     marginBottom: 20, 
     paddingVertical: 10,
@@ -220,6 +225,7 @@ buttonText: {
     shadowOffset: { width: 0, height: 2 }, // Shadow offset for iOS
     shadowOpacity: 0.3, // Shadow opacity for iOS
     shadowRadius: 4, // Shadow radius for iOS
+    columnGap: 10,
   },
   modalTitle: {
     fontSize: 18,

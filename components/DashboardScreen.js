@@ -769,12 +769,14 @@ useEffect(() => {
                 placeholder="Branch Name"
                 style={styles.input}
               />
-              <TouchableOpacity style={styles.modalButton} onPress={handleAddBranch}>
-                <Text style={styles.addButtonText}>Add Branch</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.modalButton} onPress={() => setBranchModalVisible(false)}>
-                <Text style={styles.closeModalText}>Close</Text>
-              </TouchableOpacity>
+              <View style={{rowGap: 5}}>
+                <TouchableOpacity style={styles.modalButton} onPress={handleAddBranch}>
+                  <Text style={styles.addButtonText}>Add Branch</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.modalButton} onPress={() => setBranchModalVisible(false)}>
+                  <Text style={styles.closeModalText}>Close</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </Modal>
