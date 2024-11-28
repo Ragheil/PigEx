@@ -206,6 +206,20 @@ const [error, setError] = useState(null);
     calculateTotals(filtered);
   };
   
+  const handleShowMoneyIn = () => {
+    setShowMoneyIn(true);
+    setShowMoneyOut(false);
+    const filtered = transactions.filter(transaction => transaction.type === 'in');
+    setFilteredTransactions(filtered);
+    calculateTotals(filtered);
+  };
+  const handleShowMoneyOut = () => {
+    setShowMoneyIn(false);
+    setShowMoneyOut(true);
+    const filtered = transactions.filter(transaction => transaction.type === 'out');
+    setFilteredTransactions(filtered);
+    calculateTotals(filtered);
+  };
 
 
   const openDatePicker = (type) => {
@@ -247,7 +261,21 @@ const [error, setError] = useState(null);
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
         return d.toLocaleDateString(undefined, options); // Format the date to words
     };
+ const transactionsToInclude = showMoneyIn ? 
+    transactions.filter(transaction => transaction.type === 'in') :
+    transactions.filter(transaction => transaction.type === 'out');
 
+
+    const groupedTransactions = transactionsToInclude
+    .sort((a, b) => new Date(b.date) - new Date(a.date)) // Sort by date descending
+    .reduce((acc, transaction) => {
+      const dateKey = formatDate(transaction.date);
+      if (!acc[dateKey]) {
+        acc[dateKey] = [];
+      }
+      acc[dateKey].push(transaction);
+      return acc;
+    }, {});
     // Helper function to format the time
     const formatTime = (date) => {
         const d = new Date(date);
@@ -678,23 +706,17 @@ useEffect(() => {
       </View>
 
       <View style={{ flexDirection: 'row', justifyContent: 'center', marginVertical: 10 }}>
-  <Button
-    title="Show Money In"
-    onPress={() => {
-      setShowMoneyIn(true);
-      setShowMoneyOut(false);
-    }}
-    color={showMoneyIn ? 'green' : 'grey'} // Change color based on active state
-  />
-  <Button
-    title="Show Money Out"
-    onPress={() => {
-      setShowMoneyIn(false);
-      setShowMoneyOut(true);
-    }}
-    color={showMoneyOut ? 'red' : 'grey'} // Change color based on active state
-  />
-</View>
+      <Button
+        title="Show Money In"
+        onPress={handleShowMoneyIn}
+        color={showMoneyIn ? 'green' : 'grey'} // Change color based on active state
+      />
+      <Button
+        title="Show Money Out"
+        onPress={handleShowMoneyOut}
+        color={showMoneyOut ? 'red' : 'grey'} // Change color based on active state
+      />
+    </View>
         
         <ScrollView
           refreshControl={
