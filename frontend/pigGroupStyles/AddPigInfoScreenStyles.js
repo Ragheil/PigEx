@@ -41,6 +41,17 @@ export default StyleSheet.create({
         padding: 10,
 
       },
+      datePickerButton: {
+        backgroundColor: '#B1C68CFF', // Green background
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginVertical: 10,
+      },
+      datePickerText: {
+        color: '#000000FF', // White text color
+        fontSize: 16,
+      },
       // addButtonText: {
       //   color: '#399918', // Text color
       //   fontSize: 16,

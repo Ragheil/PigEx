@@ -258,12 +258,35 @@ buttonText: {
     marginTop: 10,
     alignItems: 'center',
     marginBottom: 10,
+    borderRadius: 13,
   },
-  addBranchButtonText: {
+  addBranchText: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
   },
+  logoutButton: {
+    backgroundColor: '#FF0000FF',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginTop: 10,
+    alignItems: 'center',
+    marginBottom: 10,
+    borderRadius: 13,
+  },
+  logoutButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  horizontalLine: {
+    marginVertical: 10, // Space above and below the line
+    height: 1, // Height of the line
+    backgroundColor: '#000', // Color of the line
+    width: '100%', // Full width of the container
+    marginTop: 165, //
+},
   picker: {
     height: 50,
     width: '100%',
