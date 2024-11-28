@@ -10,7 +10,8 @@ import deleteIcon from '../../assets/images/buttons/deleteIcon.png';
 import styles from '../../frontend/pigGroupStyles/PigGroupsScreenStyles';
 import NetInfo from '@react-native-community/netinfo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import backImage from '../../assets/images/Back.png'; // Adjust the path as needed
+import backImage from '../../assets/images/buttons/backbutton.png'; // Adjust the path as needed
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 const PigGroupsScreen = ({ navigation, route }) => {
@@ -317,51 +318,32 @@ const fetchPigGroups = () => {
 }, [selectedBranch, user.uid]); // Fetch when selectedBranch or user ID changes
 
   return (
-    <View style={styles.container1}>
-      <View style={styles.mainheader}>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-    <Image source={backImage} style={styles.backImage} />
-  </TouchableOpacity>
-          {/* <Text style={styles.appname}>PigEx</Text> */}
-          <View style={styles.piglogobox}>
-            
-            <Image source={require('../../assets/images/LOGO.png')} style={styles.pigLogo} />
-          </View>
-          {/* <Text style={{fontSize: 12,fontWeight:'800', textTransform: 'uppercase' }}>Pig Groups</Text> */}
-          <View style={styles.subheader}>
-            <View style={styles.subbox1}>
-              {/* <Text style={{fontWeight:'500', textTransform: 'uppercase' }}>{farmName}</Text> */}
-            </View>
-          </View>
+    <View style={styles.container}>
+      <SafeAreaView style={styles.mainheader}>
+        <View style={{flexDirection: 'row', marginBottom: 10}}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.navibackButton}>
+            <Image source={backImage} style={styles.backImage} />
+          </TouchableOpacity>
+          <Text style={styles.headerText}>Pig Groups </Text>
         </View>
-
-    <View style={styles.container2}>
-        {/* <Text style={styles.title}>
-            Pig Groups for {farmName || 'Loading...'} branch
-        </Text> */}
+        <View style={styles.searchAndAddContainer}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search by name"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+        </View>
+      </SafeAreaView>
+    <View style={styles.body}>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        {renderPigGroups()}
         
-      <View style={styles.searchAndAddContainer}>
-        
-        <Button title="Add Pig Group"  onPress={openAddPigGroupModal} 
-        // color="#869F77"
-        color="#566F48"
-        />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search by name"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-      </View>
-
-      {/* <Text style={styles.tableHeader}>Pig Groups</Text> */}
-<ScrollView
-  refreshControl={
-    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-  }
->
-  {renderPigGroups()}
-</ScrollView>
+      </ScrollView>
       {/* Modal for adding or editing pig group */}
       <Modal isVisible={isAddEditModalVisible} onBackdropPress={closeModal}>
         <Text style={styles.modalTitle}>{editPigGroupId ? 'Edit Pig Group' : 'Add Pig Group'}</Text>
@@ -406,7 +388,15 @@ const fetchPigGroups = () => {
           </View>
         </View>
       </Modal>
-      </View>
+    </View>
+    <View style={styles.buttonContainer}>
+      <TouchableOpacity
+        onPress={openAddPigGroupModal}
+        style={styles.addButton}
+      >
+        <Text style={styles.buttonText}>Add Pig Group</Text>
+      </TouchableOpacity>
+    </View>
     </View>
   );
 };

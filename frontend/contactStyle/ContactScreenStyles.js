@@ -105,9 +105,10 @@ export default StyleSheet.create({
       fontWeight: 'bold',
     },
     modalheader: {
+      paddingLeft: 10,
       padding: 5,
       width: '100%',
-      fontSize: 24,
+      fontSize: 20,
       fontWeight: 'bold',
       borderTopLeftRadius: 10,
       borderTopRightRadius: 10,

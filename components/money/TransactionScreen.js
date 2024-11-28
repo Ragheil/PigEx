@@ -583,7 +583,7 @@ useEffect(() => {
           <TouchableOpacity onPress={() => navigation.goBack()} style={TransactionScreenStyles.navibackButton}>
             <Image source={backImage} style={TransactionScreenStyles.backImage} />
           </TouchableOpacity>
-        <Text style={TransactionScreenStyles.headerText}>Transaction </Text>
+          <Text style={TransactionScreenStyles.headerText}>Transaction </Text>
         </View>
           <View style={{}}>
             <View style={TransactionScreenStyles.infoHeader}>

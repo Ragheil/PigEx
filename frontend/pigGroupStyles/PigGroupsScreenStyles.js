@@ -3,24 +3,46 @@ import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
 
-    container1: {
+    container: {
         flex: 1,
-        // padding: 16,
-        backgroundColor: '#F5F5F5',
-      },
-      container2: {
-        flex: 1,
-        padding: 16,
-        backgroundColor: '#F5F5F5',
-        // backgroundColor: '#566F48',
+        backgroundColor: '#a7c796',
       },
       mainheader: {
-        flexDirection: 'column',
+        paddingHorizontal: 10,
+        paddingBottom: 10,
+        flexDirection: 'culomn',
         backgroundColor: '#869f77',
-        paddingTop: 30,
-        paddingBottom: 5,
-        paddingHorizontal: 20,
         alignItems: 'center',
+        borderBottomRightRadius: 25,
+        borderBottomLeftRadius: 25
+      },
+      navibackButton: {
+        // padding: 10,
+        // marginRight: 5, // Space between the back button and the title
+        // paddingTop: 45,
+        flex: 1,
+        justifyContent: 'center',
+      },
+      backImage: {
+        width: 30, // Adjust size as needed
+        height: 30, // Adjust size as needed
+      },
+      headerText: {
+        flex: 2,
+        fontSize: 28,
+        fontWeight: 'bold',
+        alignSelf: 'center',
+        // marginBottom: 10,
+        // marginTop: 5,
+        // backgroundColor: 'lightblue',
+      },
+      body: {
+        flex: 7,
+        // paddingTop: 15,
+        padding: 5,
+        paddingBottom: 20,
+        // backgroundColor: 'lightblue',
+        // backgroundColor: '#566F48',
       },
       backButton: {
         padding: 10,
@@ -28,13 +50,8 @@ export default StyleSheet.create({
         paddingTop: 45
 
       },
-      backImage: {
-        width: 50, // Adjust size as needed
-        height: 50, // Adjust size as needed
-        paddingTop: 4
-      },
       subheader: {
-        // backgroundColor: 'red',
+        backgroundColor: 'red',
         flexDirection: 'row',
         alignItems: 'flex-end',
       },
@@ -97,19 +114,17 @@ export default StyleSheet.create({
       searchAndAddContainer: {
         // backgroundColor: 'lightblue',
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 5,
-        marginBottom: 16,
+        columnGap: 10,
       },
       searchInput: {
-        flex: 1,
+        // flex: 1,
+        width: '95%',
         borderColor: '#ccc',
         backgroundColor: '#fff',
         borderWidth: 1,
-        borderRadius: 4,
+        borderRadius: 14,
         // padding: 8,
         paddingLeft: 10,
-        marginLeft: 8,
       },
       grid: {
         flexDirection: 'row',
@@ -170,10 +185,35 @@ export default StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 8,
       },
-      
+      buttonContainer: {
+        // flex: 1,
+        height: 60,
+        width: '92%',
+        alignSelf: 'center',
+        // backgroundColor: 'red',
+        // height: 70,
+        // marginBottom: 20,
+        // marginHorizontal: 10,
+        // position: 'relative',
+        bottom: 5,
+        // justifyContent: 'flex-end',
+        // paddingHorizontal: 20,
+        // paddingBottom: 20,
+      },
       addButton: {
-        width: '100%',
-        marginBottom: 8,
+        flex: 1,
+        justifyContent: 'center',
+        backgroundColor: '#566F48',
+        borderRadius: 20,
+        paddingHorizontal: 3,
+        insetBlockStart: -10,
+      },
+      buttonText: {
+        textAlign: 'center',
+        fontSize: 20,
+        fontWeight: '700',
+        color: '#F5F5F5',
+        textTransform: 'uppercase',
       },
       saveButton: {
         width: '100%',
