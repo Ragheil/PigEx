@@ -46,9 +46,9 @@ const styles = StyleSheet.create({
     marginBottom: Platform.OS === 'android' ? 40 : 0, // Add extra space for Android navigation bar
   },
   title: {
-    marginTop: 70,
-    fontSize: 40,
-    fontWeight: '500',
+    marginTop: 100,
+    fontSize: 38,
+    fontWeight: '900',
     color: '#161c12',
     letterSpacing: 1.2,
   },
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   },
   pigLogo: {
     height: '50%',
-    width: 300,
+    width: 250,
     resizeMode: 'contain',
     zIndex: 1,
   },
@@ -71,24 +71,25 @@ const styles = StyleSheet.create({
     fontSize: 17,
     paddingHorizontal: 20,
     marginTop: 5,
-    lineHeight: 22,
+    lineHeight: 20,
   },
   startButton: {
     backgroundColor: '#566F48',
     paddingVertical: 17,
     paddingHorizontal: 35, // Adjust the horizontal padding for smaller screens
     borderRadius: 8,
-    marginTop: 150,
+    marginTop: 25,
     marginBottom: 20, // Adjust bottom margin for proper spacing
     flexDirection: 'row', // Ensure "Start Now" stays in one row
     justifyContent: 'center', // Center the text horizontally
-    maxWidth: 300, // Limit the maximum width of the button
-    width: '80%', // Set the width to 80% of the screen width
+    maxWidth: 800, // Limit the maximum width of the button
+    width: 300, // Set the width to 80% of the screen width
+    borderRadius: 20,
   },
   startButtonText: {
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 20,
-    textAlign: 'center', // Ensure text stays centered
+    // textAlign: 'center', // Ensure text stays centered
   },
 });
