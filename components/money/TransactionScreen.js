@@ -733,10 +733,11 @@ useEffect(() => {
         marginVertical: 8,
         borderRadius: 16,
     }}
-    barPercentage={1} // Full width for each bar
-    groupBarsPercentage={1} // Full width for stacked bars
+    barPercentage={0.4} // Adjusts the width of each bar within its group
+    groupBarsPercentage={0.8} // Adjusts spacing between the grouped bars
     withInnerLines={false} // Optional: Hide inner grid lines
 />
+
                 </View>
               </ScrollView>
             </View>
