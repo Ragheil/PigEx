@@ -51,6 +51,12 @@ const styles = StyleSheet.create({
     width: 150,
     resizeMode: 'contain',
   },
+  pigIcon: {
+    width: 90,     // Set the width as needed
+    height: 90,    // Set the height as needed
+    // backgroundColor: 'lightblue',
+    alignSelf: 'center',
+  },
   title: {
     fontSize: 24,
     fontWeight: '500',

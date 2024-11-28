@@ -472,7 +472,15 @@ useEffect(() => {
         
         <View style={{ flex: 1, padding: 16 }}>
               
-      <Text style={{ fontSize: 24, fontWeight: '500', marginBottom: 20, textAlign: 'center',flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+      <Text style={{ 
+        fontSize: 24, 
+        fontWeight: '700', 
+        marginBottom: 10, 
+        // textAlign: 'center',
+        flexDirection: 'row', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+      }}>
         Pig Groups Summary
       </Text>
 
@@ -492,7 +500,7 @@ useEffect(() => {
           farmName: farmName // Pass the farm name here
         })}
       >
-        <Text style={{ color: '#fff', fontSize: 18 }}>See All</Text>
+        <Text style={{ color: '#fff', fontSize: 22, fontWeight: '700' }}>See All</Text>
       </TouchableOpacity>
 
       {/* FlatList for Pig Groups */}
@@ -503,15 +511,17 @@ useEffect(() => {
             width: 125,
             marginRight: 10,
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'space-between',
             backgroundColor: '#F5F5F5',
             borderRadius: 13,
             padding: 10,
             borderColor: '#566F48',
             borderWidth: 4,
             elevation: 5,
-            height: 180
+            height: 180,
+            
           }}>
+            <Image source={require('../assets/images/pigIcon.png')} style={styles.pigIcon} />
             <Text style={{ fontSize: 18, color: '#333' }}>{item.name}</Text>
             <Text style={{ fontSize: 16, color: '#666' }}>
               <Text style={{ fontWeight: 'bold' }}></Text>
@@ -522,14 +532,23 @@ useEffect(() => {
         horizontal
         showsHorizontalScrollIndicator={true}
         contentContainerStyle={{
-          paddingHorizontal: 1,
-          height: 150,
+          // backgroundColor: 'red',
+          paddingHorizontal: 0,
+          height: 180,
+          
         }}
         snapToAlignment="center"
         snapToInterval={160}
         decelerationRate="fast"
-        ListEmptyComponent={<Text style={{ fontSize: 16, color: 'gray', textAlign: 'center', marginTop: 20, }}>No pig groups available.</Text>}
+        ListEmptyComponent={<Text 
+        style={{ 
+          fontSize: 16, 
+          color: 'gray', 
+          textAlign: 'center', 
+          marginTop: 20, 
+        }}>No pig groups available.</Text>}
         style={{
+          // alignSelf: 'center',
           width: '100%', // Ensure FlatList takes full width
           zIndex: 1, // High zIndex for priority
           elevation: 2, // High elevation for priority
@@ -540,15 +559,16 @@ useEffect(() => {
       <View style={{ flex: 1, padding: 1, paddingTop: 0 }}>
  
         <Text style={{ fontSize: 24, fontWeight: '500' }}>Transaction Preview</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={true} style={{ width: '100%', zIndex: 1, elevation: 5 }}>
-          <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 20 }}>
-            <Text style={{ textAlign: 'center', fontSize: 16, fontWeight: 'bold', marginVertical: 10 }}>
+        <Text style={{ textAlign: 'center', fontSize: 16, fontWeight: 'bold', marginTop: 10, }}>
               {selectedPeriod === 'week'
                 ? 'Weekly Transactions'
                 : selectedPeriod === 'month'
                 ? `${new Date().toLocaleString('default', { month: 'long' })} Transactions`
                 : 'Yearly Transactions'}
             </Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={true} style={{ width: '100%', zIndex: 1, elevation: 5 }}>
+          <View style={{ flexDirection: 'column', alignItems: 'center', marginTop: 5 }}>
+            
 
             <BarChart
               data={barChartData}
