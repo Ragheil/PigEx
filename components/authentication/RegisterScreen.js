@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Dimensions, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Dimensions, ScrollView, KeyboardAvoidingView, Platform, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const { width } = Dimensions.get('window');
@@ -50,7 +50,9 @@ const RegisterScreen = ({ email, setEmail, password, setPassword, handleAuthenti
         keyboardShouldPersistTaps='handled'
       >
         <View style={styles.headerBox}>
-          <Text style={styles.title}>PigEx</Text>
+          <View style={styles.piglogobox}>
+            <Image source={require('../../assets/images/LOGO.png')} style={styles.pigLogo} />
+          </View>
         </View>
 
         <View style={styles.mainContent}>
@@ -153,6 +155,18 @@ const styles = StyleSheet.create({
     width: width, // Use screen width
     height: 225,
     zIndex: 1, // Ensure the header is above other content
+  },
+  piglogobox: {
+    marginVertical: 5,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pigLogo: {
+    height: '80%',
+    width: 300,
+    resizeMode: 'contain',
+    zIndex: 1,
   },
   title: {
     fontSize: 32,

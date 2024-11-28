@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Dimensions, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Dimensions, ScrollView, KeyboardAvoidingView, Platform, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../../firebase/config2'; // Import auth here
@@ -84,7 +84,9 @@ const LoginScreen = ({ email, setEmail, password, setPassword, handleAuthenticat
         keyboardShouldPersistTaps='handled'
       >
         <View style={styles.headerBox}>
-          <Text style={styles.title}>PigEx</Text>
+          <View style={styles.piglogobox}>
+            <Image source={require('../../assets/images/LOGO.png')} style={styles.pigLogo} />
+          </View>
         </View>
         <View style={styles.mainContent}>
           <Text style={styles.header}>Login</Text>
@@ -136,7 +138,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F4F4F4',
   },
   headerBox: {
-    backgroundColor: '#79936a',
+    backgroundColor: '#869f77',
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25,
     alignItems: 'center',
@@ -148,6 +150,18 @@ const styles = StyleSheet.create({
     width: width, // Use screen width
     height: 225,
     zIndex: 1, // Ensure the header is above other content
+  },
+  piglogobox: {
+    marginVertical: 5,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pigLogo: {
+    height: '85%',
+    width: 300,
+    resizeMode: 'contain',
+    zIndex: 1,
   },
   title: {
     fontSize: 50,
