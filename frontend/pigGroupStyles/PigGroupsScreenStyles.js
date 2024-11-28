@@ -196,8 +196,8 @@ export default StyleSheet.create({
       },
       buttonContainer: {
         // flex: 1,
-        height: 60,
-        width: '92%',
+        height: 50,
+        width: '90%',
         alignSelf: 'center',
         // backgroundColor: 'red',
         // height: 70,
@@ -220,7 +220,7 @@ export default StyleSheet.create({
       buttonText: {
         textAlign: 'center',
         fontSize: 20,
-        fontWeight: '700',
+        fontWeight: '600',
         color: '#F5F5F5',
         textTransform: 'uppercase',
       },
