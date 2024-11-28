@@ -290,41 +290,45 @@ const handleSeeAllBranches = () => {
     }
   };
 
+ 
   useEffect(() => {
     if (user) {
-      const userId = user.uid;
+      const userId = user.uid; 
       const userDocRef = doc(firestore, `users/${userId}/farmBranches/Main Farm`);
-
+  
       const unsubscribeUserDoc = onSnapshot(userDocRef, (doc) => {
         const userData = doc.data();
-        const farmName = userData?.farmName || 'Main Farm';
-        setCurrentFarmName(farmName);
-        setSelectedBranch('Main Farm');  // Set the branch to "Main Farm" on login
-
-        const q = query(collection(firestore, `users/${userId}/farmBranches/Farm Branch/Branches`));
+        const farmName = userData?.farmName || ''; 
+        setCurrentFarmName(`${farmName}`); 
+        
+        // Set selectedBranch to a valid initial value without prefix
+        setSelectedBranch(farmName); // Change this line
+  
+        const q = query(collection(firestore, `users/${user.uid}/farmBranches/Farm Branch/Branches`));
         const unsubscribeFarmBranches = onSnapshot(q, (snapshot) => {
           const branchList = [];
           snapshot.forEach((doc) => {
             const data = doc.data();
             branchList.push({ id: doc.id, ...data });
           });
-
+  
+          console.log("Fetched branches:", branchList); // Debug log
           const updatedBranchList = branchList.map(branch => ({
             id: branch.id,
-            name: branch.id === 'Main Farm' ? `Main Farm: ${farmName}` : `Farm Branch: ${branch.farmName || 'Unnamed Branch'}`,
+            name: branch.farmName || 'Unnamed Branch', // Clean name without prefix
+            type: 'Farm Branch' // Indicate that it's a farm branch
           }));
           
-          // Include Main Farm in the list if not present
-          if (!branchList.some(branch => branch.id === 'Main Farm')) {
-            updatedBranchList.unshift({
-              id: 'Main Farm',
-              name: `Main Farm: ${farmName}`,
-            });
-          }
-
+          // Adding the Main Farm explicitly to the list if it's not already included
+          updatedBranchList.unshift({
+            id: 'Main Farm',
+            name: farmName, // Clean name without prefix
+            type: 'Main Farm' // Indicate that it's the main farm
+          });
+  
           setBranches(updatedBranchList);
         });
-
+  
         return () => {
           unsubscribeFarmBranches();
           unsubscribeUserDoc();
@@ -332,6 +336,9 @@ const handleSeeAllBranches = () => {
       });
     }
   }, [user]);
+
+
+
 
   const closeSidebar = () => {
     if (sidebarVisible) {
@@ -646,12 +653,11 @@ useEffect(() => {
           <Text style={styles.sidebarText}> Farm: <Text style={{ fontWeight: 'bold' }}>{currentFarmName}</Text> </Text>
 
           {/* Branch Picker */}
-<RNPickerSelect
+          <RNPickerSelect
     onValueChange={(value) => handleBranchSwitch(value)}
     items={[
-    //    { label: 'Select a Branch', value: '' },
         ...branches.map((branch) => ({
-            label: branch.name,
+            label: `${branch.type}: ${branch.name}`, // Display type and name
             value: branch.id,
         })),
     ]}
@@ -661,6 +667,7 @@ useEffect(() => {
     }}
     placeholder={{ label: 'Select a Branch', value: null }} // Placeholder
 />
+
 
 
 
@@ -685,6 +692,7 @@ useEffect(() => {
             <Text style={styles.seeAllText}>Pregnancy Records</Text>
           </TouchableOpacity>
 
+            <View style={styles.horizontalLine} />
 
 
 
