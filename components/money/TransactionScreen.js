@@ -816,9 +816,10 @@ useEffect(() => {
             <TouchableOpacity style={TransactionScreenStyles.pdfButton} onPress={generatePDF}>
               <Text style={TransactionScreenStyles.pdfButtonText}>Generate PDF</Text>
             </TouchableOpacity>
+             {/* Modal for adding or editing pig group 
             <TouchableOpacity style={TransactionScreenStyles.backButton} onPress={handleGoBack}>
               <Text style={TransactionScreenStyles.backButtonText}>Back</Text>
-            </TouchableOpacity>
+            </TouchableOpacity>*/}
           </View>
 
       
