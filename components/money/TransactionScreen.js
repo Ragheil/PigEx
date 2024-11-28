@@ -40,7 +40,8 @@ const TransactionScreen = ({ route }) => {
   const [farmName, setFarmName] = useState(''); // Use farmName to display dynamically
   const [farmBranchName, setFarmBranchName] = useState('Unknown Branch'); // Store the fetched farm name
   const [branchFarmName, setBranchFarmName] = useState('');
-
+  const [showMoneyIn, setShowMoneyIn] = useState(true); // Show Money In by default
+  const [showMoneyOut, setShowMoneyOut] = useState(false); // Hide Money Out by default
 const [loading, setLoading] = useState(true);
 const [error, setError] = useState(null);
   useEffect(() => {
@@ -206,16 +207,6 @@ const [error, setError] = useState(null);
   };
   
 
-  const groupByDate = (transactions) => {
-    return transactions.reduce((grouped, transaction) => {
-      const date = transaction.date.toDateString(); // Convert to readable date
-      if (!grouped[date]) {
-        grouped[date] = [];
-      }
-      grouped[date].push(transaction);
-      return grouped;
-    }, {});
-  };
 
   const openDatePicker = (type) => {
     DateTimePickerAndroid.open({
@@ -377,21 +368,20 @@ const [error, setError] = useState(null);
   
 const generateBarChartData = () => {
   const data = {
-      labels: [], // Labels for the chart
-      datasets: [
-          {
-              label: 'Money In',
-              data: [], // Values for Money In
-              color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`, // Green
-          },
-          {
-              label: 'Money Out',
-              data: [], // Values for Money Out
-              color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`, // Red
-          },
-      ],
+    labels: [],
+    datasets: [
+      {
+        label: 'Money In',
+        data: [],
+        color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`, // Green
+      },
+      {
+        label: 'Money Out',
+        data: [],
+        color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`, // Red
+      },
+    ],
   };
-
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
@@ -417,13 +407,13 @@ const generateBarChartData = () => {
           const date = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
           if (date >= startOfWeek && date <= endOfWeek) {
               const dayIndex = date.getDay();
-              if (transaction.type === 'in') {
-                  data.datasets[0].data[dayIndex] += parseFloat(transaction.amount) || 0; // Money In
-              } else if (transaction.type === 'out') {
-                  data.datasets[1].data[dayIndex] += parseFloat(transaction.amount) || 0; // Money Out
+              if (showMoneyIn && transaction.type === 'in') {
+                data.datasets[0].data[dayIndex] += parseFloat(transaction.amount) || 0; // Money In
+              } else if (showMoneyOut && transaction.type === 'out') {
+                data.datasets[1].data[dayIndex] += parseFloat(transaction.amount) || 0; // Money Out
               }
-          }
-      });
+            }
+          });
   } else if (selectedDateRange === 'month') {
       data.labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
       data.datasets[0].data = Array(4).fill(0); // Money In
@@ -454,24 +444,20 @@ const generateBarChartData = () => {
               if (transaction.type === 'in') {
                   data.datasets[0].data[monthIndex] += parseFloat(transaction.amount) || 0; // Money In
               } else if (transaction.type === 'out') {
-                  data.datasets[1].data[monthIndex] += parseFloat(transaction.amount) || 0; // Money Out
+                  data. datasets[1].data[monthIndex] += parseFloat(transaction.amount) || 0; // Money Out
               }
           }
       });
   }
-
-  console.log('Generated Stacked Bar Chart Data:', data); // Debugging log to check data
-  return data;
+  setBarChartData(data);
 };
 
 
 
 
 useEffect(() => {
-  const chartData = generateBarChartData();
-  setBarChartData(chartData);
-}, [filteredTransactions, selectedPeriod]);
-
+  generateBarChartData();
+}, [filteredTransactions, selectedPeriod, showMoneyIn, showMoneyOut]);
 
    const getSortedTransactions = (transactions) => {
     // Sort by latest date for monthly view
@@ -691,7 +677,24 @@ useEffect(() => {
           </View>
       </View>
 
-      
+      <View style={{ flexDirection: 'row', justifyContent: 'center', marginVertical: 10 }}>
+  <Button
+    title="Show Money In"
+    onPress={() => {
+      setShowMoneyIn(true);
+      setShowMoneyOut(false);
+    }}
+    color={showMoneyIn ? 'green' : 'grey'} // Change color based on active state
+  />
+  <Button
+    title="Show Money Out"
+    onPress={() => {
+      setShowMoneyIn(false);
+      setShowMoneyOut(true);
+    }}
+    color={showMoneyOut ? 'red' : 'grey'} // Change color based on active state
+  />
+</View>
         
         <ScrollView
           refreshControl={
@@ -707,36 +710,45 @@ useEffect(() => {
                               ? `${new Date().toLocaleString('default', { month: 'long' })} Transactions`
                               : 'Yearly Transactions'}
                       </Text>
-                <ScrollView horizontal style={{borderRadius: 12,}}>
+                <ScrollView horizontal  showsHorizontalScrollIndicator={false} style={{borderRadius: 12,}}>
                 <View style={{ alignItems: 'center', marginVertical: 0, paddingVertical: 0}}>
                 <BarChart
-    data={barChartData}
-    width={Dimensions.get('window').width}
-    height={220}
-    chartConfig={{
-        backgroundColor: '#ffffff',
-        backgroundGradientFrom: '#ffffff',
-        backgroundGradientTo: '#ffffff',
-        decimalPlaces: 2,
-        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-        style: {
-            borderRadius: 16,
-        },
-        propsForDots: {
-            r: '6',
-            strokeWidth: '2',
-            stroke: '#ffa726',
-        },
-    }}
-    style={{
-        marginVertical: 8,
-        borderRadius: 16,
-    }}
-    barPercentage={0.4} // Adjusts the width of each bar within its group
-    groupBarsPercentage={0.8} // Adjusts spacing between the grouped bars
-    withInnerLines={false} // Optional: Hide inner grid lines
+  data={{
+    labels: barChartData.labels, // Always show labels
+    datasets: 
+      showMoneyIn && showMoneyOut
+        ? barChartData.datasets // Show both datasets
+        : showMoneyIn
+        ? [barChartData.datasets[0]] // Show only Money In
+        : [barChartData.datasets[1]], // Show only Money Out
+  }}
+  width={Dimensions.get('window').width}
+  height={222}
+  chartConfig={{
+    backgroundColor: '#ffffff',
+    backgroundGradientFrom: '#ffffff',
+    backgroundGradientTo: '#ffffff',
+    decimalPlaces: 2,
+    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    style: {
+      borderRadius: 16,
+    },
+    propsForDots: {
+      r: '6',
+      strokeWidth: '2',
+      stroke: '#ffa726',
+    },
+  }}
+  style={{
+    marginVertical: 8,
+    borderRadius: 16,
+  }}
+  barPercentage={0.4}
+  groupBarsPercentage={0.8}
+  withInnerLines={false}
 />
+
 
                 </View>
               </ScrollView>
