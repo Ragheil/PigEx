@@ -410,24 +410,24 @@ const generateBarChartData = () => {
 
   if (selectedDateRange === 'week') {
       data.labels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      data.datasets[0].data = Array(7).fill(0);
-      data.datasets[1].data = Array(7).fill(0);
+      data.datasets[0].data = Array(7).fill(0); // Money In
+      data.datasets[1].data = Array(7).fill(0); // Money Out
 
       filteredTransactions.forEach(transaction => {
           const date = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
           if (date >= startOfWeek && date <= endOfWeek) {
               const dayIndex = date.getDay();
               if (transaction.type === 'in') {
-                  data.datasets[0].data[dayIndex] += parseFloat(transaction.amount) || 0;
-              } else {
-                  data.datasets[1].data[dayIndex] += parseFloat(transaction.amount) || 0;
+                  data.datasets[0].data[dayIndex] += parseFloat(transaction.amount) || 0; // Money In
+              } else if (transaction.type === 'out') {
+                  data.datasets[1].data[dayIndex] += parseFloat(transaction.amount) || 0; // Money Out
               }
           }
       });
   } else if (selectedDateRange === 'month') {
       data.labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-      data.datasets[0].data = Array(4).fill(0);
-      data.datasets[1].data = Array(4).fill(0);
+      data.datasets[0].data = Array(4).fill(0); // Money In
+      data.datasets[1].data = Array(4).fill(0); // Money Out
 
       filteredTransactions.forEach(transaction => {
           const date = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
@@ -435,31 +435,32 @@ const generateBarChartData = () => {
               const weekNumber = Math.floor((date.getDate() - 1) / 7);
               if (weekNumber >= 0 && weekNumber < 4) {
                   if (transaction.type === 'in') {
-                      data.datasets[0].data[weekNumber] += parseFloat(transaction.amount) || 0;
-                  } else {
-                      data.datasets[1].data[weekNumber] += parseFloat(transaction.amount) || 0;
+                      data.datasets[0].data[weekNumber] += parseFloat(transaction.amount) || 0; // Money In
+                  } else if (transaction.type === 'out') {
+                      data.datasets[1].data[weekNumber] += parseFloat(transaction.amount) || 0; // Money Out
                   }
               }
           }
       });
   } else if (selectedDateRange === 'year') {
       data.labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      data.datasets[0].data = Array(12).fill(0);
-      data.datasets[1].data = Array(12).fill(0);
+      data.datasets[0].data = Array(12).fill(0); // Money In
+      data.datasets[1].data = Array(12).fill (0); // Money Out
 
       filteredTransactions.forEach(transaction => {
           const date = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
           if (date.getFullYear() === currentYear) {
               const monthIndex = date.getMonth();
               if (transaction.type === 'in') {
-                  data.datasets[0].data[monthIndex] += parseFloat(transaction.amount) || 0;
-              } else {
-                  data.datasets[1].data[monthIndex] += parseFloat(transaction.amount) || 0;
+                  data.datasets[0].data[monthIndex] += parseFloat(transaction.amount) || 0; // Money In
+              } else if (transaction.type === 'out') {
+                  data.datasets[1].data[monthIndex] += parseFloat(transaction.amount) || 0; // Money Out
               }
           }
       });
   }
 
+  console.log('Generated Stacked Bar Chart Data:', data); // Debugging log to check data
   return data;
 };
 
@@ -708,28 +709,34 @@ useEffect(() => {
                       </Text>
                 <ScrollView horizontal style={{borderRadius: 12,}}>
                 <View style={{ alignItems: 'center', marginVertical: 0, paddingVertical: 0}}>
-                    <BarChart
-                        data={barChartData}
-                        width={Math.max(screenWidth, barChartData.labels.length * 50)} // Adjust width for horizontal scrolling
-                        height={220}
-                        chartConfig={{
-                            // backgroundColor: '#94E334FF',
-                            backgroundGradientFrom: '#FBFBFB',
-                            backgroundGradientTo: '#FFFFFFFF',
-                            decimalPlaces: 2,
-                            barPercentage: 0.5, // Reduce bar width to accommodate two bars per label
-                            groupBarSpacing: 10, // Add spacing between Money In and Money Out bars
-                            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                            style: {
-                                // borderRadius: 16,
-                                paddingTop: 20
-                            },
-                        }}
-                        style={{
-                        }}
-                        verticalLabelRotation={30} // Optional: Rotate labels for better readability
-                    />
+                <BarChart
+    data={barChartData}
+    width={Dimensions.get('window').width}
+    height={220}
+    chartConfig={{
+        backgroundColor: '#ffffff',
+        backgroundGradientFrom: '#ffffff',
+        backgroundGradientTo: '#ffffff',
+        decimalPlaces: 2,
+        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+        style: {
+            borderRadius: 16,
+        },
+        propsForDots: {
+            r: '6',
+            strokeWidth: '2',
+            stroke: '#ffa726',
+        },
+    }}
+    style={{
+        marginVertical: 8,
+        borderRadius: 16,
+    }}
+    barPercentage={1} // Full width for each bar
+    groupBarsPercentage={1} // Full width for stacked bars
+    withInnerLines={false} // Optional: Hide inner grid lines
+/>
                 </View>
               </ScrollView>
             </View>
