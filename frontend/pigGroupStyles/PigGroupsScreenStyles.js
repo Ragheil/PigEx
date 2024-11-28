@@ -124,7 +124,16 @@ export default StyleSheet.create({
         borderWidth: 1,
         borderRadius: 14,
         // padding: 8,
-        paddingLeft: 10,
+        paddingLeft: 30,
+      },
+      iconsearch: {
+        width: 25, // Set your icon width
+        height: 25, // Set your icon height
+        position: 'absolute', // Position the icon absolutely
+        zIndex: 1,
+        marginLeft: 5,
+        opacity: .5,
+        alignSelf: 'center',
       },
       grid: {
         flexDirection: 'row',

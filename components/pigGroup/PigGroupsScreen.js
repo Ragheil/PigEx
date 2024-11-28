@@ -327,6 +327,10 @@ const fetchPigGroups = () => {
           <Text style={styles.headerText}>Pig Groups </Text>
         </View>
         <View style={styles.searchAndAddContainer}>
+          <Image 
+                source={require('../../assets/images/search.png')}
+                style={styles.iconsearch}
+          />
           <TextInput
             style={styles.searchInput}
             placeholder="Search by name"
