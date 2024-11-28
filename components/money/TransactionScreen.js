@@ -705,18 +705,27 @@ useEffect(() => {
           </View>
       </View>
 
-      <View style={{ flexDirection: 'row', justifyContent: 'center', marginVertical: 10 }}>
-      <Button
-        title="Show Money In"
-        onPress={handleShowMoneyIn}
-        color={showMoneyIn ? 'green' : 'grey'} // Change color based on active state
-      />
-      <Button
-        title="Show Money Out"
-        onPress={handleShowMoneyOut}
-        color={showMoneyOut ? 'red' : 'grey'} // Change color based on active state
-      />
-    </View>
+      <View style={TransactionScreenStyles.buttonContainer}>
+        <TouchableOpacity
+          style={[
+            TransactionScreenStyles.button,
+            showMoneyIn ? TransactionScreenStyles.activeButtonIn : TransactionScreenStyles.inactiveButton,
+          ]}
+          onPress={handleShowMoneyIn}
+        >
+          <Text style={TransactionScreenStyles.buttonText}>Show Money In</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            TransactionScreenStyles.button,
+            showMoneyOut ? TransactionScreenStyles.activeButtonOut : TransactionScreenStyles.inactiveButton,
+          ]}
+          onPress={handleShowMoneyOut}
+        >
+          <Text style={TransactionScreenStyles.buttonText}>Show Money Out</Text>
+        </TouchableOpacity>
+      </View>
         
         <ScrollView
           refreshControl={

@@ -165,6 +165,38 @@ const TransactionScreenStyles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginVertical: 10,
+  },
+  button: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    marginHorizontal: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 3, // Shadow effect for Android
+    shadowColor: '#000', // Shadow effect for iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
+  },
+  activeButtonIn: {
+    backgroundColor: 'green',
+  },
+  activeButtonOut: {
+    backgroundColor: 'red',
+  },
+  inactiveButton: {
+    backgroundColor: 'grey',
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
   
 });
 
