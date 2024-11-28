@@ -1,16 +1,40 @@
-// ContactScreenStyles.js
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
     container: {
         flex: 1,
-        // padding: 20,
+        backgroundColor: '#a7c796',
       },
       mainheader: {
         backgroundColor: '#869f77',
-        paddingHorizontal: 20,
-        // paddingTop: 10,
-        rowGap: 15,
+        paddingHorizontal: 15,
+        paddingTop: 30,
+        paddingBottom: 10,
+        borderBottomRightRadius: 25,
+        borderBottomLeftRadius: 25,
+        elevation: 10,
+        // rowGap: 15,
+      },
+      navibackButton: {
+        // padding: 10,
+        // marginRight: 5, // Space between the back button and the title
+        // paddingTop: 45,
+        flex: 1,
+        justifyContent: 'center',
+      },
+      backImage: {
+        width: 30, // Adjust size as needed
+        height: 30, // Adjust size as needed
+        // backgroundColor: 'lightblue',
+      },
+      headerText: {
+        flex: 3,
+        fontSize: 28,
+        fontWeight: 'bold',
+        alignSelf: 'center', 
+        // marginBottom: 10,
+        // marginTop: 5,
+        // backgroundColor: 'lightblue',
       },
       title: {
         fontSize: 26,
@@ -19,27 +43,97 @@ export default StyleSheet.create({
         marginTop: 1,
     
       },
-      groupName: {
+      groupnameContainer: {
+        backgroundColor: '#869f77',
+        marginHorizontal: 20,
+        marginTop: 10,
+        marginBottom: 5,
+        padding: 5,
+        paddingHorizontal: 15,
+        borderTopStartRadius: 22,
+        borderTopRightRadius: 22,
+        borderBottomLeftRadius: 3,
+        borderBottomEndRadius: 3,
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        elevation: 3,
+      },
+      groupname:{
+        flex: 1,
         fontSize: 18,
-        marginBottom: 10,
         fontWeight: 'bold',
+        // backgroundColor: 'lightblue'
+        
+      },
+      groupNametext: {
+        flex: 2
+        // backgroundColor: 'red'
+      },
+      groupNamevalue: {
+        // alignContent: 'center',
+        // alignSelf: 'center',
+        // alignItems: 'center',
+        // justifyContent: 'center'
+        // backgroundColor: 'red'
       },
       searchContainer: {
-        marginBottom: 20,
-        padding: 20,
+        // backgroundColor: 'lightblue',
+        flexDirection: 'row',
+        // justifyContent: 'center',
+        // justifyContent: 'center',
+        width: '95%',
+        alignSelf: 'center',
+        columnGap: 10,
       },
       searchInput: {
-        borderWidth: 2,
-        borderColor: '#ddd',
-        padding: 10,
-        borderRadius: 5,
-        marginTop: 5,
+        // flex: 1,
+        width: '100%',
+        borderColor: '#ccc',
+        backgroundColor: '#fff',
+        borderWidth: 1,
+        borderRadius: 15,
+        // padding: 8,
+        paddingLeft: 30,
+      },
+      iconsearch: {
+        width: 25, // Set your icon width
+        height: 25, // Set your icon height
+        position: 'absolute', // Position the icon absolutely
+        zIndex: 1,
+        marginLeft: 5,
+        opacity: .5,
+        alignSelf: 'center',
+        // backgroundColor: 'red'
+      },
+      buttonContainer: {
+        // flex: 1,
+        height: 50,
+        width: '90%',
+        alignSelf: 'center',
+        // backgroundColor: 'red',
+        // height: 70,
+        // marginBottom: 20,
+        // marginHorizontal: 10,
+        // position: 'relative',
+        bottom: 5,
+        // justifyContent: 'flex-end',
+        // paddingHorizontal: 20,
+        // paddingBottom: 20,
       },
       addButton: {
-        marginBottom: 5,
-        backgroundColor: '#DCFFB7',
-        padding: 10,
-
+        flex: 1,
+        justifyContent: 'center',
+        backgroundColor: '#566F48',
+        borderRadius: 20,
+        paddingHorizontal: 3,
+        insetBlockStart: -10,
+      },
+      buttonText: {
+        textAlign: 'center',
+        fontSize: 20,
+        fontWeight: '600',
+        color: '#F5F5F5',
+        textTransform: 'uppercase',
       },
       datePickerButton: {
         backgroundColor: '#B1C68CFF', // Green background
@@ -61,6 +155,7 @@ export default StyleSheet.create({
         flex: 1,
       },
       listContent: {
+        // backgroundColor: 'lightyellow',
         paddingBottom: 20,
         paddingHorizontal: 16,
       },
@@ -69,8 +164,11 @@ export default StyleSheet.create({
         justifyContent: 'space-between',
         marginBottom: 15,
         padding: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#ddd',
+        marginHorizontal: 5,
+        // borderBottomWidth: 1,
+        // borderBottomColor: '#F5F5F5',
+        backgroundColor: '#F5F5F5',
+        borderRadius: 22,
       },
       pigInfo: {
         flex: 1,
@@ -113,11 +211,6 @@ export default StyleSheet.create({
         borderRadius: 5,
         marginVertical: 10,
         alignItems: 'center',
-      },
-      
-      buttonText: {
-        color: '#fff',
-        fontWeight: 'bold',
       },
       switchContainer: {
         flexDirection: 'row',
@@ -191,10 +284,5 @@ export default StyleSheet.create({
         marginRight: 5, // Space between the back button and the title
         paddingTop: 45
 
-      },
-      backImage: {
-        width: 50, // Adjust size as needed
-        height: 50, // Adjust size as needed
-        paddingTop: 4
       },
 });

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, FlatList, Modal, TouchableOpacity, Image, Switch  } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, FlatList, Modal, TouchableOpacity, Image, Switch, SafeAreaView  } from 'react-native';
 import { addDoc, collection, query, onSnapshot, doc, getDoc, updateDoc, deleteDoc, getDocs, where, writeBatch } from 'firebase/firestore';
 import { auth, firestore } from '../../firebase/config2';
 import { Picker } from '@react-native-picker/picker';
@@ -11,7 +11,7 @@ import styles from '../../frontend/pigGroupStyles/AddPigInfoScreenStyles';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 import { useFocusEffect } from '@react-navigation/native'; // Import the useFocusEffect
-import backImage from '../../assets/images/Back.png'; // Adjust the path as needed
+import backImage from '../../assets/images/buttons/backbutton.png'; // Adjust the path as needed
 import RNPickerSelect from 'react-native-picker-select';
 
 
@@ -379,7 +379,7 @@ const renderPig = ({ item }) => {
   const isDeceased = item.vitality === 'deceased'; // Check if the pig is deceased
 
   return (
-    <View style={[styles.pigContainer, isDeceased ? styles.deceasedPigContainer : null]}>
+    <SafeAreaView style={[styles.pigContainer, isDeceased ? styles.deceasedPigContainer : null]}>
       <View style={styles.pigInfo}>
         <Text style={[styles.pigText, isDeceased ? styles.deceasedText : null]}>
           Tag Number: {item.tagNumber}
@@ -412,45 +412,45 @@ const renderPig = ({ item }) => {
           <Image source={deleteIcon} style={styles.idelete} />
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.mainheader}>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-    <Image source={backImage} style={styles.backImage} />
-  </TouchableOpacity>
-        <Text style={styles.title}>Pig Information</Text>
-        <Text style={styles.groupName}>Current Pig Group: {pigGroupName}</Text>
+        <View style={{flexDirection: 'row', marginBottom: 10, }}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.navibackButton}>
+            <Image source={backImage} style={styles.backImage} />
+          </TouchableOpacity>
+          <Text style={styles.headerText}>Pig Information</Text>
+        </View>
+        <View style={styles.searchContainer}>
+          <Image 
+                source={require('../../assets/images/search.png')}
+                style={styles.iconsearch}
+          />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search by pigs"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+        </View>
       </View>
-      <View style={styles.searchContainer}>
-      <Button
-          title="Add Pig"
-          onPress={() => {
-            setIsEditing(false);
-            setIsDeceased(false); // Automatically alive when adding
-            setModalVisible(true);
-          }}
-          style={styles.addButton}
-          color="#566F48"
-          
-        />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search pigs"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
+      
+      <View style={styles.groupnameContainer}>
+        <Text style={[styles.groupname, styles.groupNametext]}>Current Pig Group:</Text>
+        <Text style={[styles.groupname, styles.groupNamevalue]}>{pigGroupName}</Text>
       </View>
+
       <FlatList
       data={filteredPigs}
       renderItem={renderPig}
       keyExtractor={(item) => item.id}
       style={styles.list}
       contentContainerStyle={styles.listContent}
-    />
+      />
       
       {/* Add/Edit Pig Modal */}
       <Modal
@@ -466,6 +466,7 @@ const renderPig = ({ item }) => {
       >
         <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>{isEditing ? 'Edit Pig' : 'Add Pig'}</Text>
+
           <View style={styles.modalContent}>
             <Text style={styles.titlename}>Pig Name</Text>
             <TextInput
@@ -487,24 +488,24 @@ const renderPig = ({ item }) => {
                        <TouchableOpacity 
         onPress={handleOpenDatePicker} 
         style={styles.datePickerButton}
-      >
-<Text style={styles.datePickerText}>
-    {dateOfBirth ? dateOfBirth.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    }) : 'Select Date of Birth'}
-</Text>
-      </TouchableOpacity>
+        >
+        <Text style={styles.datePickerText}>
+            {dateOfBirth ? dateOfBirth.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }) : 'Select Date of Birth'}
+        </Text>
+              </TouchableOpacity>
 
 
-      <DateTimePickerModal
-    isVisible={openDatePicker}
-    mode="date"
-    date={dateOfBirth || new Date()} // Ensure date is never null
-    onConfirm={handleConfirmBirthDate} // Use the birth date handler
-    onCancel={() => setOpenDatePicker(false)}
-/>
+              <DateTimePickerModal
+            isVisible={openDatePicker}
+            mode="date"
+            date={dateOfBirth || new Date()} // Ensure date is never null
+            onConfirm={handleConfirmBirthDate} // Use the birth date handler
+            onCancel={() => setOpenDatePicker(false)}
+        />
 
 
         
@@ -538,58 +539,58 @@ const renderPig = ({ item }) => {
 
 
           {/* Show cause of death and date of death only if editing and the pig is deceased */}
-{isEditing && isDeceased && (
-    <>
-        <TextInput
-            style={styles.input}
-            placeholder="Cause of Death"
-            value={causeOfDeath}
-            onChangeText={setCauseOfDeath}
-        />
-        <TouchableOpacity onPress={handleOpenDeathDatePicker}>
-            <Text>
-                {dateOfDeath ? dateOfDeath.toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                }) : 'Select Date of Death'}
-            </Text>
-        </TouchableOpacity>
-        <DateTimePickerModal
-            isVisible={openDeathDatePicker}
-            mode="date"
-            date={dateOfDeath || new Date()} // Ensure date is never null
-            onConfirm={(date) => {
-                setDateOfDeath(date);
-                setOpenDeathDatePicker(false);
-            }}
-            onCancel={() => setOpenDeathDatePicker(false)}
-        />
-    </>
-)}
-            <View style={styles.modalsavecancel}>
-              <Button
-                title={isEditing ? 'Update Pig' : 'Add Pig'}
-                onPress={isEditing ? handleEditPig : handleAddPig}
-                color="#4CAF50"
-              />
-              <Button
-                title="Cancel"
-                onPress={() => setModalVisible(false)}
-                color="#f44336"
-              />
-            </View>
-          </View>
-        </View>
-      </Modal>
+        {isEditing && isDeceased && (
+            <>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Cause of Death"
+                    value={causeOfDeath}
+                    onChangeText={setCauseOfDeath}
+                />
+                <TouchableOpacity onPress={handleOpenDeathDatePicker}>
+                    <Text>
+                        {dateOfDeath ? dateOfDeath.toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        }) : 'Select Date of Death'}
+                    </Text>
+                </TouchableOpacity>
+                <DateTimePickerModal
+                    isVisible={openDeathDatePicker}
+                    mode="date"
+                    date={dateOfDeath || new Date()} // Ensure date is never null
+                    onConfirm={(date) => {
+                        setDateOfDeath(date);
+                        setOpenDeathDatePicker(false);
+                    }}
+                    onCancel={() => setOpenDeathDatePicker(false)}
+                />
+            </>
+        )}
+                    <View style={styles.modalsavecancel}>
+                      <Button
+                        title={isEditing ? 'Update Pig' : 'Add Pig'}
+                        onPress={isEditing ? handleEditPig : handleAddPig}
+                        color="#4CAF50"
+                      />
+                      <Button
+                        title="Cancel"
+                        onPress={() => setModalVisible(false)}
+                        color="#f44336"
+                      />
+                    </View>
+                  </View>
+                </View>
+              </Modal>
 
-      {/* Pig Detail Modal */}
-      <Modal
-        visible={detailModalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setDetailModalVisible(false)}
-      >
+              {/* Pig Detail Modal */}
+              <Modal
+                visible={detailModalVisible}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={() => setDetailModalVisible(false)}
+              >
         <View style={styles.modalContainer}>
         <Text style={styles.modalTitle}>Pig Details</Text>
           <View style={styles.modalContent}>
@@ -640,7 +641,18 @@ const renderPig = ({ item }) => {
           </View>
         </View>
       </Modal>
-
-    </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            onPress={() => {
+              setIsEditing(false);
+              setIsDeceased(false); // Automatically alive when adding
+              setModalVisible(true);
+            }}
+            style={styles.addButton}
+          >
+            <Text style={styles.buttonText}>Add Pig Group</Text>
+          </TouchableOpacity>
+        </View>
+    </SafeAreaView>
   );
 }

@@ -8,13 +8,12 @@ export default StyleSheet.create({
         backgroundColor: '#a7c796',
       },
       mainheader: {
-        paddingHorizontal: 10,
+        paddingHorizontal: 15,
         paddingBottom: 10,
-        flexDirection: 'culomn',
         backgroundColor: '#869f77',
         alignItems: 'center',
         borderBottomRightRadius: 25,
-        borderBottomLeftRadius: 25
+        borderBottomLeftRadius: 25,
       },
       navibackButton: {
         // padding: 10,
@@ -26,6 +25,7 @@ export default StyleSheet.create({
       backImage: {
         width: 30, // Adjust size as needed
         height: 30, // Adjust size as needed
+        // backgroundColor: 'lightblue'
       },
       headerText: {
         flex: 2,
@@ -43,12 +43,6 @@ export default StyleSheet.create({
         paddingBottom: 20,
         // backgroundColor: 'lightblue',
         // backgroundColor: '#566F48',
-      },
-      backButton: {
-        padding: 10,
-        marginRight: 5, // Space between the back button and the title
-        paddingTop: 45
-
       },
       subheader: {
         backgroundColor: 'red',
@@ -122,7 +116,7 @@ export default StyleSheet.create({
         borderColor: '#ccc',
         backgroundColor: '#fff',
         borderWidth: 1,
-        borderRadius: 14,
+        borderRadius: 15,
         // padding: 8,
         paddingLeft: 30,
       },

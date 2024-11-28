@@ -324,7 +324,7 @@ const fetchPigGroups = () => {
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.navibackButton}>
             <Image source={backImage} style={styles.backImage} />
           </TouchableOpacity>
-          <Text style={styles.headerText}>Pig Groups </Text>
+          <Text style={styles.headerText}>Pig Groups</Text>
         </View>
         <View style={styles.searchAndAddContainer}>
           <Image 

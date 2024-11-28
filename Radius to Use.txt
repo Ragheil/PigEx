@@ -1,0 +1,18 @@
+Radius Size:
+
+    15  Search Bar
+    25  Header Container
+    10  Buttos (Add,Delete,Save,Cancel)
+
+Fonts Size:
+
+    28  Header
+
+Padding Header:
+
+    15  Horizontal
+
+List:
+
+    22  Radius
+    15  marginBottom
