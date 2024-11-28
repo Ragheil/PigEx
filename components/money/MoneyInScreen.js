@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, Modal, Pressable, FlatList, RefreshControl } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, Modal, Pressable, FlatList, RefreshControl, TouchableOpacity } from 'react-native';
 import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { firestore } from '../../firebase/config2'; // Adjust path as needed
 import { Picker } from '@react-native-picker/picker'; // Ensure this package is installed
 import DateTimePicker from '@react-native-community/datetimepicker'; // For picking the date
 import styles from '../../frontend/money/MoneyInScreenStyles';
 import RNPickerSelect from 'react-native-picker-select';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const MoneyInScreen = ({ route }) => {
   const { farmName, selectedBranch, userId } = route.params; // Get farmName, selectedBranch, and userId from route params
@@ -229,7 +230,7 @@ const handleDeleteMoney = async (id) => {
       <Text style={styles.dateHeader}>{item.date}</Text>
       {item.records.map((record) => (
         <View key={record.id} style={styles.record}>
-          <Text style={styles.recordText}>Amount PHP: {record.amount.toFixed(2)}</Text>
+          <Text style={[styles.recordText && styles.recordTextAmount]}>Amount PHP: {record.amount.toFixed(2)}</Text>
           <Text style={styles.recordText}>Category: {record.category}</Text>
           <Text style={styles.recordText}>Remarks: {record.remarks}</Text>
           <View style={styles.recordButtons}>
@@ -246,7 +247,7 @@ const handleDeleteMoney = async (id) => {
             >
               <Text style={styles.buttonText}>Edit</Text>
             </Pressable>
-            <Pressable style={styles.deleteButton} onPress={() => handleDeleteMoney(record.id)}>
+            <Pressable style={[styles.button && styles.deleteButton]} onPress={() => handleDeleteMoney(record.id)}>
               <Text style={styles.buttonText}>Delete</Text>
             </Pressable>
           </View>
@@ -264,9 +265,14 @@ const handleDeleteMoney = async (id) => {
 
   return (
     <View style={styles.container}>
+      <SafeAreaView style={styles.headercontainer}>
+        <Text style={styles.balanceNumber}>₱ {totalBalance.toFixed(2)}</Text>
+        <Text style={styles.balance}>Total Balance</Text>
+      </SafeAreaView>
+      
       <Text style={styles.title}>Money In</Text>
-      <Text style={styles.balance}>Total Balance: ₱{totalBalance.toFixed(2)}</Text>
       <Text style={styles.farmName}>Current Branch: {farmName || 'No branch selected'}</Text>
+      
       <FlatList
         data={moneyRecords}
         keyExtractor={(item) => item.date}
@@ -276,7 +282,6 @@ const handleDeleteMoney = async (id) => {
         }
       />
 
-      <Button title="Add Money" onPress={() => setModalVisible(true)} />
 
       {/* Modal for adding/editing money record */}
       <Modal
@@ -329,7 +334,7 @@ const handleDeleteMoney = async (id) => {
               <Text style={styles.datePickerText}>{date.toDateString()}</Text>
             </Pressable>
       {/* Date Picker */}
-      <Button title="Pick Date" onPress={() => setShowDatePicker(true)} />
+      <Button title="Pick Date" color='#566F48' onPress={() => setShowDatePicker(true)} />
       {showDatePicker && (
         <DateTimePicker
           value={date}
@@ -340,7 +345,7 @@ const handleDeleteMoney = async (id) => {
       )}
       <Text>Selected Date: {date.toLocaleDateString()}</Text>
       {/* Time Picker */}
-      <Button title="Pick Time" onPress={() => setShowTimePicker(true)} />
+      <Button title="Pick Time" color='#566F48' onPress={() => setShowTimePicker(true)} />
       {showTimePicker && (
         <DateTimePicker
           value={time}
@@ -355,10 +360,12 @@ const handleDeleteMoney = async (id) => {
             <View style={styles.modalButtons}>
               <Button
                 title={isEditing ? 'Update' : 'Add'}
+                color='#566F48'
                 onPress={isEditing ? handleEditMoney : handleAddMoney}
               />
               <Button
                 title="Cancel"
+                color='#566F48'
                 onPress={() => {
                   setModalVisible(false);
                   setIsEditing(false);
@@ -369,6 +376,18 @@ const handleDeleteMoney = async (id) => {
           </View>
         </View>
       </Modal>
+      
+      {/* <Button title="Add Money" onPress={() => setModalVisible(true)} /> */}
+
+      <View style={styles.addbuttonContainer}>
+        <TouchableOpacity
+          onPress={() => setModalVisible(true)}
+          // onPress={openAddContactModal}
+          style={styles.addMoneyButton}
+        >
+          <Text style={styles.addMoneyButtonText}>Add Money</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

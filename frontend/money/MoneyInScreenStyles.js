@@ -3,57 +3,82 @@ import { StyleSheet } from 'react-native';
 export default StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#f8f9fa', // Light background color
+    backgroundColor: '#a7c796', // Light background color
+  },
+  headercontainer: {
+    width: '100%',
+    backgroundColor: '#869f77',
+    paddingBottom: 5,
+    borderBottomLeftRadius: 45,
+    borderBottomRightRadius: 45,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 20,
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#000',
+    marginTop: 10,
     textAlign: 'center',
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
   },
   dateGroup: {
-    marginVertical: 10,
-    padding: 10,
-    backgroundColor: '#e9ecef', // Light grey background for date groups
-    borderRadius: 8,
+    // marginVertical: 10,
+    paddingTop: 10,
+    marginBottom: 5,
+    paddingHorizontal: 20,
+    // backgroundColor: '#e9ecef', // Light grey background for date groups
+    // borderRadius: 25,
   },
   dateHeader: {
-    fontSize: 18,
+    paddingTop: 5,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#495057',
-    marginBottom: 8,
+    color: '#000',
   },
   record: {
-    padding: 10,
+    padding: 15,
     backgroundColor: '#ffffff',
     borderRadius: 8,
     marginVertical: 5,
     borderWidth: 1,
     borderColor: '#ced4da',
+    // borderRadius: 25,
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
+    borderTopRightRadius: 25,
   },
   recordText: {
     fontSize: 16,
     color: '#212529',
-    marginBottom: 4,
+  },
+  recordTextAmount: {
+    fontSize: 26,
+    fontWeight: '700',
+    marginBottom: 5,
+    color: '#0d0f0b',
+    textAlign: 'center'
   },
   recordButtons: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     marginTop: 10,
+    columnGap: 5,
+  },
+  button: {
   },
   editButton: {
-    backgroundColor: '#007bff',
+    flex: 1,
+    backgroundColor: '#6e7f5b',
     paddingVertical: 8,
     paddingHorizontal: 15,
-    borderRadius: 5,
+    borderRadius: 10,
   },
   deleteButton: {
-    backgroundColor: '#dc3545',
+    flex: 1,
+    backgroundColor: '#a95d5d',
     paddingVertical: 8,
     paddingHorizontal: 15,
-    borderRadius: 5,
+    borderRadius: 10,
   },
   buttonText: {
     color: '#ffffff',
@@ -102,11 +127,44 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
+  addbuttonContainer: {
+    // flex: 1,
+    height: 50,
+    width: '90%',
+    alignSelf: 'center',
+    // backgroundColor: 'red',
+    // height: 70,
+    // marginBottom: 20,
+    // marginHorizontal: 10,
+    // position: 'relative',
+    bottom: 5,
+    // justifyContent: 'flex-end',
+    // paddingHorizontal: 20,
+    // paddingBottom: 20,
+  },
+  addMoneyButton: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#566F48',
+    borderRadius: 20,
+    paddingHorizontal: 3,
+    insetBlockStart: -10,
+  },
+  addMoneyButtonText: {
+    textAlign: 'center',
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#F5F5F5',
+    textTransform: 'uppercase',
+  },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',  // Center the modal vertically
     alignItems: 'center',      // Center the modal horizontally
     backgroundColor: 'rgba(0, 0, 0, 0.5)', // Transparent background
+  },
+  modalButtons: {
+    rowGap: 5,
   },
   modalContent: {
     padding: 20,
@@ -132,20 +190,29 @@ export default StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 5,
   },
+  balanceNumber: {
+    fontSize: 45,
+    fontWeight: 'bold',
+    color: '#f8fff0',  // Green color for balance
+    // marginVertical: 10,
+    textAlign: 'center',
+    letterSpacing: 0.5,  // Slight letter spacing for a clean look
+  },
   balance: {
     fontSize: 22,
-    fontWeight: 'bold',
-    color: '#28a745',  // Green color for balance
-    marginVertical: 10,
+    fontWeight: '500',
+    color: '#f8fff0',  // Green color for balance
+    // marginVertical: 10,
     textAlign: 'center',
     letterSpacing: 0.5,  // Slight letter spacing for a clean look
   },
   farmName: {
     fontSize: 18,
     fontWeight: '500',
-    color: '#495057',  // Dark grey color for text
-    marginVertical: 5,
+    color: '#191919',  // Dark grey color for text
+    // marginVertical: 5,
     textAlign: 'center',
     fontStyle: 'italic',  // Italicize to add a subtle style
+    // backgroundColor: 'red'
   },
 });
