@@ -7,6 +7,10 @@ import { firestore } from '../../firebase/config2'; // Adjust path as needed
 export default function FooterScreen({ firstName, lastName, farmName, selectedBranch, toggleSidebar, userId }) { // Added userId as prop
   const navigation = useNavigation();
   const [isModalVisible, setModalVisible] = useState(false);
+  
+  const [moneyInPressed, setMoneyInPressed] = useState(false);
+  const [moneyOutPressed, setMoneyOutPressed] = useState(false);
+
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -18,6 +22,13 @@ export default function FooterScreen({ firstName, lastName, farmName, selectedBr
   };
 
   const handleMoneyIn = async () => {
+    
+    setMoneyInPressed(true);
+    setMoneyOutPressed(false);
+
+    setTimeout(() => {
+      setMoneyInPressed(false);
+    }, 300);
     try {
       let branchType;
       if (selectedBranch === 'Main Farm') {
@@ -59,6 +70,13 @@ export default function FooterScreen({ firstName, lastName, farmName, selectedBr
   
 
   const handleMoneyOut = async () => {
+    setMoneyOutPressed(true);
+    setMoneyInPressed(false);
+
+    setTimeout(() => {
+      setMoneyOutPressed(false);
+    }, 300);
+
     try {
       let branchType;
       if (selectedBranch === 'Main Farm') {
@@ -133,7 +151,6 @@ export default function FooterScreen({ firstName, lastName, farmName, selectedBr
       Alert.alert('Error', 'Unable to fetch branch name.');
     }
   };
-  
 
   return (
     <View>
@@ -190,12 +207,23 @@ export default function FooterScreen({ firstName, lastName, farmName, selectedBr
           <View style={styles.modalBackground}>
             <TouchableWithoutFeedback>
               <View style={styles.modalContent}>
-                <TouchableOpacity style={styles.button} onPress={handleMoneyIn}>
-                  <Text style={styles.buttonText}>Money In</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={handleMoneyOut}>
-                  <Text style={styles.buttonText}>Money Out</Text>
-                </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, moneyInPressed && styles.buttonPressedMoneyIn]}
+                onPress={handleMoneyIn}
+                onPressIn={() => setMoneyInPressed(true)}
+                onPressOut={() => setMoneyInPressed(false)}
+              >
+                <Text style={[styles.buttonText, moneyInPressed && styles.textPressedMoneyIn]}>Money In</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                style={[styles.button, moneyOutPressed && styles.buttonPressedMoneyOut]}
+                onPress={handleMoneyOut}
+                onPressIn={() => setMoneyOutPressed(true)}
+                onPressOut={() => setMoneyOutPressed(false)}
+              >
+                <Text style={[styles.buttonText, moneyOutPressed && styles.textPressedMoneyOut]}>Money Out</Text>
+              </TouchableOpacity>
               </View>
             </TouchableWithoutFeedback>
           </View>
@@ -246,6 +274,20 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 18,
+    fontWeight: 'bold',
+  },
+  buttonPressedMoneyIn: {
+    backgroundColor: '#DCFFB7', // Color when button is pressed
+  },
+  buttonPressedMoneyOut: {
+    backgroundColor: '#F28585', // Color when button is pressed
+  },
+  textPressedMoneyIn: {
+    color: '#6e7f5b',
+    fontWeight: 'bold',
+  },
+  textPressedMoneyOut: {
+    color: '#794242',
     fontWeight: 'bold',
   },
 });
