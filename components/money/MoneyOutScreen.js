@@ -263,6 +263,10 @@ const MoneyOutScreen = ({ route }) => {
     day: 'numeric',
   });
   
+  const formatBalance = (balance) => {
+    return balance.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
   console.log(formattedDate);
   const renderMoneyRecord = ({ item }) => (
     <View style={{
@@ -275,7 +279,7 @@ const MoneyOutScreen = ({ route }) => {
         <Text style={MoneyOutScreenStyles.flatListItemText}>{item.date}</Text>
         {item.records.map(record => (
           <View style={MoneyOutScreenStyles.record} key={record.id}>
-            <Text style={[MoneyOutScreenStyles.recordText && MoneyOutScreenStyles.recordTextAmount]}>Amount PHP: {record.amount.toFixed(2)}</Text>
+            <Text style={[MoneyOutScreenStyles.recordText && MoneyOutScreenStyles.recordTextAmount]}>Amount PHP: {formatBalance(record.amount)}</Text>
             <Text style={MoneyOutScreenStyles.recordText}>Category: {record.category}</Text>
             <Text style={MoneyOutScreenStyles.recordText}>Remarks: {record.remarks}</Text>
             <Text style={MoneyOutScreenStyles.recordText}>Time: {record.time || 'Not set'}</Text> 
@@ -323,8 +327,13 @@ const MoneyOutScreen = ({ route }) => {
   return (
     <View style={MoneyOutScreenStyles.container}>
       <SafeAreaView style={MoneyOutScreenStyles.headercontainer}>
+<<<<<<< HEAD
       <Text style={MoneyOutScreenStyles.balanceNumber}>₱ {totalBalance.toFixed(2)}</Text>
       <Text style={MoneyOutScreenStyles.balance}>Total Balance</Text>
+=======
+      <Text style={MoneyOutScreenStyles.balanceNumber}>₱ {formatBalance(totalBalance)}</Text>
+      <Text style={MoneyOutScreenStyles.balance}>Total Balance:</Text>
+>>>>>>> a1fd09467809aa04d79deb70f83c9826b76a49b0
       </SafeAreaView>
       
       <Text style={MoneyOutScreenStyles.title}>Money Out Records</Text>

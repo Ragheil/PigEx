@@ -281,7 +281,7 @@ const handleDeleteMoney = async (id) => {
         <Text style={styles.balance}>Total Balance</Text>
       </SafeAreaView>
       
-      <Text style={styles.title}>Money In</Text>
+      <Text style={styles.title}>Money In Records</Text>
       <Text style={styles.farmName}>Current Branch: {farmName || 'No branch selected'}</Text>
       
       <FlatList

@@ -19,7 +19,7 @@ export default StyleSheet.create({
     marginTop: 10,
     textAlign: 'center',
     textTransform: 'uppercase',
-    letterSpacing: 1.5,
+    letterSpacing: 1.25,
   },
   dateGroup: {
     // backgroundColor: 'red',
