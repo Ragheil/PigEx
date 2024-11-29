@@ -224,6 +224,10 @@ const handleDeleteMoney = async (id) => {
     setCategory(value);
     setShowOtherCategoryInput(value === 'other');
   };
+  
+  const formatBalance = (balance) => {
+    return balance.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
 
   const renderMoneyRecord = ({ item }) => (
     <View style={{
@@ -236,7 +240,7 @@ const handleDeleteMoney = async (id) => {
         <Text style={styles.dateHeader}>{item.date}</Text>
         {item.records.map((record) => (
           <View key={record.id} style={styles.record}>
-            <Text style={[styles.recordText && styles.recordTextAmount]}>Amount PHP: {record.amount.toFixed(2)}</Text>
+            <Text style={[styles.recordText && styles.recordTextAmount]}>Amount PHP: {formatBalance(record.amount)}</Text>
             <Text style={styles.recordText}>Category: {record.category}</Text>
             <Text style={styles.recordText}>Remarks: {record.remarks}</Text>
             <View style={styles.recordButtons}>
@@ -273,7 +277,7 @@ const handleDeleteMoney = async (id) => {
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.headercontainer}>
-        <Text style={styles.balanceNumber}>₱ {totalBalance.toFixed(2)}</Text>
+        <Text style={styles.balanceNumber}>₱ {formatBalance(totalBalance)}</Text>
         <Text style={styles.balance}>Total Balance</Text>
       </SafeAreaView>
       
