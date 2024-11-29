@@ -224,35 +224,46 @@ const handleDeleteMoney = async (id) => {
     setCategory(value);
     setShowOtherCategoryInput(value === 'other');
   };
+  
+  const formatBalance = (balance) => {
+    return balance.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
 
   const renderMoneyRecord = ({ item }) => (
-    <View style={styles.dateGroup}>
-      <Text style={styles.dateHeader}>{item.date}</Text>
-      {item.records.map((record) => (
-        <View key={record.id} style={styles.record}>
-          <Text style={[styles.recordText && styles.recordTextAmount]}>Amount PHP: {record.amount.toFixed(2)}</Text>
-          <Text style={styles.recordText}>Category: {record.category}</Text>
-          <Text style={styles.recordText}>Remarks: {record.remarks}</Text>
-          <View style={styles.recordButtons}>
-            <Pressable
-              style={styles.editButton}
-              onPress={() => {
-                setAmount(record.amount.toString());
-                setRemarks(record.remarks);
-                setCategory(record.category);
-                setCurrentRecordId(record.id);
-                setModalVisible(true);
-                setIsEditing(true);
-              }}
-            >
-              <Text style={styles.buttonText}>Edit</Text>
-            </Pressable>
-            <Pressable style={[styles.button && styles.deleteButton]} onPress={() => handleDeleteMoney(record.id)}>
-              <Text style={styles.buttonText}>Delete</Text>
-            </Pressable>
+    <View style={{
+      // backgroundColor: 'red',
+      paddingBottom: 15,
+      // rowGap: 10,
+      // columnGap: 10,
+    }}>
+      <View style={styles.dateGroup}>
+        <Text style={styles.dateHeader}>{item.date}</Text>
+        {item.records.map((record) => (
+          <View key={record.id} style={styles.record}>
+            <Text style={[styles.recordText && styles.recordTextAmount]}>Amount PHP: {formatBalance(record.amount)}</Text>
+            <Text style={styles.recordText}>Category: {record.category}</Text>
+            <Text style={styles.recordText}>Remarks: {record.remarks}</Text>
+            <View style={styles.recordButtons}>
+              <Pressable
+                style={styles.editButton}
+                onPress={() => {
+                  setAmount(record.amount.toString());
+                  setRemarks(record.remarks);
+                  setCategory(record.category);
+                  setCurrentRecordId(record.id);
+                  setModalVisible(true);
+                  setIsEditing(true);
+                }}
+              >
+                <Text style={styles.buttonText}>Edit</Text>
+              </Pressable>
+              <Pressable style={styles.deleteButton} onPress={() => handleDeleteMoney(record.id)}>
+                <Text style={styles.buttonText}>Delete</Text>
+              </Pressable>
+            </View>
           </View>
-        </View>
-      ))}
+        ))}
+      </View>
     </View>
   );
 
@@ -266,7 +277,7 @@ const handleDeleteMoney = async (id) => {
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.headercontainer}>
-        <Text style={styles.balanceNumber}>₱ {totalBalance.toFixed(2)}</Text>
+        <Text style={styles.balanceNumber}>₱ {formatBalance(totalBalance)}</Text>
         <Text style={styles.balance}>Total Balance</Text>
       </SafeAreaView>
       

@@ -3,21 +3,33 @@ import { StyleSheet } from 'react-native';
 const MoneyOutScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#f8f9fa', // Light background color
+    backgroundColor: '#a7c796', // Light background color
+  },
+  headercontainer: {
+    width: '100%',
+    backgroundColor: '#869f77',
+    paddingBottom: 5,
+    borderBottomLeftRadius: 45,
+    borderBottomRightRadius: 45,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    marginTop: 10,
     color: '#333',
-    marginBottom: 20,
     textAlign: 'center',
+  },
+  balanceNumber: {
+    fontSize: 45,
+    fontWeight: 'bold',
+    color: '#6e1a22',
+    textAlign: 'center',
+    letterSpacing: 0.5,  // Slight letter spacing for a clean look
   },
   balance: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#dc3545',  // Red color for balance to match "Money Out"
-    marginVertical: 10,
+    color: '#58151b',  // Red color for balance to match "Money Out"
     textAlign: 'center',
     letterSpacing: 0.5,  // Slight letter spacing for a clean look
   },
@@ -25,43 +37,53 @@ const MoneyOutScreenStyles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '500',
     color: '#495057',  // Dark grey color for text
-    marginVertical: 5,
     textAlign: 'center',
     fontStyle: 'italic',  // Italicize for a subtle, stylish effect
+    marginBottom: 10,
   },
   record: {
     padding: 15,
     backgroundColor: '#ffffff',
-    borderRadius: 10,
-    marginVertical: 8,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#ced4da',  // Soft border color for separation
-    shadowColor: '#000', // Adding subtle shadow for depth
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    borderColor: '#ced4da',
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
+    borderTopRightRadius: 25,
   },
   recordText: {
     fontSize: 16,
-    color: '#212529',  // Dark color for readability
-    marginBottom: 6,
+    color: '#212529',
+  },
+  recordTextAmount: {
+    fontSize: 26,
+    fontWeight: '700',
+    marginBottom: 5,
+    color: '#0d0f0b',
+    textAlign: 'center'
   },
   recordButtons: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     marginTop: 10,
+    columnGap: 5,
+  },
+  dateGroup: {
+    // backgroundColor: 'red',
+    paddingHorizontal: 20,
   },
   editButton: {
-    backgroundColor: '#28a745', // Green for edit action
+    flex: 1,
+    backgroundColor: '#6e7f5b', // Green for edit action
     paddingVertical: 10,
     paddingHorizontal: 18,
-    borderRadius: 8,
+    borderRadius: 10,
   },
   deleteButton: {
-    backgroundColor: '#dc3545', // Red for delete action
+    flex: 1,
+    backgroundColor: '#a95d5d', // Red for delete action
     paddingVertical: 10,
     paddingHorizontal: 18,
-    borderRadius: 8,
+    borderRadius: 10,
   },
   buttonText: {
     color: '#ffffff',
@@ -73,7 +95,6 @@ const MoneyOutScreenStyles = StyleSheet.create({
     backgroundColor: '#007bff', // Blue for adding new entry
     paddingVertical: 14,
     borderRadius: 8,
-    marginTop: 20,
     alignItems: 'center',
   },
   addButtonText: {
@@ -81,6 +102,29 @@ const MoneyOutScreenStyles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  addbuttonContainer: {
+    // flex: 1,
+    height: 50,
+    width: '90%',
+    alignSelf: 'center',
+    marginTop: 5,
+    bottom: 5,
+  },
+  addMoneyButton: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#566F48',
+    borderRadius: 20,
+    paddingHorizontal: 3,
+    insetBlockStart: -10,
+  },
+  addMoneyButtonText: {
+    textAlign: 'center',
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#F5F5F5',
+    textTransform: 'uppercase',
   },
   modalContent: {
     flex: 1,
@@ -126,9 +170,10 @@ const MoneyOutScreenStyles = StyleSheet.create({
     alignItems: 'center',
   },
   flatListItemText: {
-    fontSize: 20, // Bigger font size
-    fontWeight: 'bold', // Bold font
-    color: '#212529', // Dark color for readability
+    // marginTop: 5,
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#000',
   },
 });
 
