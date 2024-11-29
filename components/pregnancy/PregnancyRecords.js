@@ -320,85 +320,151 @@ const PregnancyRecords = ({ route, navigation }) => {
   return (
     <View style={PregnancyRecordsStyles.container}>
       <Text style={PregnancyRecordsStyles.header}>List of all Female Pigs</Text>
-      <ScrollView style={PregnancyRecordsStyles.container}>
-      {femalePigs.sortedGroups.length === 0 ? (
-        <Text>No female pigs found.</Text>
-      ) : (
-        femalePigs.sortedGroups.map(group => (
-          <View key={group}>
-            <Text style={PregnancyRecordsStyles.groupName}>{group}</Text>
-            {femalePigs.groupedPigs[group].map(pig => (
-              <View key={pig.id} style={PregnancyRecordsStyles.pigContainer}>
-                <TouchableOpacity onPress={() => navigation.navigate('PigDetailsScreen', {
-                  pigId: pig.id,
-                  pigName: pig.pigName,
-                  selectedBranch,
-                  user,
-                  motherId: pig.motherId
-                })}>
-                  <Text style={PregnancyRecordsStyles.pigName}>{pig.pigName}</Text>
-                </TouchableOpacity>
-                <View style={PregnancyRecordsStyles.iconContainer}>
-                  <TouchableOpacity onPress={() => fetchPiglets(pig.id, pig.pigName)}>
-                    <Image source={viewIcon} style={PregnancyRecordsStyles.viewIcon} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={PregnancyRecordsStyles.addButton}
-                    onPress={() => navigation.navigate('PigDetailsScreen', {
-                      pigId: pig.id,
-                      pigName: pig.pigName,
-                      selectedBranch,
-                      user,
-                      motherId: pig.motherId
-                    })}>
-                    <Text style={PregnancyRecordsStyles.addButtonText}>Add Piglets</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={PregnancyRecordsStyles.addBreedingDateButton}
-                    onPress={() => {
-                      setSelectedPigId(pig.id);
-                      setSelectedPigName(pig.pigName);
-                      setModalType('breeding'); // Set modal type to breeding
-                      setModalVisible(true);
-                    }}>
-                    <Text style={PregnancyRecordsStyles.addBreedingDateText}>Breed date</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            ))}
-          </View>
-        ))
-      )}
-
-      {/* Combined Modal */}
-      <Modal visible={modalVisible} transparent={true} animationType="slide">
-  <View style={PregnancyRecordsStyles.modalBackground}>
-    <View style={PregnancyRecordsStyles.pigletModalContent}>
-      
-{/* Modal for Viewing Piglets */}
-{modalType === 'piglets' && (
-  <View>
-    <View>
-      <Text style={PregnancyRecordsStyles.pigletModalHeader}>Piglets of {selectedPigName}</Text>
-      <Text style={PregnancyRecordsStyles.pigletCountText}>
-        Number of Piglets: {selectedPiglets.length} {/* Display total piglets count */}
-      </Text>
-      <ScrollView 
-        style={PregnancyRecordsStyles.pigletsList} 
-        contentContainerStyle={{ paddingBottom: 20 }} // Adds padding to the end for better spacing
-      >
-        {selectedPiglets.length === 0 ? (
-          <Text style={PregnancyRecordsStyles.noPigletsText}>No piglets found for this pig.</Text>
+      <ScrollView style={PregnancyRecordsStyles.scrollContainer}>
+        {femalePigs.sortedGroups.length === 0 ? (
+          <Text style={PregnancyRecordsStyles.noDataText}>No female pigs found.</Text>
         ) : (
-          selectedPiglets.map(piglet => (
-            <Text key={piglet.id} style={PregnancyRecordsStyles.pigletText}>
-              Pig Name: {piglet.pigName}
-            </Text>
+          femalePigs.sortedGroups.map(group => (
+            <View key={group}>
+              <Text style={PregnancyRecordsStyles.groupName}>{group}</Text>
+              {femalePigs.groupedPigs[group].map(pig => (
+                <View key={pig.id} style={PregnancyRecordsStyles.pigContainer}>
+                  <TouchableOpacity onPress={() => navigation.navigate('PigDetailsScreen', {
+                    pigId: pig.id,
+                    pigName: pig.pigName,
+                    selectedBranch,
+                    user,
+                    motherId: pig.motherId
+                  })}>
+<View>
+  <Text style={PregnancyRecordsStyles.pigName}>{pig.pigName}</Text>
+  <View style={PregnancyRecordsStyles.horizontalLine} />
+</View>
+                  </TouchableOpacity>
+                  <View style={PregnancyRecordsStyles.iconContainer}>
+                  <TouchableOpacity onPress={() => fetchPiglets(pig.id, pig.pigName)}>
+  <View style={PregnancyRecordsStyles.iconWithLabel}>
+    <Image source={viewIcon} style={PregnancyRecordsStyles.viewIcon} />
+    <Text style={PregnancyRecordsStyles.iconLabel}>piglets</Text>
+  </View>
+</TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={PregnancyRecordsStyles.addButton}
+                      onPress={() => navigation.navigate('PigDetailsScreen', {
+                        pigId: pig.id,
+                        pigName: pig.pigName,
+                        selectedBranch,
+                        user,
+                        motherId: pig.motherId
+                      })}>
+                      <Text style={PregnancyRecordsStyles.addButtonText}>Add Piglets</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={PregnancyRecordsStyles.addBreedingDateButton}
+                      onPress={() => {
+                        setSelectedPigId(pig.id);
+                        setSelectedPigName(pig.pigName);
+                        setModalType('breeding'); // Set modal type to breeding
+                        setModalVisible(true);
+                      }}>
+                      <Text style={PregnancyRecordsStyles.addBreedingDateText}>Breed date</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ))}
+            </View>
           ))
         )}
-      </ScrollView>
-      <TouchableOpacity
-        style={PregnancyRecordsStyles.closeButton}
+  
+        {/* Combined Modal */}
+        <Modal visible={modalVisible} transparent={true} animationType="slide">
+          <View style={PregnancyRecordsStyles.modalBackground}>
+            <View style={PregnancyRecordsStyles.pigletModalContent}>
+              {/* Modal for Viewing Piglets */}
+              {modalType === 'piglets' && (
+                <View>
+                  <Text style={PregnancyRecordsStyles.pigletModalHeader}>Piglets of {selectedPigName}</Text>
+                  <Text style={PregnancyRecordsStyles.pigletCountText}>
+                    Number of Piglets: {selectedPiglets.length}
+                  </Text>
+                  <ScrollView 
+                    style={PregnancyRecordsStyles.pigletsList} 
+                    contentContainerStyle={{ paddingBottom: 20 }}
+                  >
+                    {selectedPiglets.length === 0 ? (
+                      <Text style={PregnancyRecordsStyles.noPigletsText}>No piglets found for this pig.</Text>
+                    ) : (
+                      selectedPiglets.map(piglet => (
+                        <Text key={piglet.id} style={PregnancyRecordsStyles.pigletText}>
+                          Pig Name: {piglet.pigName}
+                        </Text>
+                      ))
+                    )}
+                  </ScrollView>
+                  <TouchableOpacity
+                    style={PregnancyRecordsStyles.closeButton}
+                    onPress={() => setModalVisible(false)}
+                  >
+                    <Text style={PregnancyRecordsStyles.closeButtonText}>Close</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+  
+              {/* Modal for Adding Breeding Date */}
+              {modalType === 'breeding' && (
+  <View style={PregnancyRecordsStyles.modalContainer}>
+    <Text style={PregnancyRecordsStyles.modalHeader}>Add Breeding Date</Text>
+    <Text style={PregnancyRecordsStyles.selectedPigName}>Pig Name: {selectedPigName}</Text>
+
+    <TouchableOpacity 
+      onPress={() => setShowDatePicker(true)} 
+      style={PregnancyRecordsStyles.dateButton}
+    >
+      <Text style={PregnancyRecordsStyles.dateText}>
+        {breedingDate || 'Select Breeding Date'}
+      </Text>
+    </TouchableOpacity>
+
+    {showDatePicker && (
+      <DateTimePicker
+        value={new Date()}
+        mode="date"
+        display="default"
+        onChange={onDateChange}
+      />
+    )}
+
+    <TextInput
+      style={PregnancyRecordsStyles.remarksInput}
+      placeholder="Enter Remarks"
+      value={remarks}
+      onChangeText={setRemarks}
+    />
+
+    {/* Horizontal Row for Buttons */}
+    <View style={PregnancyRecordsStyles.buttonsContainer}>
+      <TouchableOpacity 
+        style={PregnancyRecordsStyles.addButton} 
+        onPress={addBreedingDate}
+      >
+        <Text style={PregnancyRecordsStyles.addButtonText}>Add Breeding Date</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={PregnancyRecordsStyles.viewBreedingHistoryButton}
+        onPress={() => {
+          fetchBreedingHistory();
+          setBreedingHistoryVisible(true);
+        }}
+      >
+        <Text style={PregnancyRecordsStyles.viewBreedingHistoryText}>
+          View Breeding History
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={PregnancyRecordsStyles.closeButton} 
         onPress={() => setModalVisible(false)}
       >
         <Text style={PregnancyRecordsStyles.closeButtonText}>Close</Text>
@@ -408,97 +474,42 @@ const PregnancyRecords = ({ route, navigation }) => {
 )}
 
 
-
-
-      {/* Modal for Adding Breeding Date */}
-      {modalType === 'breeding' && (
-        <>
-          <Text style={PregnancyRecordsStyles.modalHeader}>Add Breeding Date</Text>
-          <Text style={PregnancyRecordsStyles.pigName}>{selectedPigName}</Text>
-
-          <TouchableOpacity
-            onPress={() => setShowDatePicker(true)} // Show the DatePicker when clicked
-            style={PregnancyRecordsStyles.dateButton}>
-            <Text style={PregnancyRecordsStyles.dateText}>{breedingDate || 'Select Breeding Date'}</Text>
-          </TouchableOpacity>
-
-          {showDatePicker && (
-            <DateTimePicker
-              value={new Date()}
-              mode="date"
-              display="default"
-              onChange={onDateChange}
-            />
-          )}
-
-          <TextInput
-            style={PregnancyRecordsStyles.remarksInput}
-            placeholder="Enter Remarks"
-            value={remarks}
-            onChangeText={setRemarks}
-          />
-
-          <TouchableOpacity style={PregnancyRecordsStyles.addButton} onPress={addBreedingDate}>
-            <Text style={PregnancyRecordsStyles.addButtonText}>Add Breeding Date</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-  style={PregnancyRecordsStyles.viewBreedingHistoryButton}
-  onPress={() => {
-    fetchBreedingHistory();
-    setBreedingHistoryVisible(true); // Show breeding history modal
-  }}>
-  <Text style={PregnancyRecordsStyles.viewBreedingHistoryText}>View Breeding History</Text>
-  
-</TouchableOpacity>
-
-          <TouchableOpacity
-            style={PregnancyRecordsStyles.closeButton}
-            onPress={() => setModalVisible(false)}>
-            <Text style={PregnancyRecordsStyles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
-        </>
-      )}
-      
-    </View>
-  </View>
-</Modal>
-<Modal visible={breedingHistoryVisible} transparent={true} animationType="slide">
-  <View style={PregnancyRecordsStyles.modalBackground}>
-    <View style={PregnancyRecordsStyles.breedingHistoryModalContainer}>
-      <Text style={PregnancyRecordsStyles.modalHeader}>Breeding History of {selectedPigName}</Text>
-      
-      {breedingHistory.length === 0 ? (
-        <Text style={PregnancyRecordsStyles.noBreedingHistoryText}>No breeding history</Text>
-      ) : (
-        <FlatList
-          data={breedingHistory}
-          keyExtractor={(item) => item.id ? item.id : item.breedingDate} // Use id if available, else fallback to breedingDate
-          renderItem={({ item }) => (
-            <View style={PregnancyRecordsStyles.breedingHistoryItem}>
-              <View style={PregnancyRecordsStyles.breedingHistoryTextContainer}>
-                <Text style={PregnancyRecordsStyles.breedingHistoryLabel}>Breeding Date: {item.breedingDate}</Text>
-                <Text style={PregnancyRecordsStyles.breedingHistoryLabel}>Remarks: {item.remarks}</Text>
-              </View>
             </View>
-          )}
-        />
-      )}
-      
-      <TouchableOpacity
-        style={PregnancyRecordsStyles.closeButton}
-        onPress={() => setBreedingHistoryVisible(false)}
-      >
-        <Text style={PregnancyRecordsStyles.closeButtonText}>Close</Text>
-      </TouchableOpacity>
-    </View>
-  </View>
-</Modal>
-</ScrollView>
-
-
-
-
-
+          </View>
+        </Modal>
+  
+        <Modal visible={breedingHistoryVisible} transparent={true} animationType="slide">
+          <View style={PregnancyRecordsStyles.modalBackground}>
+            <View style={PregnancyRecordsStyles.breedingHistoryModalContainer}>
+              <Text style={PregnancyRecordsStyles.modalHeader}>Breeding History of {selectedPigName}</Text>
+  
+              {breedingHistory.length === 0 ? (
+                <Text style={PregnancyRecordsStyles.noBreedingHistoryText}>No breeding history</Text>
+              ) : (
+                <FlatList
+                  data={breedingHistory}
+                  keyExtractor={(item) => item.id ? item.id : item.breedingDate}
+                  renderItem={({ item }) => (
+                    <View style={PregnancyRecordsStyles.breedingHistoryItem}>
+                      <View style={PregnancyRecordsStyles.breedingHistoryTextContainer}>
+                        <Text style={PregnancyRecordsStyles.breedingHistoryLabel}>Breeding Date: {item.breedingDate}</Text>
+                        <Text style={PregnancyRecordsStyles.breedingHistoryLabel}>Remarks: {item.remarks}</Text>
+                      </View>
+                    </View>
+                  )}
+                />
+              )}
+  
+              <TouchableOpacity
+                style={PregnancyRecordsStyles.closeButton}
+                onPress={() => setBreedingHistoryVisible(false)}
+              >
+                <Text style={PregnancyRecordsStyles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      </ScrollView>
     </View>
   );
 };

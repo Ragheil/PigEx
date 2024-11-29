@@ -1,35 +1,96 @@
 import { StyleSheet } from 'react-native';
 
 const PregnancyRecordsStyles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  header: { fontSize: 24, fontWeight: 'bold', marginBottom: 16 },
-  groupName: { fontSize: 20, fontWeight: 'bold', marginVertical: 10 },
-  pigName: { fontSize: 16, marginBottom: 5 },
-  pigContainer: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'space-between',
-    padding: 10,
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#a7c796', // Light gray background for the main container
+  },
+  scrollContainer: {
+    flex: 1,
+  },
+  header: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    color: '#000000FF',
+    textAlign: 'center',
+    marginTop: 60,
+  },
+  
+  noDataText: {
+    fontSize: 18,
+    color: '#888',
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  groupName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginVertical: 10,
+    color: '#000000FF', // Brand color for group names
+  },
+  pigName: {
+    fontSize: 18,
+    fontWeight: 'bold', // Ensure emphasis on the pig name
+    marginBottom: 10, // Spacing between pig name and the container content
+    color: '#333',
+    textAlign: 'center', // Optional: center-align the pig name
+  },
+  pigContainer: {
+    padding: 12,
     marginVertical: 8,
-    borderRadius: 8,
-    backgroundColor: '#fff',
+    borderRadius: 10,
+    backgroundColor: '#D4E1CDFF', 
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#566F48',
     elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10, // Space between pig content and buttons
   },
   iconContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  viewIcon: { width: 24, height: 24, marginRight: 10 },
+  viewIcon: {
+    width: 50,
+    height: 50,
+    marginRight: 60,
+    position: 'relative',
+    right: -30, //
+  },
+  iconWithLabel: {
+    alignItems: 'center', // Center the label below the image
+  },
+  horizontalLine: {
+    width: '100%', // Full width of the container
+    height: 1,     // Thin horizontal line
+    backgroundColor: '#000000FF', // Light gray color
+    marginTop: 4,  // Space between the pig name and the line
+    alignSelf: 'center', // Center the line horizontally
+    marginBott: 4,
+  },
+  iconLabel: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#000000FF', // Slightly muted color for the label
+   // marginTop: 4, // Space between the image and label
+    textAlign: 'center',
+  },
+  
   addButton: {
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    backgroundColor: '#4CAF50',
+    flex: 1,
+    marginRight: 8, // Space between buttons
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    backgroundColor: '#4981BDFF',
     borderRadius: 8,
     alignItems: 'center',
     elevation: 3,
@@ -38,178 +99,36 @@ const PregnancyRecordsStyles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 2,
   },
-  addButtonText: { color: '#fff', fontWeight: 'bold' },
+addButtonText: {
+  color: '#FFFFFF',
+  fontWeight: 'bold',
+  // Adjust this value to move the text slightly to the left
+},
 
-  // Modal Background and Container (Common)
-  modalBackground: { 
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
+addBreedingDateButton: {
+  flex: 1,
+  paddingVertical: 6,
+  paddingHorizontal: 12,
+  backgroundColor: '#FF9800',
+  borderRadius: 8,
+  alignItems: 'center',
+  elevation: 3,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.3,
+  shadowRadius: 2,
+},
+  addBreedingDateText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
+
+  // Modal Background and Container
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
-  },
-  modalContainer: { 
-    width: '80%',  // Adjust width to make modal more responsive
-    padding: 20, 
-    backgroundColor: '#fff', 
-    borderRadius: 8,
-    alignItems: 'center',
-    elevation: 5, 
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-  },
-
-  // Add Breeding Date Modal Specific Styles
-  modalTitle: { 
-    fontSize: 20, 
-    fontWeight: 'bold', 
-    marginBottom: 15, 
-    textAlign: 'center' 
-  },
-  pigNameInModal: { 
-    fontSize: 18, 
-    marginBottom: 20, 
-    color: '#555' 
-  },
-  // Updated breeding date button style (Orange background)
-  dateButton: { 
-    marginBottom: 20, 
-    padding: 10, 
-    backgroundColor: '#FF9800',  // Orange background color
-    borderRadius: 5, 
-    width: '80%', 
-    alignItems: 'center', 
-  },
-  dateText: { 
-    color: '#fff', 
-    fontSize: 18 
-  },
-  inputField: {
-    width: '80%',
-    padding: 10,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-  },
-
-  // Remarks TextInput
-  remarksInput: {
-    width: '80%',
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    marginBottom: 20,
-  },
-
-  // Button Styles
-  saveButton: {
-    backgroundColor: '#4CAF50',
-    padding: 10,
-    borderRadius: 5,
-    width: '80%',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  saveButtonText: {
-    color: '#fff',
-    fontSize: 18,
-  },
-
-  closeButton: {
-    color: '#FF5733', 
-    marginTop: 20, 
-    textAlign: 'center', 
-    fontSize: 16,
-    textDecorationLine: 'underline',
-  },
-
-  // For Piglets Modal
-  pigletName: { 
-    fontSize: 16, 
-    marginBottom: 5 
-  },
-  noPigletsText: { 
-    fontSize: 16, 
-    fontStyle: 'italic', 
-    color: 'gray' 
-  },
-
-  // Styles for displaying piglets under each pig
-  pigletContainer: { 
-    marginTop: 10, 
-    paddingLeft: 20, 
-    backgroundColor: '#f9f9f9', 
-    borderRadius: 5, 
-    marginBottom: 15 
-  },
-  pigletList: {
-    fontSize: 50,
-    marginBottom: 5,
-    color: '#555',
-  },
-  breedingHistoryModalContainer: {
-    width: '90%', // Make the modal wider
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-    elevation: 5,
-  },
-  modalHeader: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  noBreedingHistoryText: {
-    textAlign: 'center',
-    marginVertical: 20,
-  },
-  closeButton: {
-    marginTop: 15,
-    backgroundColor: '#007bff',
-    padding: 10,
-    alignItems: 'center',
-    borderRadius: 5,
-  },
-  breedingHistoryItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    },
-  // Container to place Breeding Date and Remarks side by side
-  breedingHistoryTextContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  breedingHistoryLabel: {
-    fontWeight: 'bold',
-    width: '45%', // Adjust width to make them fit on the same line
-    marginRight: 10, // Space between the two labels
-    flex: 1,
-    fontSize: 16,
-  },
-  editButtonText: {
-    color: 'blue',
-    fontWeight: 'bold',
-    marginLeft: 10,
-  },
-  closeButton: {
-    backgroundColor: '#f44336',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  closeButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
   },
   pigletModalContent: {
     width: '85%',
@@ -230,6 +149,12 @@ const PregnancyRecordsStyles = StyleSheet.create({
     marginBottom: 15,
     textAlign: 'center',
   },
+  pigletCountText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#333',
+  },
   pigletsList: {
     width: '100%',
     maxHeight: 200,
@@ -245,7 +170,7 @@ const PregnancyRecordsStyles = StyleSheet.create({
   },
   noPigletsText: {
     fontSize: 16,
-    color: 'gray',
+    color : 'gray',
     textAlign: 'center',
     paddingVertical: 20,
   },
@@ -261,13 +186,151 @@ const PregnancyRecordsStyles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: 'bold',
   },
-  pigletCountText: {
-    fontSize: 16, // Adjust size as needed
-    fontWeight: 'bold', // Make it bold for emphasis
-    marginBottom: 10, // Space below the count
-    color: '#333', // Darker color for better readability
+  modalHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  breedingHistoryModalContainer: {
+    width: '90%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    elevation: 5,
+  },
+  noBreedingHistoryText: {
+    textAlign: 'center',
+    marginVertical: 20,
+  },
+  breedingHistoryItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  breedingHistoryTextContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  breedingHistoryLabel: {
+    fontWeight: 'bold',
+    width: '45%',
+    marginRight: 10,
+    flex: 1,
+    fontSize: 16,
+  },
+  viewBreedingHistoryButton: {
+    marginTop: 10,
+    backgroundColor: '#007bff',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    flex: 1,
+  },
+  
+  viewBreedingHistoryText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  remarksInput: {
+    width: '100%',
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    marginBottom: 20,
   },
 
+
+
+
+
+  
+  modalHeader: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  
+  selectedPigName: {
+    fontSize: 18,
+    color: '#000000FF',
+    textAlign: 'center',
+    marginBottom: 12,
+    fontWeight: 'bold',
+  },
+  
+  dateButton: {
+    backgroundColor: '#E9AF92FF',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginVertical: 8,
+  },
+  
+  dateText: {
+    fontSize: 16,
+    color: '#555',
+  },
+  
+  remarksInput: {
+    height: 50,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginVertical: 10,
+    backgroundColor: '#FAFAFA',
+  },
+  
+  addButton: {
+    backgroundColor: '#28A745',
+    padding: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginVertical: 8,
+  },
+  
+  addButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  
+  viewBreedingHistoryButton: {
+    backgroundColor: '#007BFF',
+    padding: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginVertical: 8,
+  },
+  
+  viewBreedingHistoryText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  
+  closeButton: {
+    backgroundColor: '#D9534F',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginVertical: 8,
+  },
+  
+  closeButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  
 });
 
 export default PregnancyRecordsStyles;
