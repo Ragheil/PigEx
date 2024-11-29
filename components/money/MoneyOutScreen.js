@@ -324,7 +324,7 @@ const MoneyOutScreen = ({ route }) => {
     <View style={MoneyOutScreenStyles.container}>
       <SafeAreaView style={MoneyOutScreenStyles.headercontainer}>
       <Text style={MoneyOutScreenStyles.balanceNumber}>₱ {totalBalance.toFixed(2)}</Text>
-      <Text style={MoneyOutScreenStyles.balance}>Total Balance:</Text>
+      <Text style={MoneyOutScreenStyles.balance}>Total Balance</Text>
       </SafeAreaView>
       
       <Text style={MoneyOutScreenStyles.title}>Money Out Records</Text>

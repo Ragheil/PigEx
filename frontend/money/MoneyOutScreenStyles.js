@@ -29,7 +29,7 @@ const MoneyOutScreenStyles = StyleSheet.create({
   balance: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#58151b',  // Red color for balance to match "Money Out"
+    color: '#FFFFFFFF',  // Red color for balance to match "Money Out"
     textAlign: 'center',
     letterSpacing: 0.5,  // Slight letter spacing for a clean look
   },
