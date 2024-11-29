@@ -3,21 +3,34 @@ import { StyleSheet } from 'react-native';
 const PregnancyRecordsStyles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
     backgroundColor: '#a7c796', // Light gray background for the main container
   },
   scrollContainer: {
     flex: 1,
+    // backgroundColor: '#a7c796'
+    paddingHorizontal: 20,
   },
   header: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: 'bold',
     marginBottom: 16,
     color: '#000000FF',
     textAlign: 'center',
-    marginTop: 60,
+    marginTop: 10,
   },
-  
+  headercontainer: {
+    backgroundColor: 'red'
+  }, 
+  piglogobox: {
+    marginVertical: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  piglogo: {
+    height: 70,
+    width: 180,
+    resizeMode: 'contain',
+  },
   noDataText: {
     fontSize: 18,
     color: '#888',
@@ -56,18 +69,35 @@ const PregnancyRecordsStyles = StyleSheet.create({
     marginTop: 10, // Space between pig content and buttons
   },
   iconContainer: {
+    // flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    // columnGap: 5
+    gap: 5,
+    paddingTop: 5,
+    // backgroundColor: 'red'
+  },
+  iconWithLabel: {
+    flex: 1,
+    // width: '100%',
+    // height: 100,
+    alignItems: 'center', // Center the label below the image
+    backgroundColor: '#EEE2B5',
+    borderRadius: 10,
+    padding: 3,
+    
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
   },
   viewIcon: {
     width: 50,
     height: 50,
-    marginRight: 60,
-    position: 'relative',
-    right: -30, //
-  },
-  iconWithLabel: {
-    alignItems: 'center', // Center the label below the image
+    // marginRight: 60,
+    // position: 'relative',
+    // right: -30, //
   },
   horizontalLine: {
     width: '100%', // Full width of the container
@@ -80,19 +110,19 @@ const PregnancyRecordsStyles = StyleSheet.create({
   iconLabel: {
     fontSize: 15,
     fontWeight: 'bold',
+    textTransform: 'uppercase',
     color: '#000000FF', // Slightly muted color for the label
    // marginTop: 4, // Space between the image and label
     textAlign: 'center',
   },
   
-  addButton: {
+  addButtonPiglets: {
     flex: 1,
-    marginRight: 8, // Space between buttons
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    backgroundColor: '#4981BDFF',
-    borderRadius: 8,
+    backgroundColor: '#D7B26D',
     alignItems: 'center',
+    borderRadius: 10,
+    padding: 3,
+    
     elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -107,11 +137,11 @@ addButtonText: {
 
 addBreedingDateButton: {
   flex: 1,
-  paddingVertical: 6,
-  paddingHorizontal: 12,
-  backgroundColor: '#FF9800',
-  borderRadius: 8,
+  backgroundColor: '#CA7373',
   alignItems: 'center',
+  borderRadius: 10,
+  padding: 3,
+  
   elevation: 3,
   shadowColor: '#000',
   shadowOffset: { width: 0, height: 2 },

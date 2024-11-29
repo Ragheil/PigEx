@@ -625,19 +625,19 @@ useEffect(() => {
 
           {/* Branch Picker */}
           <RNPickerSelect
-    onValueChange={(value) => handleBranchSwitch(value)}
-    items={[
-        ...branches.map((branch) => ({
-            label: `${branch.type}: ${branch.name}`, // Display type and name
-            value: branch.id,
-        })),
-    ]}
-    style={{
-        inputIOS: styles.picker, // Styles for iOS
-        inputAndroid: styles.picker, // Styles for Android
-    }}
-    placeholder={{ label: 'Select a Branch', value: null }} // Placeholder
-/>
+            onValueChange={(value) => handleBranchSwitch(value)}
+            items={[
+                ...branches.map((branch) => ({
+                    label: `${branch.type}: ${branch.name}`, // Display type and name
+                    value: branch.id,
+                })),
+            ]}
+            style={{
+                inputIOS: styles.picker, // Styles for iOS
+                inputAndroid: styles.picker, // Styles for Android
+            }}
+            placeholder={{ label: 'Select a Branch', value: null }} // Placeholder
+        />
 
 
 

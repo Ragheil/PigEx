@@ -286,6 +286,8 @@ addButtonText: {
     alignItems: 'center',
     marginBottom: 10,
     borderRadius: 13,
+    position: 'static',
+    bottom: 5,
   },
   logoutButtonText: {
     color: '#FFFFFF',
@@ -297,7 +299,9 @@ addButtonText: {
     height: 1, // Height of the line
     backgroundColor: '#000', // Color of the line
     width: '100%', // Full width of the container
-    marginTop: 165, //
+    marginTop: '100%', //
+    position: 'static',
+    bottom: 5,
 },
   picker: {
     height: 50,

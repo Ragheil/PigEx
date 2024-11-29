@@ -4,6 +4,7 @@ import { firestore } from '../../firebase/config2';
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import viewIcon from '../../assets/images/buttons/viewIcon.png';
 import PregnancyRecordsStyles from '../../frontend/Pregnancy/PregnancyRecordsStyles';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const PregnancyRecords = ({ route, navigation }) => {
   const { selectedBranch, user } = route.params || {};
@@ -97,7 +98,17 @@ const PregnancyRecords = ({ route, navigation }) => {
 
   return (
     <View style={PregnancyRecordsStyles.container}>
-      <Text style={PregnancyRecordsStyles.header}>List of Female Pigs</Text>
+      <SafeAreaView 
+        style={{
+          // flex: 1,
+          backgroundColor: '#869f77',
+          width: '100%',
+        }}>
+        <View style={PregnancyRecordsStyles.piglogobox}>
+          <Image source={require('../../assets/images/LOGO.png')} style={PregnancyRecordsStyles.pigLogo} />
+          </View>
+        <Text style={PregnancyRecordsStyles.header}>List of Female Pigs</Text>
+      </SafeAreaView>
       {femalePigs.sortedGroups.length === 0 ? (
         <Text>No female pigs found.</Text>
       ) : (

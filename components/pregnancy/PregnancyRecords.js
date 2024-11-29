@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, Modal, Image,TextInput, ScrollView } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, TouchableOpacity, Modal, Image,TextInput, ScrollView, SafeAreaViewBase } from 'react-native';
 import { firestore } from '../../firebase/config2';
 import { collection, getDocs, doc, getDoc,updateDoc,setDoc,addDoc } from 'firebase/firestore';
-import viewIcon from '../../assets/images/buttons/viewIcon.png';
+import previewicon from '../../assets/images/pregnancyBTN/preview.png';
+import calendaricon from '../../assets/images/pregnancyBTN/addcalendar.png';
+import addboxicon from '../../assets/images/pregnancyBTN/addbox.png';
 import PregnancyRecordsStyles from '../../frontend/Pregnancy/PregnancyRecordsStyles';
 import DateTimePicker from '@react-native-community/datetimepicker'; // Import DateTimePicker
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
+import { SafeAreaView } from 'react-native-safe-area-context';
 const PregnancyRecords = ({ route, navigation }) => {
   const { selectedBranch, user } = route.params || {};
 
@@ -319,7 +322,18 @@ const PregnancyRecords = ({ route, navigation }) => {
 
   return (
     <View style={PregnancyRecordsStyles.container}>
-      <Text style={PregnancyRecordsStyles.header}>List of all Female Pigs</Text>
+      <SafeAreaView 
+        style={{
+          backgroundColor: '#869f77',
+          width: '100%',
+          borderBottomLeftRadius: 25,
+          borderBottomRightRadius: 25,
+        }}>
+          <View style={PregnancyRecordsStyles.piglogobox}>
+            <Image source={require('../../assets/images/LOGO.png')} style={PregnancyRecordsStyles.piglogo} />
+          </View>
+          <Text style={PregnancyRecordsStyles.header}>List of all Female Pigs</Text>
+      </SafeAreaView>
       <ScrollView style={PregnancyRecordsStyles.scrollContainer}>
         {femalePigs.sortedGroups.length === 0 ? (
           <Text style={PregnancyRecordsStyles.noDataText}>No female pigs found.</Text>
@@ -336,21 +350,22 @@ const PregnancyRecords = ({ route, navigation }) => {
                     user,
                     motherId: pig.motherId
                   })}>
-<View>
-  <Text style={PregnancyRecordsStyles.pigName}>{pig.pigName}</Text>
-  <View style={PregnancyRecordsStyles.horizontalLine} />
-</View>
+                  <View>
+                      <Text style={PregnancyRecordsStyles.pigName}>{pig.pigName}</Text>
+                      <View style={PregnancyRecordsStyles.horizontalLine} />
+                    </View>
                   </TouchableOpacity>
                   <View style={PregnancyRecordsStyles.iconContainer}>
-                  <TouchableOpacity onPress={() => fetchPiglets(pig.id, pig.pigName)}>
-  <View style={PregnancyRecordsStyles.iconWithLabel}>
-    <Image source={viewIcon} style={PregnancyRecordsStyles.viewIcon} />
-    <Text style={PregnancyRecordsStyles.iconLabel}>piglets</Text>
-  </View>
-</TouchableOpacity>
+
+                    <TouchableOpacity 
+                    onPress={() => fetchPiglets(pig.id, pig.pigName)} 
+                    style={PregnancyRecordsStyles.iconWithLabel}>
+                        <Image source={previewicon} style={PregnancyRecordsStyles.viewIcon} />
+                        <Text style={PregnancyRecordsStyles.iconLabel}>View Piglets</Text>
+                    </TouchableOpacity>
 
                     <TouchableOpacity
-                      style={PregnancyRecordsStyles.addButton}
+                      style={PregnancyRecordsStyles.addButtonPiglets}
                       onPress={() => navigation.navigate('PigDetailsScreen', {
                         pigId: pig.id,
                         pigName: pig.pigName,
@@ -358,7 +373,8 @@ const PregnancyRecords = ({ route, navigation }) => {
                         user,
                         motherId: pig.motherId
                       })}>
-                      <Text style={PregnancyRecordsStyles.addButtonText}>Add Piglets</Text>
+                      <Image source={calendaricon} style={PregnancyRecordsStyles.viewIcon} />
+                      <Text style={PregnancyRecordsStyles.iconLabel}>Add Piglets</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={PregnancyRecordsStyles.addBreedingDateButton}
@@ -368,7 +384,8 @@ const PregnancyRecords = ({ route, navigation }) => {
                         setModalType('breeding'); // Set modal type to breeding
                         setModalVisible(true);
                       }}>
-                      <Text style={PregnancyRecordsStyles.addBreedingDateText}>Breed date</Text>
+                      <Image source={addboxicon} style={PregnancyRecordsStyles.viewIcon} />
+                      <Text style={PregnancyRecordsStyles.iconLabel}>Breed date</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
