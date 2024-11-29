@@ -13,11 +13,13 @@ const MoneyOutScreenStyles = StyleSheet.create({
     borderBottomRightRadius: 45,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#000',
     marginTop: 10,
-    color: '#333',
     textAlign: 'center',
+    textTransform: 'uppercase',
+    letterSpacing: 1.25,
   },
   balanceNumber: {
     fontSize: 45,
@@ -36,7 +38,7 @@ const MoneyOutScreenStyles = StyleSheet.create({
   farmName: {
     fontSize: 18,
     fontWeight: '500',
-    color: '#495057',  // Dark grey color for text
+    color: '#191919',  // Dark grey color for text
     textAlign: 'center',
     fontStyle: 'italic',  // Italicize for a subtle, stylish effect
     marginBottom: 10,
