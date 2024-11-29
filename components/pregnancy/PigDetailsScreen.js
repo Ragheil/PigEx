@@ -259,7 +259,7 @@ const filteredPigs = allPigs.filter(pig =>
   return (
     <View style={PigDetailsScreenStyles.container}>
       <Text style={PigDetailsScreenStyles.title}>Pig Details</Text>
-      <Text style={PigDetailsScreenStyles.pigInfo}>Pig Name: {pigName}</Text>
+      <Text style={PigDetailsScreenStyles.pigInfo}>Mothers Name: {pigName}</Text>
        {/*  <Text style={PigDetailsScreenStyles.pigInfo}>Pig ID: {pigId}</Text> */}
 
       <View style={PigDetailsScreenStyles.headerContainer}>
