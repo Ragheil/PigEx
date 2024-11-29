@@ -602,13 +602,14 @@ useEffect(() => {
         </View>
           
         <FooterScreen 
-          firstName={firstName} 
-          lastName={lastName} 
-          farmName={farmName} 
-          selectedBranch={selectedBranch} 
-          toggleSidebar={toggleSidebar} 
-          userId={userId} 
-        />
+  firstName={firstName} 
+  lastName={lastName} 
+  farmName={farmName} 
+  selectedBranch={selectedBranch} 
+  toggleSidebar={toggleSidebar} 
+  userId={userId} 
+  style={{ zIndex: 0 }} // Set zIndex for FooterScreen to be behind
+/>
 
         <TouchableWithoutFeedback onPress={closeSidebar}>
           <Animated.View style={[styles.sidebarOverlay, { opacity: sidebarVisible ? 0.5 : 0 }]} />
