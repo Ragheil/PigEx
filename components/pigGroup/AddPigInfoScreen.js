@@ -63,7 +63,11 @@ export default function AddPigInfoScreen({ route }) {
 };
 
 const handleConfirmBirthDate = (date) => {
-  setDateOfBirth(date);
+  if (date instanceof Date && !isNaN(date)) {
+    setDateOfBirth(date);
+  } else {
+    console.warn("Invalid date selected");
+  }
   setOpenDatePicker(false);
 };
 
@@ -500,24 +504,24 @@ const renderPig = ({ item }) => {
 
 
               <DateTimePickerModal
-            isVisible={openDatePicker}
-            mode="date"
-            date={dateOfBirth || new Date()} // Ensure date is never null
-            onConfirm={handleConfirmBirthDate} // Use the birth date handler
-            onCancel={() => setOpenDatePicker(false)}
-        />
+  isVisible={openDatePicker}
+  mode="date"
+  date={dateOfBirth || new Date()} // Ensure date is never null
+  onConfirm={handleConfirmBirthDate} // Use the birth date handler
+  onCancel={() => setOpenDatePicker(false)}
+/>
 
 
         
-                  <RNPickerSelect
-            onValueChange={(value) => setGender(value)} // Update the gender state
-            items={[
-              { label: 'Male', value: 'male' },
-              { label: 'Female', value: 'female' },
-            ]}
-            style={styles.picker} // Ensure you have styles defined for the picker
-            placeholder={{ label: 'Select Gender', value: null }} // Optional placeholder
-          />
+<RNPickerSelect
+  onValueChange={(value) => setGender(value)} // Update the gender state
+  items={[
+    { label: 'Male', value: 'male' },
+    { label: 'Female', value: 'female' },
+  ]}
+  style={styles.picker} // Ensure you have styles defined for the picker
+  placeholder={{ label: 'Select Gender', value: null }} // Optional placeholder
+/>
             <Text style={styles.titlename}>Race</Text>
             <TextInput
               style={styles.input}
@@ -557,15 +561,12 @@ const renderPig = ({ item }) => {
                     </Text>
                 </TouchableOpacity>
                 <DateTimePickerModal
-                    isVisible={openDeathDatePicker}
-                    mode="date"
-                    date={dateOfDeath || new Date()} // Ensure date is never null
-                    onConfirm={(date) => {
-                        setDateOfDeath(date);
-                        setOpenDeathDatePicker(false);
-                    }}
-                    onCancel={() => setOpenDeathDatePicker(false)}
-                />
+  isVisible={openDatePicker}
+  mode="date"
+  date={dateOfBirth || new Date()} // Ensure date is never null
+  onConfirm={handleConfirmBirthDate} // Use the birth date handler
+  onCancel={() => setOpenDatePicker(false)}
+/>
             </>
         )}
                     <View style={styles.modalsavecancel}>

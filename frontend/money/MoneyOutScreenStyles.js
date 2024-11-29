@@ -177,6 +177,68 @@ const MoneyOutScreenStyles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
   },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    elevation: 5, // Shadow effect for Android
+    shadowColor: '#000', // Shadow effect for iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  input: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 15,
+  },
+  dateText: {
+    fontSize: 16,
+    color: '#007BFF',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  saveButton: {
+    backgroundColor: '#28a745',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  cancelButton: {
+    backgroundColor: '#dc3545',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  input: {
+    height: 40,
+    borderColor: 'black', // Set border color to black
+    borderWidth: 1, // Set border width
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 15,
+  },
 });
 
 export default MoneyOutScreenStyles;
