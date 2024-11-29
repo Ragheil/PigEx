@@ -304,7 +304,7 @@ const filteredPigs = allPigs.filter(pig =>
         >
           <Text style={PigDetailsScreenStyles.buttonText}>
           {isAssignedToDifferentMother
-            ? `Already assigned to another mother: ${assignedMotherName}` // Using template literals
+            ? `Already assigned to ${assignedMotherName}` // Using template literals
             : selectedPiglets.includes(item.id)
             ? "Deselect Piglet"
             : "Select as Piglet"}

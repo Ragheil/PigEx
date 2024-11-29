@@ -263,10 +263,6 @@ const MoneyOutScreen = ({ route }) => {
     day: 'numeric',
   });
   
-  const formatBalance = (balance) => {
-    return balance.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  }
-
   console.log(formattedDate);
   const renderMoneyRecord = ({ item }) => (
     <View style={{
@@ -279,7 +275,7 @@ const MoneyOutScreen = ({ route }) => {
         <Text style={MoneyOutScreenStyles.flatListItemText}>{item.date}</Text>
         {item.records.map(record => (
           <View style={MoneyOutScreenStyles.record} key={record.id}>
-            <Text style={[MoneyOutScreenStyles.recordText && MoneyOutScreenStyles.recordTextAmount]}>Amount PHP: {formatBalance(record.amount)}</Text>
+            <Text style={[MoneyOutScreenStyles.recordText && MoneyOutScreenStyles.recordTextAmount]}>Amount PHP: {record.amount.toFixed(2)}</Text>
             <Text style={MoneyOutScreenStyles.recordText}>Category: {record.category}</Text>
             <Text style={MoneyOutScreenStyles.recordText}>Remarks: {record.remarks}</Text>
             <Text style={MoneyOutScreenStyles.recordText}>Time: {record.time || 'Not set'}</Text> 
@@ -327,8 +323,8 @@ const MoneyOutScreen = ({ route }) => {
   return (
     <View style={MoneyOutScreenStyles.container}>
       <SafeAreaView style={MoneyOutScreenStyles.headercontainer}>
-      <Text style={MoneyOutScreenStyles.balanceNumber}>₱ {formatBalance(totalBalance)}</Text>
-      <Text style={MoneyOutScreenStyles.balance}>Total Balance:</Text>
+      <Text style={MoneyOutScreenStyles.balanceNumber}>₱ {totalBalance.toFixed(2)}</Text>
+      <Text style={MoneyOutScreenStyles.balance}>Total Balance</Text>
       </SafeAreaView>
       
       <Text style={MoneyOutScreenStyles.title}>Money Out Records</Text>
@@ -353,81 +349,83 @@ const MoneyOutScreen = ({ route }) => {
         </TouchableOpacity>
       </View>
 
-      <Modal visible={isModalVisible} animationType="slide">
-        <View style={MoneyOutScreenStyles.modalContent}>
-          <Text style={MoneyOutScreenStyles.modalTitle}>{isEditing ? 'Edit Money Out' : 'Add Money Out'}</Text>
-          <TextInput
-            style={MoneyOutScreenStyles.input}
-            placeholder="Amount"
-            value={amount}
-            onChangeText={setAmount}
-            keyboardType="numeric"
-          />
-          <TextInput
-            style={MoneyOutScreenStyles.input}
-            placeholder="Remarks"
-            value={remarks}
-            onChangeText={setRemarks}
-          />
-          <RNPickerSelect
-            onValueChange={handleCategoryChange}
-            items={[
-              { label: 'Expense', value: 'expense' },
-              { label: 'Bill', value: 'bill' },
-              { label: 'Other', value: 'other' },
-            ]}
-            placeholder={{ label: 'Select a category', value: null }} // Optional placeholder
-            style={{
-              inputIOS: MoneyOutScreenStyles.input,
-              inputAndroid: MoneyOutScreenStyles.input,
-            }}
-          />
-          {showOtherCategoryInput && (
+      <Modal visible={isModalVisible} animationType="slide" transparent={true}>
+        <View style={MoneyOutScreenStyles.modalOverlay}>
+          <View style={MoneyOutScreenStyles.modalContent}>
+            <Text style={MoneyOutScreenStyles.modalTitle}>{isEditing ? 'Edit Money Out' : 'Add Money Out'}</Text>
             <TextInput
               style={MoneyOutScreenStyles.input}
-              placeholder="Specify Category"
-              value={otherCategory}
-              onChangeText={setOtherCategory}
+              placeholder="Amount"
+              value={amount}
+              onChangeText={setAmount}
+              keyboardType="numeric"
             />
-          )}
-          <Pressable onPress={() => setShowDatePicker(true)}>
-            <Text style={MoneyOutScreenStyles.dateText}>{date.toDateString()}</Text>
-          </Pressable>
-          {showDatePicker && (
-            <DateTimePicker
-              value={date}
-              mode="date"
-              display="default"
-              onChange={(event, selectedDate) => {
-                setShowDatePicker(false);
-                if (selectedDate) {
-                  setDate(selectedDate);
-                }
+            <TextInput
+              MoneyOutScreenStyles={MoneyOutScreenStyles.input}
+              placeholder="Remarks"
+              value={remarks}
+              onChangeText={setRemarks}
+            />
+            <RNPickerSelect
+              onValueChange={handleCategoryChange}
+              items={[
+                { label: 'Expense', value: 'expense' },
+                { label: 'Bill', value: 'bill' },
+                { label: 'Other', value: 'other' },
+              ]}
+              placeholder={{ label: 'Select a category', value: null }}
+              MoneyOutScreenStyles={{
+                inputIOS: MoneyOutScreenStyles.input,
+                inputAndroid: MoneyOutScreenStyles.input,
               }}
             />
-          )}
-          <Pressable onPress={() => setShowTimePicker(true)}>
-            <Text style={MoneyOutScreenStyles.dateText}>{time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
-          </Pressable>
-          {showTimePicker && (
-            <DateTimePicker
-              value={time}
-              mode="time"
-              display="default"
-              onChange={(event, selectedTime) => {
-                setShowTimePicker(false);
-                if (selectedTime) {
-                  setTime(selectedTime);
-                }
-              }}
-            />
-          )}
-          <Pressable style={MoneyOutScreenStyles.saveButton} onPress={isEditing ? handleEditMoney : handleAddMoney}>
-            <Text style={MoneyOutScreenStyles.buttonText}>{isEditing ? 'Update' : 'Save'}</Text>
-          </Pressable>
-          <Pressable style={MoneyOutScreenStyles.cancelButton} onPress={resetModalState}>
-            <Text style={MoneyOutScreenStyles.buttonText}>Cancel</Text>
-          </Pressable>
+            {showOtherCategoryInput && (
+              <TextInput
+                style={MoneyOutScreenStyles.input}
+                placeholder="Specify Category"
+                value={otherCategory}
+                onChangeText={setOtherCategory}
+              />
+            )}
+            <Pressable onPress={() => setShowDatePicker(true)}>
+              <Text style={MoneyOutScreenStyles.dateText}>{date.toDateString()}</Text>
+            </Pressable>
+            {showDatePicker && (
+              <DateTimePicker
+                value={date}
+                mode="date"
+                display="default"
+                onChange={(event, selectedDate) => {
+                  setShowDatePicker(false);
+                  if (selectedDate) {
+                    setDate(selectedDate);
+                  }
+                }}
+              />
+            )}
+            <Pressable onPress={() => setShowTimePicker(true)}>
+              <Text style={MoneyOutScreenStyles.dateText}>{time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+            </Pressable>
+            {showTimePicker && (
+              <DateTimePicker
+                value={time}
+                mode="time"
+                display="default"
+                onChange={(event, selectedTime) => {
+                  setShowTimePicker(false);
+                  if (selectedTime) {
+                    setTime(selectedTime);
+                  }
+                }}
+              />
+            )}
+            <Pressable style={MoneyOutScreenStyles.saveButton} onPress={isEditing ? handleEditMoney : handleAddMoney}>
+              <Text style={MoneyOutScreenStyles.buttonText}>{isEditing ? 'Update' : 'Save'}</Text>
+            </Pressable>
+            <Pressable style={MoneyOutScreenStyles.cancelButton} onPress={resetModalState}>
+              <Text style={MoneyOutScreenStyles.buttonText}>Cancel</Text>
+            </Pressable>
+          </View>
         </View>
       </Modal>
     </View>
