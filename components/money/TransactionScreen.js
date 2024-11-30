@@ -221,6 +221,7 @@ const handleShowAllTransactions = () => {
   const handleShowMoneyIn = () => {
     setShowMoneyIn(true);
     setShowMoneyOut(false);
+    setShowAllTransactions(false);
     const filtered = transactions.filter(transaction => transaction.type === 'in');
     setFilteredTransactions(filtered);
     calculateTotals(filtered);
@@ -228,6 +229,7 @@ const handleShowAllTransactions = () => {
   const handleShowMoneyOut = () => {
     setShowMoneyIn(false);
     setShowMoneyOut(true);
+    setShowAllTransactions(false);
     const filtered = transactions.filter(transaction => transaction.type === 'out');
     setFilteredTransactions(filtered);
     calculateTotals(filtered);
@@ -600,6 +602,7 @@ useEffect(() => {
 
   return (
     <SafeAreaView style={TransactionScreenStyles.container}>
+
       <View style={TransactionScreenStyles.header}>
         <View style={TransactionScreenStyles.navheader}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={TransactionScreenStyles.navibackButton}>
@@ -611,10 +614,13 @@ useEffect(() => {
             <View style={TransactionScreenStyles.infoHeader}>
               <View
                   style={{
+                    flex: .75,
+                    // width: '100%',
                     flexDirection: 'column',
                     // padding: 10,
-                    width: width * 0.9, // 90% of screen width
+                    // width: width * 0.9, // 90% of screen width
                     alignSelf: 'center', // Center the container
+                    // backgroundColor: 'lightblue'
                   }}
                 >
                   <TouchableOpacity onPress={() => openDatePicker('start')}>
@@ -659,20 +665,34 @@ useEffect(() => {
               </View>
 
               <View style={{ 
+                flex: 1,
                 flexDirection: 'row', 
                 justifyContent: 'center', 
                 columnGap: 5,
+                height: '100%',
+                width: '100%'
               }}>
                 {/* <Button color='#566F48' title="Week" onPress={() => setSelectedPeriod('week')} />
                 <Button color='#566F48' title="Month" onPress={() => setSelectedPeriod('month')} />
                 <Button color='#566F48' title="Year" onPress={() => setSelectedPeriod('year')} /> */}
                 {periods.map(period => (
-                    <Button 
-                        key={period.value} 
-                        color={navbuttonColor} 
-                        title={period.title}
-                        onPress={() => setSelectedPeriod(period.value)} 
-                    />
+                    // <Button 
+                    //     key={period.value} 
+                    //     color={navbuttonColor} 
+                    //     title={period.title}
+                    //     onPress={() => setSelectedPeriod(period.value)} 
+                    // />
+                    <TouchableOpacity
+                      key={period.value}
+                      style={[
+                          TransactionScreenStyles.datebutton, // Add your button styles here
+                          { backgroundColor: navbuttonColor }, // Set the background color
+                      ]}
+                      onPress={() => setSelectedPeriod(period.value)}
+                      activeOpacity={0.7} // Optional: Adjust opacity for touch feedback
+                    >
+                      <Text style={TransactionScreenStyles.buttonText}>{period.title}</Text>
+                    </TouchableOpacity>
                 ))}
               </View>
 
@@ -713,133 +733,137 @@ useEffect(() => {
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={TransactionScreenStyles.scrollView}>
-  <View style={TransactionScreenStyles.buttonContainer}>
-    <TouchableOpacity
-      style={[
-        TransactionScreenStyles.button,
-        showMoneyIn ? TransactionScreenStyles.activeButtonIn : TransactionScreenStyles.inactiveButton,
-      ]}
-      onPress={handleShowMoneyIn}
-    >
-      <Text style={TransactionScreenStyles.buttonText}>Show Money In</Text>
-    </TouchableOpacity>
+      <View style={TransactionScreenStyles.buttonContainer}>
+    
+      <TouchableOpacity
+        style={[
+          TransactionScreenStyles.button,
+          showMoneyIn ? TransactionScreenStyles.activeButtonIn : TransactionScreenStyles.inactiveButton,
+        ]}
+        onPress={handleShowMoneyIn}
+        activeOpacity={1}
+          >
+          <Text style={TransactionScreenStyles.buttonText}>Show Money In</Text>
+        </TouchableOpacity>
 
-    <TouchableOpacity
-      style={[
-        TransactionScreenStyles.button,
-        showAllTransactions ? TransactionScreenStyles.activeButtonAll : TransactionScreenStyles.inactiveButton,
-      ]}
-      onPress={handleShowAllTransactions}
-    >
-      <Text style={TransactionScreenStyles.showAllButtonText}>Show All Records</Text>
-    </TouchableOpacity>
-
-    <TouchableOpacity
-      style={[
-        TransactionScreenStyles.button,
-        showMoneyOut ? TransactionScreenStyles.activeButtonOut : TransactionScreenStyles.inactiveButton,
-      ]}
-      onPress={handleShowMoneyOut}
-    >
-      <Text style={TransactionScreenStyles.buttonText}>Show Money Out</Text>
-    </TouchableOpacity>
-  </View>
-</ScrollView>
-
-        <ScrollView
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
+        <TouchableOpacity
+          style={[
+            TransactionScreenStyles.button,
+            showAllTransactions ? TransactionScreenStyles.activeButtonAll : TransactionScreenStyles.inactiveButton,
+          ]}
+          onPress={handleShowAllTransactions}
+          activeOpacity={1}
         >
-        <View style={TransactionScreenStyles.body}>
-            <View style={{ alignItems: 'center', marginBottom: 20,}}>
-              <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: 'bold', marginBottom: 10,}}>
-                  {selectedPeriod === 'week'
-                      ? 'Weekly Transactions'
-                      : selectedPeriod === 'month'
-                      ? `${new Date().toLocaleString('default', { month: 'long' })} Transactions`
-                      : 'Yearly Transactions'}
-              </Text>
-                <ScrollView 
-                horizontal
-                showsHorizontalScrollIndicator={false} 
-                style={{borderRadius: 12,}}>
-                  <View style={{ alignItems: 'center', marginVertical: 0, paddingVertical: 0}}>
-                    <BarChart
-                      data={{
-                        labels: barChartData.labels, // Always show labels
-                        datasets: 
-                          showMoneyIn && showMoneyOut
-                            ? barChartData.datasets // Show both datasets
-                            : showMoneyIn
-                            ? [barChartData.datasets[0]] // Show only Money In
-                            : [barChartData.datasets[1]], // Show only Money Out
-                      }}
-                      width={Dimensions.get('window').width}
-                      height={222}
-                      chartConfig={{
-                        backgroundColor: '#ffffff',
-                        backgroundGradientFrom: '#ffffff',
-                        backgroundGradientTo: '#ffffff',
-                        decimalPlaces: 2,
-                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                        style: {
-                          borderRadius: 16,
-                        },
-                        propsForDots: {
-                          r: '6',
-                          strokeWidth: '2',
-                          stroke: '#ffa726',
-                        },
-                      }}
-                      style={{
-                        marginVertical: 8,
+          <Text style={TransactionScreenStyles.showAllButtonText}>Show All Records</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            TransactionScreenStyles.button,
+            showMoneyOut ? TransactionScreenStyles.activeButtonOut : TransactionScreenStyles.inactiveButton,
+          ]}
+          onPress={handleShowMoneyOut}
+          activeOpacity={1}
+        >
+          <Text style={TransactionScreenStyles.buttonText}>Show Money Out</Text>
+        </TouchableOpacity>
+      </View>
+      </ScrollView>
+
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+      <View style={TransactionScreenStyles.body}>
+          <View style={{ alignItems: 'center', marginBottom: 20,}}>
+            <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: 'bold', marginBottom: 10,}}>
+                {selectedPeriod === 'week'
+                    ? 'Weekly Transactions'
+                    : selectedPeriod === 'month'
+                    ? `${new Date().toLocaleString('default', { month: 'long' })} Transactions`
+                    : 'Yearly Transactions'}
+            </Text>
+              <ScrollView 
+              horizontal
+              showsHorizontalScrollIndicator={false} 
+              style={{borderRadius: 12,}}>
+                <View style={{ alignItems: 'center', marginVertical: 0, paddingVertical: 0}}>
+                  <BarChart
+                    data={{
+                      labels: barChartData.labels, // Always show labels
+                      datasets: 
+                        showMoneyIn && showMoneyOut
+                          ? barChartData.datasets // Show both datasets
+                          : showMoneyIn
+                          ? [barChartData.datasets[0]] // Show only Money In
+                          : [barChartData.datasets[1]], // Show only Money Out
+                    }}
+                    width={Dimensions.get('window').width}
+                    height={222}
+                    chartConfig={{
+                      backgroundColor: '#ffffff',
+                      backgroundGradientFrom: '#ffffff',
+                      backgroundGradientTo: '#ffffff',
+                      decimalPlaces: 2,
+                      color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                      labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                      style: {
                         borderRadius: 16,
-                      }}
-                      barPercentage={0.4}
-                      groupBarsPercentage={0.8}
-                      withInnerLines={false}
-                    />
-                  </View>
-                </ScrollView>
-            </View>
-
-
-            {filteredTransactions.length > 0 ? (
-              Object.entries(groupedTransactions).map(([date, transactions]) => (
-                <View key={date} style={TransactionScreenStyles.transactionContainer}>
-                  <Text style={TransactionScreenStyles.dateText}>{date}</Text>
-                  {transactions.map((transaction) => (
-                    <View key={transaction.id} style={TransactionScreenStyles.transactionItem}>
-                      <Text style={TransactionScreenStyles.transactionLabel}>
-                        <Text style={TransactionScreenStyles.categoryText}>{transaction.category || 'N/A'}</Text>:
-                        <Text style={transaction.type === 'in' ? TransactionScreenStyles.income : TransactionScreenStyles.expense}>
-                          ₱{parseFloat(transaction.amount).toFixed(2)}
-                        </Text>
-                      </Text>
-                      <Text style={TransactionScreenStyles.remarksText}>
-                        Remarks: {transaction.remarks || 'No remarks provided.'}
-                      </Text>
-                    </View>
-                  ))}
+                      },
+                      propsForDots: {
+                        r: '6',
+                        strokeWidth: '2',
+                        stroke: '#ffa726',
+                      },
+                    }}
+                    style={{
+                      marginVertical: 8,
+                      borderRadius: 16,
+                    }}
+                    barPercentage={0.4}
+                    groupBarsPercentage={0.8}
+                    withInnerLines={false}
+                  />
                 </View>
-              ))
-            ) : (
-              <Text style={TransactionScreenStyles.noTransactionsText}>No transactions found.</Text>
-            )}
+              </ScrollView>
           </View>
-          </ScrollView>
-          
-          <View style={{paddingHorizontal: 20, marginBottom: 15}}>
-            <TouchableOpacity style={TransactionScreenStyles.pdfButton} onPress={generatePDF}>
-              <Text style={TransactionScreenStyles.pdfButtonText}>Generate PDF</Text>
-            </TouchableOpacity>
-             {/* Modal for adding or editing pig group 
-            <TouchableOpacity style={TransactionScreenStyles.backButton} onPress={handleGoBack}>
-              <Text style={TransactionScreenStyles.backButtonText}>Back</Text>
-            </TouchableOpacity>*/}
-          </View>
+
+
+          {filteredTransactions.length > 0 ? (
+            Object.entries(groupedTransactions).map(([date, transactions]) => (
+              <View key={date} style={TransactionScreenStyles.transactionContainer}>
+                <Text style={TransactionScreenStyles.dateText}>{date}</Text>
+                {transactions.map((transaction) => (
+                  <View key={transaction.id} style={TransactionScreenStyles.transactionItem}>
+                    <Text style={TransactionScreenStyles.transactionLabel}>
+                      <Text style={TransactionScreenStyles.categoryText}>{transaction.category || 'N/A'}</Text>:
+                      <Text style={transaction.type === 'in' ? TransactionScreenStyles.income : TransactionScreenStyles.expense}>
+                        ₱{parseFloat(transaction.amount).toFixed(2)}
+                      </Text>
+                    </Text>
+                    <Text style={TransactionScreenStyles.remarksText}>
+                      Remarks: {transaction.remarks || 'No remarks provided.'}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            ))
+          ) : (
+            <Text style={TransactionScreenStyles.noTransactionsText}>No transactions found.</Text>
+          )}
+        </View>
+      </ScrollView>
+        
+      <View style={{paddingHorizontal: 20, marginBottom: 15}}>
+        <TouchableOpacity style={TransactionScreenStyles.pdfButton} onPress={generatePDF}>
+          <Text style={TransactionScreenStyles.pdfButtonText}>Generate PDF</Text>
+        </TouchableOpacity>
+          {/* Modal for adding or editing pig group 
+        <TouchableOpacity style={TransactionScreenStyles.backButton} onPress={handleGoBack}>
+          <Text style={TransactionScreenStyles.backButtonText}>Back</Text>
+        </TouchableOpacity>*/}
+      </View>
 
       
     </SafeAreaView>
