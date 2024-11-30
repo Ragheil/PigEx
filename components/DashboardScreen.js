@@ -492,7 +492,7 @@ useEffect(() => {
             backgroundColor: '#F5F5F5',
             borderRadius: 13,
             alignItems: 'center',
-            zIndex: 5, // High zIndex for priority
+            zIndex: 2, // High zIndex for priority
             elevation: 5, // High elevation for priority
           }}
           onPress={() => navigation.navigate('PigGroups', {
@@ -608,7 +608,7 @@ useEffect(() => {
   selectedBranch={selectedBranch} 
   toggleSidebar={toggleSidebar} 
   userId={userId} 
-  style={{ zIndex: 0 }} // Set zIndex for FooterScreen to be behind
+  style={styles.footer} // Apply the footer style here
 />
 
         <TouchableWithoutFeedback onPress={closeSidebar}>
@@ -647,7 +647,7 @@ useEffect(() => {
             <Text style={styles.addBranchText}>Add Branch</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.seeAllButton, { zIndex: 10, elevation: 5 }]}
+            style={[styles.seeAllButton, { zIndex: 1, elevation: 5 }]}
             onPress={handleSeeAllBranches} // New button functionality
           >
             <Text style={styles.seeAllText}>Manage Farm Branches</Text>
@@ -655,7 +655,7 @@ useEffect(() => {
 
 
           <TouchableOpacity
-            style={[styles.seeAllButton, { zIndex: 10, elevation: 5 }]}
+            style={[styles.seeAllButton, { zIndex: 1, elevation: 5 }]}
             onPress={() => {
               console.log("Navigating to PregnancyRecords with:", { selectedBranch, user });
               navigation.navigate('PregnancyRecords', { selectedBranch, user });

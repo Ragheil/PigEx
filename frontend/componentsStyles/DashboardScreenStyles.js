@@ -154,6 +154,10 @@ addButtonText: {
     right: 0,
     backgroundColor: '#000',
     zIndex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent overlay
+    elevation: 4, // Elevation for Android shadow
+
+
   },
   sidebar: {
     position: 'absolute',
@@ -163,8 +167,20 @@ addButtonText: {
     width: '80%',
     backgroundColor: '#fff',
     padding: 20,
-    zIndex: 10,
+    zIndex: 2,
     elevation: 1,
+    width: Dimensions.get('window').width * 0.8, // Width of the sidebar
+    height: '100%', // Full height
+
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    // Add any additional styles for the footer
+    zIndex: 0, // Lower zIndex to ensure it stays behind the sidebar
+    elevation: 0, // No elevation for the footer
   },
   sidebarHeader: {
     fontSize: 24,
@@ -288,6 +304,7 @@ addButtonText: {
     borderRadius: 13,
     position: 'static',
     bottom: 5,
+    marginBottom: 10,
   },
   logoutButtonText: {
     color: '#FFFFFF',
@@ -301,7 +318,8 @@ addButtonText: {
     width: '100%', // Full width of the container
     marginTop: '100%', //
     position: 'static',
-    bottom: 5,
+    bottom: 50,
+    
 },
   picker: {
     height: 50,
