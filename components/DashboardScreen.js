@@ -493,7 +493,7 @@ useEffect(() => {
             borderRadius: 13,
             alignItems: 'center',
             zIndex: 2, // High zIndex for priority
-            elevation: 5, // High elevation for priority
+            elevation: 1, // High elevation for priority
           }}
           onPress={() => navigation.navigate('PigGroups', {
             selectedBranch: selectedBranch === `Main Farm: ${farmName}` ? 'Main Farm' : selectedBranch,
@@ -551,7 +551,7 @@ useEffect(() => {
             // alignSelf: 'center',
             width: '100%', // Ensure FlatList takes full width
             zIndex: 1, // High zIndex for priority
-            elevation: 2, // High elevation for priority
+            elevation: 5, // High elevation for priority
               height: 0, //
           }}
         />
