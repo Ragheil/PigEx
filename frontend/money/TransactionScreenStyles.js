@@ -193,7 +193,7 @@ const TransactionScreenStyles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row', // Keep buttons in a horizontal layout
-    padding: 10,
+    padding: 6,
   },
   button: {
     paddingVertical: 15, // Increase vertical padding for height

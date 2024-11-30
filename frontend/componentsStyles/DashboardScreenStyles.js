@@ -149,14 +149,12 @@ addButtonText: {
   sidebarOverlay: {
     position: 'absolute',
     top: 0,
-    bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#000',
-    zIndex: 1,
+    bottom: 0,
     backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent overlay
+    zIndex: 1, // Lower zIndex to be behind the sidebar
     elevation: 4, // Elevation for Android shadow
-
 
   },
   sidebar: {
@@ -168,7 +166,7 @@ addButtonText: {
     backgroundColor: '#fff',
     padding: 20,
     zIndex: 2,
-    elevation: 1,
+    elevation: 15,
     width: Dimensions.get('window').width * 0.8, // Width of the sidebar
     height: '100%', // Full height
 
