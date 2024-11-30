@@ -183,6 +183,24 @@ const TransactionScreenStyles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 4,
   },
+  scrollView: {
+    height: 150, // Set your desired height for the ScrollView
+   // marginBottom: 10, // Optional: Add margin if needed
+  },
+  scrollViewContent: {
+    flexDirection: 'row', // Keep buttons in a horizontal layout
+    alignItems: 'center', // Center items vertically within the ScrollView
+  },
+  buttonContainer: {
+    flexDirection: 'row', // Keep buttons in a horizontal layout
+    padding: 10,
+  },
+  button: {
+    paddingVertical: 15, // Increase vertical padding for height
+    paddingHorizontal: 20,
+    borderRadius: 100,
+    marginHorizontal: 5, // Space between buttons
+  },
   activeButtonIn: {
     backgroundColor: 'green',
   },
@@ -194,6 +212,14 @@ const TransactionScreenStyles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  activeButtonAll: {
+    backgroundColor: '#FF5900FF',
+  },
+  showAllButtonText: {
+    color: '#FFFFFFFF',
     fontWeight: 'bold',
     fontSize: 16,
   },

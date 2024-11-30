@@ -712,38 +712,40 @@ useEffect(() => {
           </View>
       </View>
 
-      <View style={TransactionScreenStyles.buttonContainer}>
-  <TouchableOpacity
-    style={[
-      TransactionScreenStyles.button,
-      showMoneyIn ? TransactionScreenStyles.activeButtonIn : TransactionScreenStyles.inactiveButton,
-    ]}
-    onPress={handleShowMoneyIn}
-  >
-    <Text style={TransactionScreenStyles.buttonText}>Show Money In</Text>
-  </TouchableOpacity>
-  <TouchableOpacity
-    style={[
-      TransactionScreenStyles.button,
-      showAllTransactions ? TransactionScreenStyles.activeButtonAll : TransactionScreenStyles.inactiveButton,
-    ]}
-    onPress={handleShowAllTransactions}
-  >
-    <Text style={TransactionScreenStyles.buttonText}>Show All Records</Text>
-  </TouchableOpacity>
-  <TouchableOpacity
-    style={[
-      TransactionScreenStyles.button,
-      showMoneyOut ? TransactionScreenStyles.activeButtonOut : TransactionScreenStyles.inactiveButton,
-    ]}
-    onPress={handleShowMoneyOut}
-  >
-    <Text style={TransactionScreenStyles.buttonText}>Show Money Out</Text>
-  </TouchableOpacity>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={TransactionScreenStyles.scrollView}>
+  <View style={TransactionScreenStyles.buttonContainer}>
+    <TouchableOpacity
+      style={[
+        TransactionScreenStyles.button,
+        showMoneyIn ? TransactionScreenStyles.activeButtonIn : TransactionScreenStyles.inactiveButton,
+      ]}
+      onPress={handleShowMoneyIn}
+    >
+      <Text style={TransactionScreenStyles.buttonText}>Show Money In</Text>
+    </TouchableOpacity>
 
+    <TouchableOpacity
+      style={[
+        TransactionScreenStyles.button,
+        showAllTransactions ? TransactionScreenStyles.activeButtonAll : TransactionScreenStyles.inactiveButton,
+      ]}
+      onPress={handleShowAllTransactions}
+    >
+      <Text style={TransactionScreenStyles.showAllButtonText}>Show All Records</Text>
+    </TouchableOpacity>
 
-</View>
-        
+    <TouchableOpacity
+      style={[
+        TransactionScreenStyles.button,
+        showMoneyOut ? TransactionScreenStyles.activeButtonOut : TransactionScreenStyles.inactiveButton,
+      ]}
+      onPress={handleShowMoneyOut}
+    >
+      <Text style={TransactionScreenStyles.buttonText}>Show Money Out</Text>
+    </TouchableOpacity>
+  </View>
+</ScrollView>
+
         <ScrollView
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
