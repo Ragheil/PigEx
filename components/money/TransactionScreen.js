@@ -23,6 +23,8 @@ const TransactionScreen = ({ route }) => {
     lastName: '',
     farmName: '',
   });
+  const [showAllTransactions, setShowAllTransactions] = useState(false);
+
   const [refreshing, setRefreshing] = useState(false);
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpense, setTotalExpense] = useState(0);
@@ -92,6 +94,16 @@ const [error, setError] = useState(null);
 }, [selectedBranch, userId]);
 
   
+const handleShowAllTransactions = () => {
+  setShowAllTransactions(true);
+  setShowMoneyIn(false);
+  setShowMoneyOut(false);
+  setFilteredTransactions(transactions); // Show all transactions
+  calculateTotals(transactions); // Calculate totals for all transactions
+};
+
+
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -252,53 +264,51 @@ const [error, setError] = useState(null);
   }, {});
 
   const generatePDF = async () => {
-    // Helper function to format the date into words
     const formatDateToWords = (date) => {
         const d = new Date(date);
         if (isNaN(d.getTime())) {
-            return 'Invalid Date'; // Handle invalid dates
+            return 'Invalid Date';
         }
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        return d.toLocaleDateString(undefined, options); // Format the date to words
+        return d.toLocaleDateString(undefined, options);
     };
- const transactionsToInclude = showMoneyIn ? 
-    transactions.filter(transaction => transaction.type === 'in') :
-    transactions.filter(transaction => transaction.type === 'out');
 
+    // Determine which transactions to include in the PDF
+    const transactionsToInclude = showAllTransactions
+        ? transactions // Include all transactions
+        : showMoneyIn
+        ? transactions.filter(transaction => transaction.type === 'in')
+        : transactions.filter(transaction => transaction.type === 'out');
 
     const groupedTransactions = transactionsToInclude
-    .sort((a, b) => new Date(b.date) - new Date(a.date)) // Sort by date descending
-    .reduce((acc, transaction) => {
-      const dateKey = formatDate(transaction.date);
-      if (!acc[dateKey]) {
-        acc[dateKey] = [];
-      }
-      acc[dateKey].push(transaction);
-      return acc;
-    }, {});
-    // Helper function to format the time
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .reduce((acc, transaction) => {
+            const dateKey = formatDate(transaction.date);
+            if (!acc[dateKey]) {
+                acc[dateKey] = [];
+            }
+            acc[dateKey].push(transaction);
+            return acc;
+        }, {});
+
     const formatTime = (date) => {
         const d = new Date(date);
         if (isNaN(d.getTime())) {
-            return 'Invalid Time'; // Handle invalid dates
+            return 'Invalid Time';
         }
         const options = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
-        return d.toLocaleTimeString(undefined, options); // Format the time
+        return d.toLocaleTimeString(undefined, options);
     };
 
-    // Get the current date and time
     const currentDate = new Date();
     const formattedCurrentDate = formatDateToWords(currentDate);
     const formattedCurrentTime = formatTime(currentDate);
 
-    // Start building the HTML content for the PDF
-    //  <h3 style="text-align: left;">As of: ${formattedCurrentDate} at ${formattedCurrentTime}</h3>
     let htmlContent = `
         <div style="margin: 20px;">
             <h1 style="text-align: center;">PigEx Transaction Report</h1>
-           
             <h3 style="text-align: left;">Time Requested: ${formattedCurrentTime}</h3>
-            <h2 style="text-align: left;">Branch Name: ${farmBranchName}</h2> <!-- Use farmBranchName here -->
+            <h2 style="text-align: left;">Branch Name: ${farmBranchName}</h2>
             <h3 style="text-align: left;">Total Balance: ₱${totalBalance.toFixed(2)}</h3>
             <h3 style="text-align: left;">Total Income: ₱${totalIncome.toFixed(2)}</h3>
             <h3 style="text-align: left;">Total Expense: ₱${totalExpense.toFixed(2)}</h3>
@@ -315,26 +325,23 @@ const [error, setError] = useState(null);
                 <tbody>
     `;
 
-    // Loop through grouped transactions by date
     for (const date in groupedTransactions) {
-        const firstTransactionDate = groupedTransactions[date][0].date; // Get the date of the first transaction
-        const formattedHeaderDate = formatDateToWords(firstTransactionDate); // Format that date for display
+        const firstTransactionDate = groupedTransactions[date][0].date;
+        const formattedHeaderDate = formatDateToWords(firstTransactionDate);
 
-        // Add the date header for each group of transactions
         htmlContent += `
             <tr>
-                <td colspan="6" style="font-weight: bold; text-align: center; padding: 10px; background-color: #D7FBC0FF;">
+                <td colspan="5" style="font-weight: bold; text-align: center; padding: 10px; background-color: #D7FBC0FF;">
                     ${formattedHeaderDate}
                 </td>
             </tr>
         `;
 
-        // Loop through transactions for the current date
         for (const transaction of groupedTransactions[date]) {
             const transactionDate = new Date(transaction.date);
             if (isNaN(transactionDate.getTime())) {
                 console.error(`Invalid date found: ${transaction.date}`);
-                continue; // Skip this transaction if the date is invalid
+                continue;
             }
 
             const formattedTime = transaction.time; // Assuming time is stored in the transaction object
@@ -345,9 +352,9 @@ const [error, setError] = useState(null);
             htmlContent += `
                 <tr>
                     <td style="padding: 8px; text-align: center;">${formattedTime}</td>
-                    <td style="padding : 8px; text-align: center;">${transaction.category || 'N/A'}</td>
+                    <td style=" padding: 8px; text-align: center;">${transaction.category || 'N/A'}</td>
                     <td style="padding: 8px; text-align: center;">${transaction.type}</td>
-                    <td style="color : ${amountColor}; text-align: center; padding: 8px;">${formattedAmount}</td>
+                    <td style="color: ${amountColor}; text-align: center; padding: 8px;">${formattedAmount}</td>
                     <td style="padding: 8px; text-align: center;">${transaction.remarks || 'No remarks provided.'}</td>
                 </tr>
             `;
@@ -706,26 +713,36 @@ useEffect(() => {
       </View>
 
       <View style={TransactionScreenStyles.buttonContainer}>
-        <TouchableOpacity
-          style={[
-            TransactionScreenStyles.button,
-            showMoneyIn ? TransactionScreenStyles.activeButtonIn : TransactionScreenStyles.inactiveButton,
-          ]}
-          onPress={handleShowMoneyIn}
-        >
-          <Text style={TransactionScreenStyles.buttonText}>Show Money In</Text>
-        </TouchableOpacity>
+  <TouchableOpacity
+    style={[
+      TransactionScreenStyles.button,
+      showMoneyIn ? TransactionScreenStyles.activeButtonIn : TransactionScreenStyles.inactiveButton,
+    ]}
+    onPress={handleShowMoneyIn}
+  >
+    <Text style={TransactionScreenStyles.buttonText}>Show Money In</Text>
+  </TouchableOpacity>
+  <TouchableOpacity
+    style={[
+      TransactionScreenStyles.button,
+      showAllTransactions ? TransactionScreenStyles.activeButtonAll : TransactionScreenStyles.inactiveButton,
+    ]}
+    onPress={handleShowAllTransactions}
+  >
+    <Text style={TransactionScreenStyles.buttonText}>Show All Records</Text>
+  </TouchableOpacity>
+  <TouchableOpacity
+    style={[
+      TransactionScreenStyles.button,
+      showMoneyOut ? TransactionScreenStyles.activeButtonOut : TransactionScreenStyles.inactiveButton,
+    ]}
+    onPress={handleShowMoneyOut}
+  >
+    <Text style={TransactionScreenStyles.buttonText}>Show Money Out</Text>
+  </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[
-            TransactionScreenStyles.button,
-            showMoneyOut ? TransactionScreenStyles.activeButtonOut : TransactionScreenStyles.inactiveButton,
-          ]}
-          onPress={handleShowMoneyOut}
-        >
-          <Text style={TransactionScreenStyles.buttonText}>Show Money Out</Text>
-        </TouchableOpacity>
-      </View>
+
+</View>
         
         <ScrollView
           refreshControl={
