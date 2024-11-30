@@ -7,9 +7,9 @@
     "icon": "./assets/images/LOGO.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/images/LOGO.png",
+      "image": "./assets/images/pigIcon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#E1EADEFF"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -20,7 +20,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/LOGO.png",
+        "foregroundImage": "./assets/images/pigIcon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.pigex.app",
