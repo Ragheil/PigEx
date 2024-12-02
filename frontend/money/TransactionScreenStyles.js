@@ -42,7 +42,7 @@ const TransactionScreenStyles = StyleSheet.create({
     flex: 2.25,
     fontSize: 28,
     fontWeight: 'bold',
-    alignSelf: 'center'
+    alignSelf: 'center',
     // marginBottom: 10,
     // marginTop: 5,
     // backgroundColor: 'lightblue',
@@ -51,13 +51,14 @@ const TransactionScreenStyles = StyleSheet.create({
     flexDirection: 'row',
     // flexWrap: 'wrap',
     backgroundColor: '#F5F5F5',
+    padding: 10,
     // paddingHorizontal: 10,
-    paddingVertical: 10,
+    // paddingVertical: 10,
     borderTopStartRadius: 12,
     borderTopEndRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 18,
+    gap: 10,
     borderBottomColor: 'lightgray',
     borderBottomWidth: 2,
   },
@@ -166,40 +167,54 @@ const TransactionScreenStyles = StyleSheet.create({
     fontWeight: 'bold',
   },
   buttonContainer: {
+    // flex:1,
+    // width: '100%',
     flexDirection: 'row',
-    justifyContent: 'center',
-    marginVertical: 10,
+    // justifyContent: 'center',
+    // marginVertical: 10,
+    // paddingHorizontal: 10,
+    // backgroundColor: 'lightblue',
+    gap: 15,
+    paddingRight: 20,
+    // marginHorizontal: 10
+    // height: 100,
   },
   button: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 25,
-    marginHorizontal: 10,
+    paddingHorizontal: 15,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
+
     elevation: 3, // Shadow effect for Android
     shadowColor: '#000', // Shadow effect for iOS
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 4,
   },
+  datebutton: {
+    flex: 1,
+    justifyContent: 'center',
+    borderRadius: 10,
+    // textAlign: 'center'
+    // height: '100%',
+  },
+  // showbutton: {
+  //   paddingVertical: 15, // Increase vertical padding for height
+  //   paddingHorizontal: 20,
+  //   borderRadius: 100,
+  //   marginHorizontal: 5, // Space between buttons
+  // },
   scrollView: {
+    // flex: 1,
+    // width: '100%',
+    padding: 10,
+    // backgroundColor: 'red',
     height: 150, // Set your desired height for the ScrollView
    // marginBottom: 10, // Optional: Add margin if needed
   },
   scrollViewContent: {
     flexDirection: 'row', // Keep buttons in a horizontal layout
     alignItems: 'center', // Center items vertically within the ScrollView
-  },
-  buttonContainer: {
-    flexDirection: 'row', // Keep buttons in a horizontal layout
-    padding: 6,
-  },
-  button: {
-    paddingVertical: 15, // Increase vertical padding for height
-    paddingHorizontal: 20,
-    borderRadius: 100,
-    marginHorizontal: 5, // Space between buttons
   },
   activeButtonIn: {
     backgroundColor: 'green',
@@ -214,6 +229,7 @@ const TransactionScreenStyles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
+    textAlign: 'center'
   },
   activeButtonAll: {
     backgroundColor: '#FF5900FF',

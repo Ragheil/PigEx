@@ -572,31 +572,36 @@ useEffect(() => {
             <ScrollView
               showsHorizontalScrollIndicator={false}
               horizontal
-              style={{borderRadius: 15}}
+              style={{
+                borderRadius: 15,
+                width: '100%'
+              }}
             >
-                <BarChart
-                  data={barChartData}
-                  width={Math.max(screenWidth, barChartData.labels.length * 30)} // Adjust width for horizontal scrolling
-                  height={200}
-                  chartConfig={{
-                    backgroundColor: '#ffffff',
-                    backgroundGradientFrom: '#ffffff',
-                    backgroundGradientTo: '#ffffff',
-                    decimalPlaces: 2,
-                    barPercentage: 1, // Reduce bar width to accommodate two bars per label
-                    groupBarSpacing: 5, // Add spacing between Money In and Money Out bars
-                    color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
-                    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                    style: {
-                      // Add any additional styles if needed
-                    },
-                  }}
-                  style={{
-                    // marginVertical: 8,
+              <BarChart
+                data={barChartData}
+                width={Math.max(screenWidth, barChartData.labels.length * 30)} // Adjust width for horizontal scrolling
+                height={200}
+                chartConfig={{
+                  backgroundColor: '#ffffff',
+                  backgroundGradientFrom: '#ffffff',
+                  backgroundGradientTo: '#ffffff',
+                  decimalPlaces: 2,
+                  barPercentage: 1, // Reduce bar width to accommodate two bars per label
+                  groupBarSpacing: 5, // Add spacing between Money In and Money Out bars
+                  color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
+                  labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                  style: {
                     // Add any additional styles if needed
-                  }}
-                  verticalLabelRotation={30} // Optional: Rotate labels for better readability
-                />
+                    elevation: 3,
+                  },
+                }}
+                style={{
+                  width: '100%'
+                  // marginVertical: 8,
+                  // Add any additional styles if needed
+                }}
+                verticalLabelRotation={30} // Optional: Rotate labels for better readability
+              />
             </ScrollView>
           </View>
         </View>
