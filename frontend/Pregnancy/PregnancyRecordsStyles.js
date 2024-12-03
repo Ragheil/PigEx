@@ -275,7 +275,10 @@ addBreedingDateButton: {
     marginBottom: 20,
   },
 
-
+  backImage: {
+    width: 30, // Adjust size as needed
+    height: 20, // Adjust size as needed
+  },
 
 
 

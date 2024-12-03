@@ -90,6 +90,10 @@ const PigDetailsScreenStyles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500', // Medium weight for button text
   },
+  backImage: {
+    width: 30, // Adjust size as needed
+    height: 20, // Adjust size as needed
+  },
 });
 
 export default PigDetailsScreenStyles;

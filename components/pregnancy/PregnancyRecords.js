@@ -10,6 +10,8 @@ import DateTimePicker from '@react-native-community/datetimepicker'; // Import D
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import backImage from '../../assets/images/buttons/backbutton.png'; // Adjust the path as needed
+
 const PregnancyRecords = ({ route, navigation }) => {
   const { selectedBranch, user } = route.params || {};
 
@@ -332,6 +334,9 @@ const PregnancyRecords = ({ route, navigation }) => {
           <View style={PregnancyRecordsStyles.piglogobox}>
             <Image source={require('../../assets/images/LOGO.png')} style={PregnancyRecordsStyles.piglogo} />
           </View>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={PregnancyRecordsStyles.backButton}>
+            <Image source={backImage} style={PregnancyRecordsStyles.backImage} />
+          </TouchableOpacity>
           <Text style={PregnancyRecordsStyles.header}>List of all Female Pigs</Text>
       </SafeAreaView>
       <ScrollView style={PregnancyRecordsStyles.scrollContainer}>

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, FlatList, Button, TouchableOpacity, Alert, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, FlatList, Button, TouchableOpacity, Alert, TextInput, Image } from 'react-native';
 import { firestore } from '../../firebase/config2';
 import { collection, getDocs, doc, setDoc, writeBatch, getDoc, deleteDoc, query, where } from 'firebase/firestore';
 import PigDetailsScreenStyles from '../../frontend/Pregnancy/PigDetailsScreenStyles';
+import backImage from '../../assets/images/buttons/backbutton.png'; // Adjust the path as needed
 
-const PigDetailsScreen = ({ route }) => {
+const PigDetailsScreen = ({ route, navigation }) => {
   const { selectedBranch, user, pigId, pigName } = route.params;
   const [allPigs, setAllPigs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -258,8 +259,13 @@ const filteredPigs = allPigs.filter(pig =>
 
   return (
     <View style={PigDetailsScreenStyles.container}>
+
       <Text style={PigDetailsScreenStyles.title}>Pig Details</Text>
+      
       <Text style={PigDetailsScreenStyles.pigInfo}>Mothers Name: {pigName}</Text>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={PigDetailsScreenStyles.backButton}>
+            <Image source={backImage} style={PigDetailsScreenStyles.backImage} />
+          </TouchableOpacity>
        {/*  <Text style={PigDetailsScreenStyles.pigInfo}>Pig ID: {pigId}</Text> */}
 
       <View style={PigDetailsScreenStyles.headerContainer}>
