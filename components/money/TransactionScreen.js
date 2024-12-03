@@ -99,6 +99,8 @@ const handleShowAllTransactions = () => {
   setShowMoneyIn(false);
   setShowMoneyOut(false);
   setFilteredTransactions(transactions); // Show all transactions
+  setStartDate(new Date()); // Reset start date
+  setEndDate(new Date()); // Reset end date
   calculateTotals(transactions); // Calculate totals for all transactions
 };
 
@@ -166,6 +168,8 @@ const handleShowAllTransactions = () => {
 
   const onRefresh = async () => {
     setRefreshing(true);
+    setStartDate(new Date()); // Reset start date
+    setEndDate(new Date()); // Reset end date
     await fetchTransactionRecords();
     setRefreshing(false);
   };
@@ -197,25 +201,25 @@ const handleShowAllTransactions = () => {
   };
 
   const filterTransactionsByDate = () => {
-    // Reset time to the start of the day (00:00:00) for accurate comparisons
-    const start = new Date(startDate.setHours(0, 0, 0, 0));
-    const end = new Date(endDate.setHours(23, 59, 59, 999)); // Set to the end of the day
+    // Only filter if start and end dates are set
+    if (startDate && endDate) {
+      const start = new Date(startDate.setHours(0, 0, 0, 0));
+      const end = new Date(endDate.setHours(23, 59, 59, 999));
   
-    const filtered = transactions
-      .filter((transaction) => {
-        // Check if the transaction.date is a Firebase Timestamp, and convert it
-        const transactionDate = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
-        
-        return transactionDate >= start && transactionDate <= end;
-      })
-      .sort((a, b) => {
-        const dateA = a.date.toDate ? a.date.toDate() : new Date(a.date);
-        const dateB = b.date.toDate ? b.date.toDate() : new Date(b.date);
-        return dateB - dateA; // Newest first
-      });
+      const filtered = transactions
+        .filter((transaction) => {
+          const transactionDate = transaction.date.toDate ? transaction.date.toDate() : new Date(transaction.date);
+          return transactionDate >= start && transactionDate <= end;
+        })
+        .sort((a, b) => {
+          const dateA = a.date.toDate ? a.date.toDate() : new Date(a.date);
+          const dateB = b.date.toDate ? b.date.toDate() : new Date(b.date);
+          return dateB - dateA; // Newest first
+        });
   
-    setFilteredTransactions(filtered);
-    calculateTotals(filtered);
+      setFilteredTransactions(filtered);
+      calculateTotals(filtered);
+    }
   };
   
   const handleShowMoneyIn = () => {
@@ -275,12 +279,8 @@ const handleShowAllTransactions = () => {
         return d.toLocaleDateString(undefined, options);
     };
 
-    // Determine which transactions to include in the PDF
-    const transactionsToInclude = showAllTransactions
-        ? transactions // Include all transactions
-        : showMoneyIn
-        ? transactions.filter(transaction => transaction.type === 'in')
-        : transactions.filter(transaction => transaction.type === 'out');
+    // Use filteredTransactions directly as they are already the transactions displayed on the screen
+    const transactionsToInclude = filteredTransactions;
 
     const groupedTransactions = transactionsToInclude
         .sort((a, b) => new Date(b.date) - new Date(a.date))
@@ -354,7 +354,7 @@ const handleShowAllTransactions = () => {
             htmlContent += `
                 <tr>
                     <td style="padding: 8px; text-align: center;">${formattedTime}</td>
-                    <td style=" padding: 8px; text-align: center;">${transaction.category || 'N/A'}</td>
+                    <td style="padding: 8px; text-align: center;">${transaction.category || 'N/A'}</td>
                     <td style="padding: 8px; text-align: center;">${transaction.type}</td>
                     <td style="color: ${amountColor}; text-align: center; padding: 8px;">${formattedAmount}</td>
                     <td style="padding: 8px; text-align: center;">${transaction.remarks || 'No remarks provided.'}</td>
@@ -743,7 +743,7 @@ useEffect(() => {
         onPress={handleShowMoneyIn}
         activeOpacity={1}
           >
-          <Text style={TransactionScreenStyles.buttonText}>Show Money In</Text>
+          <Text style={TransactionScreenStyles.buttonText}>Show all Money In</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -765,7 +765,7 @@ useEffect(() => {
           onPress={handleShowMoneyOut}
           activeOpacity={1}
         >
-          <Text style={TransactionScreenStyles.buttonText}>Show Money Out</Text>
+          <Text style={TransactionScreenStyles.buttonText}>Show all Money Out</Text>
         </TouchableOpacity>
       </View>
       </ScrollView>
