@@ -77,7 +77,7 @@ const fetchPigGroups = () => {
   const pigGroupsCollection = collection(firestore, pigGroupsCollectionPath);
   const q = query(pigGroupsCollection, orderBy('name'));
 
-  return onSnapshot(q, (snapshot) => {
+  return onSnapshot(q, async (snapshot) => {
     const pigGroupPromises = snapshot.docs.map(async (doc) => {
       const pigGroupId = doc.id;
 
@@ -85,10 +85,13 @@ const fetchPigGroups = () => {
       const pigsCollection = collection(firestore, pigsCollectionPath);
       const pigsSnapshot = await getDocs(pigsCollection); // Get pigs snapshot directly
 
+      // Count only the pigs that are alive (vitality !== "deceased")
+      const alivePigsCount = pigsSnapshot.docs.filter(pigDoc => pigDoc.data().vitality !== 'deceased').length;
+
       return {
         id: pigGroupId,
         ...doc.data(),
-        pigCount: pigsSnapshot.size, // Use pigsSnapshot size for pig count
+        pigCount: alivePigsCount, // Use the count of alive pigs
       };
     });
 
