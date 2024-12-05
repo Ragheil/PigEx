@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, FlatList, Modal, TouchableOpacity, Image, Switch, SafeAreaView  } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, FlatList, Modal, TouchableOpacity, Image, Switch, SafeAreaView, ScrollView   } from 'react-native';
 import { addDoc, collection, query, onSnapshot, doc, getDoc, updateDoc, deleteDoc, getDocs, where, writeBatch } from 'firebase/firestore';
 import { auth, firestore } from '../../firebase/config2';
 import { Picker } from '@react-native-picker/picker';
@@ -51,7 +51,7 @@ export default function AddPigInfoScreen({ route }) {
   const [motherName, setMotherName] = useState("");
   const [selectedPiglets, setSelectedPiglets] = useState([]); // Add this line to your state initialization
   const [showDatePicker, setShowDatePicker] = useState(false); // State to control DatePicker visibility
-
+  const [filterType, setFilterType] = useState('all'); // 'alive', 'deceased', 'all'
   
   const handleConfirm = (date) => {
     if (date instanceof Date && !isNaN(date)) {
@@ -134,6 +134,19 @@ const handleConfirmDeathDate = (date) => {
   useEffect(() => {
     fetchFemalePigs();
   }, [selectedBranch, user.uid]);
+
+
+
+
+  const filterPigs = (pigs) => {
+    if (filterType === 'alive') {
+      return pigs.filter(pig => pig.vitality === 'alive');
+    } else if (filterType === 'deceased') {
+      return pigs.filter(pig => pig.vitality === 'deceased');
+    }
+    return pigs; // Return all pigs if 'all' is selected
+  };
+
 
 
   useFocusEffect(
@@ -448,13 +461,30 @@ const renderPig = ({ item }) => {
         <Text style={[styles.groupname, styles.groupNamevalue]}>{pigGroupName}</Text>
       </View>
 
-      <FlatList
-      data={filteredPigs}
-      renderItem={renderPig}
-      keyExtractor={(item) => item.id}
-      style={styles.list}
-      contentContainerStyle={styles.listContent}
-      />
+  <View style={styles.filterButtonContainer}>
+    <TouchableOpacity style={styles.buttonAlive} onPress={() => setFilterType('alive')}>
+      <Text style={styles.buttonText}>Show {'\n'}Alive</Text>
+    </TouchableOpacity>
+    <TouchableOpacity style={styles.buttonDeceased} onPress={() => setFilterType('deceased')}>
+      <Text style={styles.buttonText}>Show{'\n'} Deceased</Text>
+    </TouchableOpacity>
+    <TouchableOpacity style={styles.buttonAll} onPress={() => setFilterType('all')}>
+      <Text style={styles.buttonText}>Show{'\n'} All</Text>
+    </TouchableOpacity>
+    <TouchableOpacity style={styles.buttonSold} onPress={() => setFilterType('all')}>
+      <Text style={styles.buttonText}>Sold{'\n'} Pig</Text>
+    </TouchableOpacity>
+  </View>
+
+{/* FlatList for Pig Items */}
+<FlatList
+  data={filterPigs(filteredPigs)}
+  renderItem={renderPig}
+  keyExtractor={(item) => item.id}
+  contentContainerStyle={styles.listContent}
+/>
+
+
       
       {/* Add/Edit Pig Modal */}
       <Modal

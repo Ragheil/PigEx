@@ -4,6 +4,7 @@ export default StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#a7c796',
+        
       },
       mainheader: {
         backgroundColor: '#869f77',
@@ -43,6 +44,39 @@ export default StyleSheet.create({
         marginTop: 1,
     
       },
+      filterButtonContainer: {
+        flexDirection: 'row',
+        paddingVertical: 5, // Reduced vertical padding
+        paddingHorizontal: 5,
+        marginBottom: 5, // Reduced margin
+      },
+      buttonAlive: {
+        backgroundColor: '#008000',
+        borderRadius: 5, // Reduced border radius
+        padding: 10, // Reduced padding
+        marginHorizontal: 2, // Reduced margin
+      },
+      buttonDeceased: {
+        backgroundColor: '#FF0000',
+        borderRadius: 5, // Reduced border radius
+        padding: 10, // Reduced padding
+        marginHorizontal: 2, // Reduced margin
+      },
+      buttonAll: {
+        backgroundColor: '#FFA500',
+        borderRadius: 5, // Reduced border radius
+        padding: 10, // Reduced padding
+        marginHorizontal: 2, // Reduced margin
+      },
+      buttonSold: {
+        backgroundColor: '#000000FF',
+        borderRadius: 5, // Reduced border radius
+        padding: 10, // Reduced padding
+        marginHorizontal: 2, // Reduced margin
+      },
+      
+      
+      
       groupnameContainer: {
         backgroundColor: '#869f77',
         marginHorizontal: 20,
@@ -134,11 +168,13 @@ export default StyleSheet.create({
       },
       buttonText: {
         textAlign: 'center',
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: '600',
         color: '#F5F5F5',
         textTransform: 'uppercase',
+        lineHeight: 20, // Adjust the line height to your preference
       },
+      
       datePickerButton: {
         backgroundColor: '#B1C68CFF', // Green background
         padding: 10,
