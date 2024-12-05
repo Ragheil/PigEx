@@ -551,21 +551,22 @@ const renderPig = ({ item }) => {
                     value={causeOfDeath}
                     onChangeText={setCauseOfDeath}
                 />
-                <TouchableOpacity onPress={handleOpenDeathDatePicker}>
-                    <Text>
-                        {dateOfDeath ? dateOfDeath.toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        }) : 'Select Date of Death'}
-                    </Text>
-                </TouchableOpacity>
-                <DateTimePickerModal
-  isVisible={openDatePicker}
+              <TouchableOpacity onPress={handleOpenDeathDatePicker}>
+  <Text>
+    {dateOfDeath ? dateOfDeath.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    }) : 'Select Date of Death'}
+  </Text>
+</TouchableOpacity>
+
+<DateTimePickerModal
+  isVisible={openDeathDatePicker}
   mode="date"
-  date={dateOfBirth || new Date()} // Ensure date is never null
-  onConfirm={handleConfirmBirthDate} // Use the birth date handler
-  onCancel={() => setOpenDatePicker(false)}
+  date={dateOfDeath || new Date()} 
+  onConfirm={handleConfirmDeathDate} 
+  onCancel={() => setOpenDeathDatePicker(false)}
 />
             </>
         )}
@@ -601,7 +602,7 @@ const renderPig = ({ item }) => {
                 <Text style={styles.detailText}>Tag Number: {selectedPig.tagNumber}</Text>
                 <Text style={styles.detailText}>Gender: {selectedPig.gender}</Text>
                 <Text style={styles.detailText}>Race: {selectedPig.race}</Text>
-                <Text style={styles.detailText}>Date of Birth: {selectedPig.dateOfBirth.toDate().toDateString()}</Text>
+                <Text style={styles.detailText}>Date of Birth: {selectedPig.dateOfBirth ? selectedPig.dateOfBirth.toDate().toDateString() : 'N/A'}</Text>                
                 <Text style={styles.detailText}>Vitality: {selectedPig.vitality}</Text>
                  {/* View Medical Records Button 
                 <Text style={styles.detailText}>
