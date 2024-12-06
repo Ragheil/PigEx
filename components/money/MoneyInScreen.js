@@ -152,14 +152,6 @@ const MoneyInScreen = ({ route }) => {
   
   
 
-
-
-
-
-
-
-  
-
   const handleEditMoney = async () => {
     if (!amount) {
       Alert.alert('Error', 'Please enter an amount.');
