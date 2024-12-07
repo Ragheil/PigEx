@@ -319,7 +319,7 @@ const handleShowAllTransactions = () => {
                     <tr>
                         <th style="width: 25%; text-align: center;">Time</th>
                         <th style="width: 30%; text-align: center;">Description</th>
-                        <th style="width: 25%; text-align: center;">Type of Money</th>
+                        <th style="width: 25%; text-align: center;">Cash Flow</th>
                         <th style="width: 23%; text-align: center;">Amount</th>
                         <th style="width: 25%; text-align: center;">Remarks</th>
                     </tr>
