@@ -325,4 +325,9 @@ export default StyleSheet.create({
         paddingTop: 45
 
       },
+      isold: {
+        width: 24, // Adjust size as needed
+        height: 24, // Adjust size as needed
+        marginRight: 3, // Space between icons
+      },
 });

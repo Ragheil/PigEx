@@ -7,6 +7,7 @@ import DatePicker from 'react-native-date-picker';
 import deleteIcon from '../../assets/images/buttons/deleteIcon.png';
 import editIcon from '../../assets/images/buttons/editIcon.png';
 import viewIcon from '../../assets/images/buttons/viewIcon.png';
+import soldIcon from '../../assets/images/buttons/soldIcon.png'; // Adjust the path as needed
 import styles from '../../frontend/pigGroupStyles/AddPigInfoScreenStyles';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation
@@ -406,12 +407,23 @@ const renderPig = ({ item }) => {
         </Text>
       </View>
       <View style={styles.actionsContainer}>
+        {/* Sold Icon */}
+        <TouchableOpacity onPress={() => {
+          // Handle sold action here
+          Alert.alert('Sold', `You marked ${item.pigName} as sold.`);
+        }}>
+          <Image source={soldIcon} style={styles.isold} />
+        </TouchableOpacity>
+        
+        {/* View Icon */}
         <TouchableOpacity onPress={() => {
           setSelectedPig(item);
           setDetailModalVisible(true);
         }}>
           <Image source={viewIcon} style={styles.iview} />
         </TouchableOpacity>
+        
+        {/* Edit Icon */}
         <TouchableOpacity onPress={() => {
           // Allow editing even if the pig is deceased
           setPigName(item.pigName);
@@ -425,6 +437,8 @@ const renderPig = ({ item }) => {
         }}>
           <Image source={editIcon} style={styles.iedit} />
         </TouchableOpacity>
+        
+        {/* Delete Icon */}
         <TouchableOpacity onPress={() => handleDeletePig(item.id)}>
           <Image source={deleteIcon} style={styles.idelete} />
         </TouchableOpacity>
