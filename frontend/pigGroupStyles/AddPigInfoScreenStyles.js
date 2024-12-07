@@ -326,8 +326,8 @@ export default StyleSheet.create({
 
       },
       isold: {
-        width: 24, // Adjust size as needed
-        height: 24, // Adjust size as needed
-        marginRight: 3, // Space between icons
+        width: 24, 
+        height: 24, 
+        marginRight: 3, 
       },
 });
