@@ -61,16 +61,19 @@ export default function AddPigInfoScreen({ route }) {
   const [openTimePicker, setOpenTimePicker] = useState(false);
   const userId = user ? user.uid : null; // Ensure userId is defined
   const [moneyRecords, setMoneyRecords] = useState([]); // State to hold money records
-
-  const handleConfirm = (date) => {
-    if (date instanceof Date && !isNaN(date)) {
-        setDateOfBirth(date);
-    } else {
-        console.warn("Invalid date selected");
-    }
-    setOpenDatePicker(false);
+  const [soldDate, setSoldDate] = useState(new Date());
+  const [soldTime, setSoldTime] = useState(new Date());
+  const [openSoldDatePicker, setOpenSoldDatePicker] = useState(false);
+  const [openSoldTimePicker, setOpenSoldTimePicker] = useState(false);
+  
+  const handleConfirmSoldDate = (date) => {
+    setSoldDate(date);
+    setOpenSoldDatePicker(false);
 };
-
+const handleConfirmSoldTime = (time) => {
+  setSoldTime(time);
+  setOpenSoldTimePicker(false);
+};
 const handleConfirmBirthDate = (date) => {
   if (date instanceof Date && !isNaN(date)) {
     setDateOfBirth(date);
@@ -380,8 +383,8 @@ const handleAddMoney = async (pigId) => {
     const moneyRecord = {
       amount: parseFloat(amount),
       category: category,
-      date: date,
-      time: time,
+      date: date.toISOString().split('T')[0], // Store date in YYYY-MM-DD format
+      time: time.toISOString().split('T')[1].substring(0, 5), // Store time in HH:MM format
       remarks: remarks,
       createdAt: new Date(),
       pigId: pigId, // Add the selected pig ID to the money record
@@ -610,66 +613,82 @@ const renderPig = ({ item }) => {
 />
 
 <Modal
-  visible={soldModalVisible}
-  transparent={true}
-  animationType="slide"
-  onRequestClose={() => setSoldModalVisible(false)}
+    visible={soldModalVisible}
+    transparent={true}
+    animationType="slide"
+    onRequestClose={() => setSoldModalVisible(false)}
 >
-  <View style={styles.modalContainer}>
-  <Text style={styles.modalTitle}>Sold Pig Details</Text>
-  <View style={styles.modalContent}>
-      <Text style={styles.titlename}>Amount</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Amount"
-        value={amount}
-        onChangeText={setAmount}
-        keyboardType="numeric"
-      />
-      
-      <Text style={styles.titlename}>Category</Text>
-      <TextInput
-        style={styles.input}
-        value={category}
-        editable={false} // Make it read-only since it's default
-      />
-      
-      <Text style={styles.titlename}>Date</Text>
-      <TouchableOpacity onPress={() => setOpenDatePicker(true)}>
-        <Text style={styles.datePickerText}>
-          {date.toLocaleDateString('en-US')}
-        </Text>
-      </TouchableOpacity>
+    <View style={styles.modalContainer}>
+        <Text style={styles.modalTitle}>Sold Pig Details</Text>
+        <View style={styles.modalContent}>
+            <Text style={styles.titlename}>Amount</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="Enter Amount"
+                value={amount}
+                onChangeText={setAmount}
+                keyboardType="numeric"
+            />
+            
+            <Text style={styles.titlename}>Category</Text>
+            <TextInput
+                style={styles.input}
+                value={category}
+                editable={false} // Make it read-only since it's default
+            />
+            
+            <Text style={styles.titlename}>Date</Text>
+            <TouchableOpacity onPress={() => setOpenSoldDatePicker(true)}>
+                <Text style={styles.datePickerText}>
+                    {soldDate.toLocaleDateString('en-US')}
+                </Text>
+            </TouchableOpacity>
 
-      <Text style={styles.titlename}>Time</Text>
-      <TouchableOpacity onPress={() => setOpenTimePicker(true)}>
-        <Text style={styles.datePickerText}>
-          {time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-        </Text>
-      </TouchableOpacity>
+            <DateTimePickerModal
+                isVisible={openSoldDatePicker}
+                mode="date"
+                date={soldDate}
+                onConfirm={handleConfirmSoldDate}
+                onCancel={() => setOpenSoldDatePicker(false)}
+            />
 
-      <Text style={styles.titlename}>Remarks</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Remarks"
-        value={remarks}
-        onChangeText={setRemarks}
-      />
+            <Text style={styles.titlename}>Time</Text>
+            <TouchableOpacity onPress={() => setOpenSoldTimePicker(true)}>
+                <Text style={styles.datePickerText}>
+                    {soldTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                </Text>
+            </TouchableOpacity>
 
-      <View style={styles.modalsavecancel}>
-      <Button
-      title="Add Sold Pig"
-      onPress={() => handleAddMoney(selectedPig.id)} // Ensure selectedPig is an object with an id
-      color="#4CAF50"
-    />
-        <Button
-          title="Cancel"
-          onPress={() => setSoldModalVisible(false)}
-          color="#f44336"
-        />
-      </View>
+            <DateTimePickerModal
+                isVisible={openSoldTimePicker}
+                mode="time"
+                date={soldTime}
+                onConfirm={handleConfirmSoldTime}
+                onCancel={() => setOpenSoldTimePicker(false)}
+            />
+
+            <Text style={styles.titlename}>Remarks</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="Enter Remarks"
+                value={remarks}
+                onChangeText={setRemarks}
+            />
+
+            <View style={styles.modalsavecancel}>
+                <Button
+                    title="Add Sold Pig"
+                    onPress={() => handleAddMoney(selectedPig.id)} // Ensure selectedPig is an object with an id
+                    color="#4CAF50"
+                />
+                <Button
+                    title="Cancel"
+                    onPress={() => setSoldModalVisible(false)}
+                    color="#f44336"
+                />
+            </View>
+        </View>
     </View>
-  </View>
 </Modal>
       
       {/* Add/Edit Pig Modal */}
