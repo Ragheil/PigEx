@@ -560,8 +560,8 @@ const renderPig = ({ item }) => {
   onRequestClose={() => setSoldModalVisible(false)}
 >
   <View style={styles.modalContainer}>
-    <Text style={styles.modalTitle}>Sold this Pig "{selectedPig.pigName}"?</Text>
-    <View style={styles.modalContent}>
+  <Text style={styles.modalTitle}>Sold Pig Details</Text>
+  <View style={styles.modalContent}>
       <Text style={styles.titlename}>Amount</Text>
       <TextInput
         style={styles.input}
