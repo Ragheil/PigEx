@@ -18,7 +18,7 @@ import RNPickerSelect from 'react-native-picker-select';
 
 export default function AddPigInfoScreen({ route }) {
   const navigation = useNavigation(); // Get the navigation object
-  const { pigGroupId, selectedBranch } = route.params; // Add selectedBranch param
+  const { pigGroupId, selectedBranch, farmName  } = route.params; // Add selectedBranch param
   const [pigName, setPigName] = useState('');
   const [tagNumber, setTagNumber] = useState('');
   const [gender, setGender] = useState('male');
@@ -53,7 +53,15 @@ export default function AddPigInfoScreen({ route }) {
   const [selectedPiglets, setSelectedPiglets] = useState([]); // Add this line to your state initialization
   const [showDatePicker, setShowDatePicker] = useState(false); // State to control DatePicker visibility
   const [filterType, setFilterType] = useState('all'); // 'alive', 'deceased', 'all'
-  
+  const [soldModalVisible, setSoldModalVisible] = useState(false);
+  const [amount, setAmount] = useState('');
+  const [category, setCategory] = useState('sales'); // Default category
+  const [time, setTime] = useState(new Date());
+  const [remarks, setRemarks] = useState('');
+  const [openTimePicker, setOpenTimePicker] = useState(false);
+  const userId = user ? user.uid : null; // Ensure userId is defined
+  const [moneyRecords, setMoneyRecords] = useState([]); // State to hold money records
+
   const handleConfirm = (date) => {
     if (date instanceof Date && !isNaN(date)) {
         setDateOfBirth(date);
@@ -347,7 +355,55 @@ const updateMotherRecordsInAllFarmBranches = async (db, userId, pigId, newPigNam
   }
 };
 
+useEffect(() => {
+  console.log('User  ID:', userId);
+  console.log('Route Params:', route.params);
+}, [userId, route.params]);
 
+const handleAddMoney = async () => {
+  // Check if amount is entered
+  if (!amount) {
+    Alert.alert('Error', 'Please enter an amount.');
+    return;
+  }
+
+  // Construct Firestore path based on selectedBranch value
+  const path = selectedBranch === 'Main Farm'
+    ? `users/${userId}/farmBranches/Main Farm/moneyInRecords`
+    : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyInRecords`;
+
+  // Log the constructed Firestore path for debugging
+  console.log('Firestore Path:', path);
+
+  try {
+    // Reference to the Firestore collection
+    const moneyInRecordsRef = collection(firestore, path);
+
+    // Create a money record object
+    const moneyRecord = {
+      amount: parseFloat(amount), // Ensure amount is a number
+      category: category,
+      date: date, // You might want to format this if needed
+      time: time, // You might want to format this if needed
+      remarks: remarks,
+      createdAt: new Date(), // Optional: add a timestamp
+    };
+
+    // Add the money record to the Firestore collection
+    await addDoc(moneyInRecordsRef, moneyRecord);
+
+    // Success alert and reset form fields
+    Alert.alert('Success', 'Money added successfully!');
+    setAmount('');
+    setRemarks('');
+    setCategory('salary'); // Reset category to default 'salary'
+    setSoldModalVisible(false); // Close the modal
+  } catch (error) {
+    // Log and show error details if adding to Firestore fails
+    console.error('Error adding money record:', error);
+    Alert.alert('Error', 'Failed to add money. Please try again.');
+  }
+};
 
 
    // Delete Pig
@@ -409,11 +465,10 @@ const renderPig = ({ item }) => {
       <View style={styles.actionsContainer}>
         {/* Sold Icon */}
         <TouchableOpacity onPress={() => {
-          // Handle sold action here
-          Alert.alert('Sold', `You marked ${item.pigName} as sold.`);
-        }}>
-          <Image source={soldIcon} style={styles.isold} />
-        </TouchableOpacity>
+        setSoldModalVisible(true);
+      }}>
+        <Image source={soldIcon} style={styles.isold} />
+      </TouchableOpacity>
         
         {/* View Icon */}
         <TouchableOpacity onPress={() => {
@@ -498,7 +553,68 @@ const renderPig = ({ item }) => {
   contentContainerStyle={styles.listContent}
 />
 
+<Modal
+  visible={soldModalVisible}
+  transparent={true}
+  animationType="slide"
+  onRequestClose={() => setSoldModalVisible(false)}
+>
+  <View style={styles.modalContainer}>
+    <Text style={styles.modalTitle}>Sold Pig Details</Text>
+    <View style={styles.modalContent}>
+      <Text style={styles.titlename}>Amount</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter Amount"
+        value={amount}
+        onChangeText={setAmount}
+        keyboardType="numeric"
+      />
+      
+      <Text style={styles.titlename}>Category</Text>
+      <TextInput
+        style={styles.input}
+        value={category}
+        editable={false} // Make it read-only since it's default
+      />
+      
+      <Text style={styles.titlename}>Date</Text>
+      <TouchableOpacity onPress={() => setOpenDatePicker(true)}>
+        <Text style={styles.datePickerText}>
+          {date.toLocaleDateString('en-US')}
+        </Text>
+      </TouchableOpacity>
 
+      <Text style={styles.titlename}>Time</Text>
+      <TouchableOpacity onPress={() => setOpenTimePicker(true)}>
+        <Text style={styles.datePickerText}>
+          {time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+        </Text>
+      </TouchableOpacity>
+
+      <Text style={styles.titlename}>Remarks</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter Remarks"
+        value={remarks}
+        onChangeText={setRemarks}
+      />
+
+      <View style={styles.modalsavecancel}>
+        <Button
+          title="Add Sold Pig"
+          onPress={handleAddMoney}
+          color="#4CAF50"
+        />
+        <Button
+          title="Cancel"
+          onPress={() => setSoldModalVisible(false)}
+          color="#f44336"
+        />
+      </View>
+    </View>
+  </View>
+</Modal>
       
       {/* Add/Edit Pig Modal */}
       <Modal
