@@ -496,98 +496,6 @@ useEffect(() => {
   generateBarChartData();
 }, [filteredTransactions, selectedPeriod, showMoneyIn, showMoneyOut]);
 
-   const getSortedTransactions = (transactions) => {
-    // Sort by latest date for monthly view
-    return transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
-  };
-
- const getMonthName = (date) => {
-    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    return monthNames[new Date(date).getMonth()];
-  };
-  
-  const renderMonthlyGraph = (transactions) => {
-    const currentMonth = getMonthName(new Date());
-    
-    // Sort transactions by day within the selected month
-    const sortedTransactions = getSortedTransactions(transactions);
-    
-    return (
-      <Bar
-        data={{
-          labels: sortedTransactions.map(t => t.date), // display each date in the selected month
-          datasets: [
-            {
-              label: 'Income',
-              backgroundColor: 'green',
-              data: sortedTransactions.map(t => t.type === 'in' ? t.amount : 0)
-            },
-            {
-              label: 'Expenses',
-              backgroundColor: 'red',
-              data: sortedTransactions.map(t => t.type === 'out' ? t.amount : 0)
-            }
-          ]
-        }}
-        options={{
-          title: {
-            display: true,
-            text: currentMonth // Display current month on top
-          },
-          scales: {
-            x: {
-              reverse: true // Reverse x-axis to make latest date on the left
-            }
-          }
-        }}
-      />
-    );
-  };
-  
-  const getSortedByYear = (transactions) => {
-    return transactions.sort((a, b) => new Date(a.date).getFullYear() - new Date(b.date).getFullYear());
-  };
-  
-  const renderYearlyGraph = (transactions) => {
-    const sortedByYear = getSortedByYear(transactions);
-    
-    return (
-      <Bar
-        data={{
-          labels: sortedByYear.map(t => new Date(t.date).getFullYear()), // display years
-          datasets: [
-            {
-              label: 'Income',
-              backgroundColor: 'green',
-              data: sortedByYear.map(t => t.type === 'in' ? t.amount : 0)
-            },
-            {
-              label: 'Expenses',
-              backgroundColor: 'red',
-              data: sortedByYear.map(t => t.type === 'out' ? t.amount : 0)
-            }
-          ]
-        }}
-        options={{
-          scales: {
-            x: {
-              reverse: false // Do not reverse for yearly view, keep ascending order
-            }
-          }
-        }}
-      />
-    );
-  };
-  const TransactionGraph = ({ transactions, viewType }) => {
-    if (viewType === 'monthly') {
-      return renderMonthlyGraph(transactions);
-    } else if (viewType === 'yearly') {
-      return renderYearlyGraph(transactions);
-    } else {
-      // Default or fallback if needed
-      return null;
-    }
-  };
   
   const formatBalance = (balance) => {
     return balance.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -837,10 +745,10 @@ useEffect(() => {
                 {transactions.map((transaction) => (
                   <View key={transaction.id} style={TransactionScreenStyles.transactionItem}>
                     <Text style={TransactionScreenStyles.transactionLabel}>
-                      <Text style={TransactionScreenStyles.categoryText}>{transaction.category || 'N/A'}</Text>:
-                      <Text style={transaction.type === 'in' ? TransactionScreenStyles.income : TransactionScreenStyles.expense}>
-                        ₱{parseFloat(transaction.amount).toFixed(2)}
-                      </Text>
+                      <Text style={TransactionScreenStyles.categoryText}> {transaction.category || 'N/A'}</Text>: 
+                      <Text style={transaction.type === 'in' ? TransactionScreenStyles.income : TransactionScreenStyles.expense}> 
+                      ₱ {new Intl.NumberFormat('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(parseFloat(transaction.amount))}
+                    </Text>
                     </Text>
                     <Text style={TransactionScreenStyles.remarksText}>
                       Remarks: {transaction.remarks || 'No remarks provided.'}

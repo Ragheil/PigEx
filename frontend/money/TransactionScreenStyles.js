@@ -123,6 +123,8 @@ const TransactionScreenStyles = StyleSheet.create({
   },
   categoryText: {
     fontWeight: 'bold',
+    padding: 10
+    
   },
   amountText: {
     fontSize: 16,
