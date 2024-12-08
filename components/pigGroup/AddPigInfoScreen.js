@@ -384,6 +384,7 @@ const handleAddMoney = async (pigId) => {
       time: time,
       remarks: remarks,
       createdAt: new Date(),
+      pigId: pigId, // Add the selected pig ID to the money record
     };
 
     // Add the money record to the Firestore collection
@@ -393,8 +394,6 @@ const handleAddMoney = async (pigId) => {
     const pigCollectionPath = selectedBranch === 'Main Farm'
       ? `users/${userId}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${pigId}`
       : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${pigId}`;
-
-    console.log('Updating pig at path:', pigCollectionPath); // Debugging line
 
     await updateDoc(doc(firestore, pigCollectionPath), {
       sold: true, // Mark the pig as sold
@@ -464,7 +463,7 @@ const handleAddMoney = async (pigId) => {
       // Now, remove the corresponding money record
       const moneyInRecordsPath = selectedBranch === 'Main Farm'
         ? `users/${userId}/farmBranches/Main Farm/moneyInRecords`
-        : `users /${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyInRecords`;
+        : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyInRecords`;
   
       const moneyInQuery = query(collection(firestore, moneyInRecordsPath), where('pigId', '==', pigId));
       const querySnapshot = await getDocs(moneyInQuery);
@@ -479,7 +478,6 @@ const handleAddMoney = async (pigId) => {
       Alert.alert('Error', 'There was an error canceling the sale. Please try again.');
     }
   };
-
 
 
   // Filter Pigs
