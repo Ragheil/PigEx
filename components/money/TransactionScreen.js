@@ -12,6 +12,8 @@ import { DateTimePickerAndroid } from '@react-native-community/datetimepicker'; 
 import { BarChart } from 'react-native-chart-kit'; // Import the bar chart component
 import { Dimensions } from 'react-native';
 import backImage from '../../assets/images/buttons/backbutton.png'; // Adjust the path as needed
+import { Picker } from '@react-native-picker/picker'; // Import the Picker
+
 const TransactionScreen = ({ route }) => {
   const { selectedBranch, userId } = route.params;
   const navigation = useNavigation();
@@ -32,6 +34,11 @@ const TransactionScreen = ({ route }) => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [filteredTransactions, setFilteredTransactions] = useState([]);
+
+  const [dynamicCategories, setDynamicCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+
+  
   const [barChartData, setBarChartData] = useState({
     labels: [],
     datasets: [
@@ -103,6 +110,35 @@ const handleShowAllTransactions = () => {
   setEndDate(new Date()); // Reset end date
   calculateTotals(transactions); // Calculate totals for all transactions
 };
+
+const filterTransactionsByCategory = (category) => {
+  if (category === 'all') {
+    setFilteredTransactions(transactions); // Show all transactions
+  } else {
+    const filtered = transactions.filter(transaction => transaction.category === category);
+    setFilteredTransactions(filtered);
+  }
+};
+
+const handleCategoryChange = (category) => {
+  setSelectedCategory(category); // Update the selected category state
+  filterTransactionsByCategory(category); // Call the function to filter transactions
+};
+
+const extractUniqueCategories = () => {
+  const uniqueCategories = new Set();
+  filteredTransactions.forEach(transaction => {
+    if (transaction.category) {
+      uniqueCategories.add(transaction.category);
+    }
+  });
+  setDynamicCategories(Array.from(uniqueCategories));
+};
+
+useEffect(() => {
+  extractUniqueCategories();
+}, [filteredTransactions]);
+
 
 
 
@@ -641,42 +677,55 @@ useEffect(() => {
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={TransactionScreenStyles.scrollView}>
-      <View style={TransactionScreenStyles.buttonContainer}>
+  <View style={TransactionScreenStyles.buttonContainer}>
     
-      <TouchableOpacity
-        style={[
-          TransactionScreenStyles.button,
-          showMoneyIn ? TransactionScreenStyles.activeButtonIn : TransactionScreenStyles.inactiveButton,
-        ]}
-        onPress={handleShowMoneyIn}
-        activeOpacity={1}
-          >
-          <Text style={TransactionScreenStyles.buttonText}>Show all Money In</Text>
-        </TouchableOpacity>
+    <TouchableOpacity
+      style={[
+        TransactionScreenStyles.button,
+        showMoneyIn ? TransactionScreenStyles.activeButtonIn : TransactionScreenStyles.inactiveButton,
+      ]}
+      onPress={handleShowMoneyIn}
+      activeOpacity={1}
+    >
+      <Text style={TransactionScreenStyles.buttonText}>Show all Money In</Text>
+    </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[
-            TransactionScreenStyles.button,
-            showAllTransactions ? TransactionScreenStyles.activeButtonAll : TransactionScreenStyles.inactiveButton,
-          ]}
-          onPress={handleShowAllTransactions}
-          activeOpacity={1}
-        >
-          <Text style={TransactionScreenStyles.showAllButtonText}>Show All Records</Text>
-        </TouchableOpacity>
+    <TouchableOpacity
+      style={[
+        TransactionScreenStyles.button,
+        showAllTransactions ? TransactionScreenStyles.activeButtonAll : TransactionScreenStyles.inactiveButton,
+      ]}
+      onPress={handleShowAllTransactions}
+      activeOpacity={1}
+    >
+      <Text style={TransactionScreenStyles.showAllButtonText}>Show All Records</Text>
+    </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[
-            TransactionScreenStyles.button,
-            showMoneyOut ? TransactionScreenStyles.activeButtonOut : TransactionScreenStyles.inactiveButton,
-          ]}
-          onPress={handleShowMoneyOut}
-          activeOpacity={1}
-        >
-          <Text style={TransactionScreenStyles.buttonText}>Show all Money Out</Text>
-        </TouchableOpacity>
-      </View>
-      </ScrollView>
+    <TouchableOpacity
+      style={[
+        TransactionScreenStyles.button,
+        showMoneyOut ? TransactionScreenStyles.activeButtonOut : TransactionScreenStyles.inactiveButton,
+      ]}
+      onPress={handleShowMoneyOut}
+      activeOpacity={1}
+    >
+      <Text style={TransactionScreenStyles.buttonText}>Show all Money Out</Text>
+    </TouchableOpacity>
+
+    <View style={{ width: 150 }}> 
+    <Picker
+              selectedValue={selectedCategory}
+              onValueChange={(itemValue) => handleCategoryChange(itemValue)}
+              style={{ height: 50, width: '100%' }}
+            >
+              <Picker.Item label="All" value="all" />
+              {dynamicCategories.map((category, index) => (
+                <Picker.Item key={index} label={category} value={category} />
+              ))}
+            </Picker>
+    </View>
+  </View>
+</ScrollView>
 
       <ScrollView
         refreshControl={
