@@ -150,14 +150,17 @@ const handleConfirmDeathDate = (date) => {
 
 
 
-  const filterPigs = (pigs) => {
-    if (filterType === 'alive') {
-      return pigs.filter(pig => pig.vitality === 'alive');
-    } else if (filterType === 'deceased') {
-      return pigs.filter(pig => pig.vitality === 'deceased');
-    }
-    return pigs; // Return all pigs if 'all' is selected
-  };
+// Function to filter pigs based on the selected filter type
+const filterPigs = (pigs) => {
+  if (filterType === 'alive') {
+    return pigs.filter(pig => pig.vitality === 'alive');
+  } else if (filterType === 'deceased') {
+    return pigs.filter(pig => pig.vitality === 'deceased');
+  } else if (filterType === 'sold') {
+    return pigs.filter(pig => pig.sold === true); // Filter for sold pigs
+  }
+  return pigs; // Return all pigs if 'all' is selected
+};
 
 
 
@@ -589,20 +592,20 @@ const renderPig = ({ item }) => {
         <Text style={[styles.groupname, styles.groupNamevalue]}>{pigGroupName}</Text>
       </View>
 
-  <View style={styles.filterButtonContainer}>
-    <TouchableOpacity style={styles.buttonAlive} onPress={() => setFilterType('alive')}>
-      <Text style={styles.buttonText}>Show {'\n'}Alive</Text>
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.buttonDeceased} onPress={() => setFilterType('deceased')}>
-      <Text style={styles.buttonText}>Show{'\n'} Deceased</Text>
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.buttonAll} onPress={() => setFilterType('all')}>
-      <Text style={styles.buttonText}>Show{'\n'} All</Text>
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.buttonSold} onPress={() => setFilterType('all')}>
-      <Text style={styles.buttonText}>Sold{'\n'} Pig</Text>
-    </TouchableOpacity>
-  </View>
+      <View style={styles.filterButtonContainer}>
+          <TouchableOpacity style={styles.buttonAlive} onPress={() => setFilterType('alive')}>
+            <Text style={styles.buttonText}>Show {'\n'}Alive</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonDeceased} onPress={() => setFilterType('deceased')}>
+            <Text style={styles.buttonText}>Show{'\n'} Deceased</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonAll} onPress={() => setFilterType('all')}>
+            <Text style={styles.buttonText}>Show{'\n'} All</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonSold} onPress={() => setFilterType('sold')}>
+            <Text style={styles.buttonText}>Sold{'\n'} Pig</Text>
+          </TouchableOpacity>
+      </View>
 
 {/* FlatList for Pig Items */}
 <FlatList
