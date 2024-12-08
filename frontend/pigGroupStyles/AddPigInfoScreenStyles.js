@@ -330,4 +330,14 @@ export default StyleSheet.create({
         height: 24, 
         marginRight: 3, 
       },
+      soldPigContainer: {
+        backgroundColor: '#D3D3D3', // Light gray background
+        padding: 10,
+        borderRadius: 5,
+        marginVertical: 5,
+      },
+      soldText: {
+        color: '#008000', // Green text color
+        fontWeight: 'bold',
+      },
 });

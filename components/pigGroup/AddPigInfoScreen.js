@@ -360,7 +360,7 @@ useEffect(() => {
   console.log('Route Params:', route.params);
 }, [userId, route.params]);
 
-const handleAddMoney = async () => {
+const handleAddMoney = async (pigId) => {
   // Check if amount is entered
   if (!amount) {
     Alert.alert('Error', 'Please enter an amount.');
@@ -372,39 +372,44 @@ const handleAddMoney = async () => {
     ? `users/${userId}/farmBranches/Main Farm/moneyInRecords`
     : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyInRecords`;
 
-  // Log the constructed Firestore path for debugging
-  console.log('Firestore Path:', path);
-
   try {
     // Reference to the Firestore collection
     const moneyInRecordsRef = collection(firestore, path);
 
     // Create a money record object
     const moneyRecord = {
-      amount: parseFloat(amount), // Ensure amount is a number
+      amount: parseFloat(amount),
       category: category,
-      date: date, // You might want to format this if needed
-      time: time, // You might want to format this if needed
+      date: date,
+      time: time,
       remarks: remarks,
-      createdAt: new Date(), // Optional: add a timestamp
+      createdAt: new Date(),
     };
 
     // Add the money record to the Firestore collection
     await addDoc(moneyInRecordsRef, moneyRecord);
 
-    // Success alert and reset form fields
-    Alert.alert('Success', 'Money added successfully!');
+    // Mark the pig as sold
+    const pigCollectionPath = selectedBranch === 'Main Farm'
+      ? `users/${userId}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${pigId}`
+      : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${pigId}`;
+
+    console.log('Updating pig at path:', pigCollectionPath); // Debugging line
+
+    await updateDoc(doc(firestore, pigCollectionPath), {
+      sold: true, // Mark the pig as sold
+    });
+
+    Alert.alert('Success', 'Money added and pig marked as sold successfully!');
     setAmount('');
     setRemarks('');
-    setCategory('salary'); // Reset category to default 'salary'
-    setSoldModalVisible(false); // Close the modal
+    setCategory('salary');
+    setSoldModalVisible(false);
   } catch (error) {
-    // Log and show error details if adding to Firestore fails
     console.error('Error adding money record:', error);
     Alert.alert('Error', 'Failed to add money. Please try again.');
   }
 };
-
 
    // Delete Pig
    const handleDeletePig = (pigId) => {
@@ -444,31 +449,85 @@ const handleAddMoney = async () => {
     setSelectedFemalePigId(null); // Clear mother ID
   };
 
+
+  const cancelSoldPig = async (pigId) => {
+    try {
+      // Update the pig document to set sold to false
+      const pigCollectionPath = selectedBranch === 'Main Farm'
+        ? `users/${userId}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${pigId}`
+        : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${pigId}`;
+  
+      await updateDoc(doc(firestore, pigCollectionPath), {
+        sold: false, // Mark the pig as not sold
+      });
+  
+      // Now, remove the corresponding money record
+      const moneyInRecordsPath = selectedBranch === 'Main Farm'
+        ? `users/${userId}/farmBranches/Main Farm/moneyInRecords`
+        : `users /${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyInRecords`;
+  
+      const moneyInQuery = query(collection(firestore, moneyInRecordsPath), where('pigId', '==', pigId));
+      const querySnapshot = await getDocs(moneyInQuery);
+  
+      querySnapshot.forEach(async (doc) => {
+        await deleteDoc(doc.ref); // Delete the money record associated with the sold pig
+      });
+  
+      Alert.alert('Success', 'The sale has been canceled and the money record has been removed.');
+    } catch (error) {
+      console.error('Error canceling the sale:', error);
+      Alert.alert('Error', 'There was an error canceling the sale. Please try again.');
+    }
+  };
+
+
+
   // Filter Pigs
   const filteredPigs = pigs.filter(pig => pig.pigName.toLowerCase().includes(searchQuery.toLowerCase()));
 
   // Render Pig Item
 // Render Pig Item
 const renderPig = ({ item }) => {
-  const isDeceased = item.vitality === 'deceased'; // Check if the pig is deceased
+  const isDeceased = item.vitality === 'deceased';
+  const isSold = item.sold; // Check if the pig is sold
+
+  const handleSoldPress = async () => {
+    if (isSold) {
+      // If the pig is already sold, ask if the user wants to cancel the sale
+      Alert.alert(
+        'Cancel Sale',
+        'This pig is already marked as sold. Do you want to cancel the sale?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Yes', onPress: async () => {
+              await cancelSoldPig(item.id); // Call the function to cancel the sale
+            }
+          },
+        ],
+        { cancelable: true }
+      );
+    } else {
+      // If the pig is not sold, proceed to mark it as sold
+      setSoldModalVisible(true);
+      setSelectedPig(item); // Set the selected pig to mark as sold
+    }
+  };
 
   return (
-    <SafeAreaView style={[styles.pigContainer, isDeceased ? styles.deceasedPigContainer : null]}>
+    <SafeAreaView style={[styles.pigContainer, isDeceased ? styles.deceasedPigContainer : null, isSold ? styles.soldPigContainer : null]}>
       <View style={styles.pigInfo}>
-        <Text style={[styles.pigText, isDeceased ? styles.deceasedText : null]}>
+        <Text style={[styles.pigText, isDeceased ? styles.deceasedText : null, isSold ? styles.soldText : null]}>
           Tag Number: {item.tagNumber}
         </Text>
-        <Text style={[styles.pigText, isDeceased ? styles.deceasedText : null]}>
-          Pig Name: {isDeceased ? 'Deceased' : item.pigName}
+        <Text style={[styles.pigText, isDeceased ? styles.deceasedText : null, isSold ? styles.soldText : null]}>
+          Pig Name: {isSold ? 'Sold' : isDeceased ? 'Deceased' : item.pigName}
         </Text>
       </View>
       <View style={styles.actionsContainer}>
         {/* Sold Icon */}
-        <TouchableOpacity onPress={() => {
-        setSoldModalVisible(true);
-      }}>
-        <Image source={soldIcon} style={styles.isold} />
-      </TouchableOpacity>
+        <TouchableOpacity onPress={handleSoldPress}>
+          <Image source={soldIcon} style={styles.isold} />
+        </TouchableOpacity>
         
         {/* View Icon */}
         <TouchableOpacity onPress={() => {
@@ -480,13 +539,12 @@ const renderPig = ({ item }) => {
         
         {/* Edit Icon */}
         <TouchableOpacity onPress={() => {
-          // Allow editing even if the pig is deceased
           setPigName(item.pigName);
           setTagNumber(item.tagNumber);
           setGender(item.gender);
           setRace(item.race);
           setCurrentPigId(item.id);
-          setVitality(item.vitality); // Set vitality when editing
+          setVitality(item.vitality);
           setIsEditing(true);
           setModalVisible(true);
         }}>
@@ -601,11 +659,11 @@ const renderPig = ({ item }) => {
       />
 
       <View style={styles.modalsavecancel}>
-        <Button
-          title="Add Sold Pig"
-          onPress={handleAddMoney}
-          color="#4CAF50"
-        />
+      <Button
+      title="Add Sold Pig"
+      onPress={() => handleAddMoney(selectedPig.id)} // Ensure selectedPig is an object with an id
+      color="#4CAF50"
+    />
         <Button
           title="Cancel"
           onPress={() => setSoldModalVisible(false)}
