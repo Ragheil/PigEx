@@ -122,12 +122,17 @@ const filterTransactionsByCategory = (category) => {
 
 const handleCategoryChange = (category) => {
   setSelectedCategory(category); // Update the selected category state
-  filterTransactionsByCategory(category); // Call the function to filter transactions
+  if (category === 'all') {
+    setFilteredTransactions(transactions); // Show all transactions
+  } else {
+    const filtered = transactions.filter(transaction => transaction.category === category);
+    setFilteredTransactions(filtered);
+  }
 };
 
 const extractUniqueCategories = () => {
   const uniqueCategories = new Set();
-  filteredTransactions.forEach(transaction => {
+  transactions.forEach(transaction => {
     if (transaction.category) {
       uniqueCategories.add(transaction.category);
     }
@@ -137,8 +142,7 @@ const extractUniqueCategories = () => {
 
 useEffect(() => {
   extractUniqueCategories();
-}, [filteredTransactions]);
-
+}, [transactions]); // Update this to depend on transactions
 
 
 
@@ -718,7 +722,7 @@ useEffect(() => {
               onValueChange={(itemValue) => handleCategoryChange(itemValue)}
               style={{ height: 50, width: '100%' }}
             >
-              <Picker.Item label="All" value="all" />
+              <Picker.Item label="Filter by Category" value="all" />
               {dynamicCategories.map((category, index) => (
                 <Picker.Item key={index} label={category} value={category} />
               ))}
