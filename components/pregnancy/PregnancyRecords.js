@@ -378,7 +378,7 @@ const PregnancyRecords = ({ route, navigation }) => {
                         user,
                         motherId: pig.motherId
                       })}>
-                      <Image source={calendaricon} style={PregnancyRecordsStyles.viewIcon} />
+                      <Image source={addboxicon} style={PregnancyRecordsStyles.viewIcon} />
                       <Text style={PregnancyRecordsStyles.iconLabel}>Add Piglets</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -389,7 +389,7 @@ const PregnancyRecords = ({ route, navigation }) => {
                         setModalType('breeding'); // Set modal type to breeding
                         setModalVisible(true);
                       }}>
-                      <Image source={addboxicon} style={PregnancyRecordsStyles.viewIcon} />
+                      <Image source={calendaricon} style={PregnancyRecordsStyles.viewIcon} />
                       <Text style={PregnancyRecordsStyles.iconLabel}>Breed date</Text>
                     </TouchableOpacity>
                   </View>
