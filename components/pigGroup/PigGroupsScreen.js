@@ -85,13 +85,15 @@ const fetchPigGroups = () => {
       const pigsCollection = collection(firestore, pigsCollectionPath);
       const pigsSnapshot = await getDocs(pigsCollection); // Get pigs snapshot directly
 
-      // Count only the pigs that are alive (vitality !== "deceased")
-      const alivePigsCount = pigsSnapshot.docs.filter(pigDoc => pigDoc.data().vitality !== 'deceased').length;
+      // Count only the pigs that are alive and not sold
+      const alivePigsCount = pigsSnapshot.docs.filter(pigDoc => 
+        pigDoc.data().vitality !== 'deceased' && !pigDoc.data().sold
+      ).length;
 
       return {
         id: pigGroupId,
         ...doc.data(),
-        pigCount: alivePigsCount, // Use the count of alive pigs
+        pigCount: alivePigsCount, // Use the count of alive pigs that are not sold
       };
     });
 
