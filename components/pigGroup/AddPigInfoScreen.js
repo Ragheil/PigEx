@@ -459,7 +459,7 @@ const handleAddMoney = async (pigId) => {
       category: category,
       date: date.toISOString().split('T')[0], // Store date in YYYY-MM-DD format
       time: time.toISOString().split('T')[1].substring(0, 5), // Store time in HH:MM format
-      remarks: remarks,
+      remarks: `Sales of ${selectedPig.pigName}`, // Include the pig name in the remarks
       createdAt: new Date(),
       pigId: pigId, // Add the selected pig ID to the money record
     };
@@ -479,7 +479,7 @@ const handleAddMoney = async (pigId) => {
     Alert.alert('Success', 'Money added and pig marked as sold successfully!');
     setAmount('');
     setRemarks('');
-    setCategory('salary');
+    setCategory('sales');
     setSoldModalVisible(false);
   } catch (error) {
     console.error('Error adding money record:', error);
