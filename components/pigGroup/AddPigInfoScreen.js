@@ -33,7 +33,7 @@ export default function AddPigInfoScreen({ route }) {
   const [selectedPig, setSelectedPig] = useState(null);
  // const [dateOfBirth, setDateOfBirth] = useState(new Date());  // Date of birth state
   const [dateOfBirth, setDateOfBirth] = useState(null);
-
+  const [moneyLoss, setMoneyLoss] = useState('');
   const [openDatePicker, setOpenDatePicker] = useState(false); // Corrected
   const [vitality, setVitality] = useState('alive'); // Vitality state (alive/disabled)
   const [isVitalityEditable, setIsVitalityEditable] = useState(false); // Controls the picker state
@@ -228,7 +228,7 @@ useEffect(() => {
       : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs`;
   
     try {
-      await addDoc(collection(firestore, pigCollectionPath), {
+      const pigData = {
         pigName,
         tagNumber,
         gender,
@@ -237,9 +237,28 @@ useEffect(() => {
         vitality: isDeceased ? 'deceased' : 'alive',
         ...(isDeceased && { causeOfDeath, dateOfDeath }),
         createdAt: new Date(),
-        motherId: selectedFemalePigId || null,       // Store mother pig's ID
-        motherName: motherName || ""                 // Store mother pig's name
-      });
+        motherId: selectedFemalePigId || null,
+        motherName: motherName || "",
+      };
+  
+      // Add the pig to Firestore
+      const pigDocRef = await addDoc(collection(firestore, pigCollectionPath), pigData);
+  
+      // If the pig is deceased, add a money loss record
+      if (isDeceased && moneyLoss) {
+        const moneyLossRecord = {
+          amount: parseFloat(moneyLoss),
+          remarks: `Loss due to death of pig ${pigName}`,
+          date: new Date().toISOString(), // Store current date as ISO string
+          pigId: pigDocRef.id, // Reference to the pig
+        };
+  
+        const moneyLossPath = selectedBranch === 'Main Farm'
+          ? `users/${user.uid}/farmBranches/Main Farm/moneyLossRecords`
+          : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyLossRecords`;
+  
+        await addDoc(collection(firestore, moneyLossPath), moneyLossRecord);
+      }
   
       Alert.alert('Success', 'Pig added successfully!');
       resetFields();
@@ -257,38 +276,56 @@ useEffect(() => {
       Alert.alert('Validation Error', 'All fields are required.');
       return;
     }
-
-  const pigCollectionPath = selectedBranch === 'Main Farm'
-    ? `users/${user.uid}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${currentPigId}`
-    : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${currentPigId}`;
-
-  try {
-    // Update the main pig document
-    await updateDoc(doc(firestore, pigCollectionPath), {
-      pigId: currentPigId,
-      pigName,
-      tagNumber,
-      gender,
-      race,
-      dateOfBirth,
-      vitality: isDeceased ? 'deceased' : 'alive',
-      ...(isDeceased && { causeOfDeath, dateOfDeath }),
-      motherId: selectedFemalePigId || null,
-      motherName: motherName || ""
-    });
-
-    // Update pigName in all motherRecords documents with matching pigId for Main Farm and Farm Branches
-    await updateMotherRecordsInMainFarm(firestore, user.uid, currentPigId, pigName);
-    await updateMotherRecordsInAllFarmBranches(firestore, user.uid, currentPigId, pigName);
-
-    Alert.alert('Success', 'Pig updated successfully!');
-    setIsEditing(false);
-    resetFields();
-  } catch (error) {
-    console.error('Error updating pig records:', error);
-    Alert.alert('Error', 'There was a problem updating the pig records.');
-  }
-};
+  
+    const pigCollectionPath = selectedBranch === 'Main Farm'
+      ? `users/${user.uid}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${currentPigId}`
+      : `users/${user.uid}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${currentPigId}`;
+  
+    try {
+      // Update the main pig document
+      await updateDoc(doc(firestore, pigCollectionPath), {
+        pigId: currentPigId,
+        pigName,
+        tagNumber,
+        gender,
+        race,
+        dateOfBirth,
+        vitality: isDeceased ? 'deceased' : 'alive',
+        ...(isDeceased && { causeOfDeath, dateOfDeath }),
+        motherId: selectedFemalePigId || null,
+        motherName: motherName || ""
+      });
+  
+      // If the pig is deceased, add a money loss record to the moneyOutRecords path
+      if (isDeceased && moneyLoss) {
+        const moneyRecord = {
+          amount: parseFloat(moneyLoss), // Use the money loss amount
+          remarks: `Loss due to death of pig ${pigName}`,
+          date: new Date().toISOString(), // Store current date as ISO string
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), // Store time as a formatted string
+          category: 'loss', // You can set a category for money loss if needed
+          pigId: currentPigId, // Reference to the pig
+        };
+  
+        const path = selectedBranch === 'Main Farm'
+          ? `users/${userId}/farmBranches/Main Farm/moneyOutRecords`
+          : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyOutRecords`;
+  
+        await addDoc(collection(firestore, path), moneyRecord);
+      }
+  
+      // Update pigName in all motherRecords documents with matching pigId for Main Farm and Farm Branches
+      await updateMotherRecordsInMainFarm(firestore, user.uid, currentPigId, pigName);
+      await updateMotherRecordsInAllFarmBranches(firestore, user.uid, currentPigId, pigName);
+  
+      Alert.alert('Success', 'Pig updated successfully!');
+      setIsEditing(false);
+      resetFields();
+    } catch (error) {
+      console.error('Error updating pig records:', error);
+      Alert.alert('Error', 'There was a problem updating the pig records.');
+    }
+  };
 
 // Function to update pigName in all motherRecords documents in Main Farm with matching pigId or document ID
 const updateMotherRecordsInMainFarm = async (db, userId, pigId, newPigName) => {
@@ -365,6 +402,40 @@ useEffect(() => {
   console.log('User  ID:', userId);
   console.log('Route Params:', route.params);
 }, [userId, route.params]);
+
+const handleAddMoneyOut = async (pigId, moneyLoss) => {
+  if (!amount && !moneyLoss) {
+    Alert.alert('Error', 'Please enter an amount or money loss.');
+    return;
+  }
+
+  const selectedCategory = category === 'other' ? otherCategory : category;
+
+  try {
+    const moneyRecord = {
+      amount: parseFloat(amount) || 0, // Use amount if provided, otherwise default to 0
+      moneyLoss: parseFloat(moneyLoss) || 0, // Store money loss if provided
+      remarks,
+      date: date.toISOString(), // Store date as ISO string
+      time: time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), // Store time as a formatted string
+      category: selectedCategory,
+      pigId: pigId, // Include the pig ID for reference
+    };
+
+    const path = selectedBranch === 'Main Farm'
+      ? `users/${userId}/farmBranches/Main Farm/moneyOutRecords`
+      : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/moneyOutRecords`;
+
+    await addDoc(collection(firestore, path), moneyRecord);
+    Alert.alert('Success', 'Money out added successfully!');
+    resetModalState();
+    fetchTotalBalance();
+  } catch (error) {
+    Alert.alert('Error', 'Failed to add money. Please try again.');
+    console.error('Error adding money out record:', error);
+  }
+};
+
 
 const handleAddMoney = async (pigId) => {
   // Check if amount is entered
@@ -781,33 +852,40 @@ const renderPig = ({ item }) => {
 
 
           {/* Show cause of death and date of death only if editing and the pig is deceased */}
-        {isEditing && isDeceased && (
-            <>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Cause of Death"
-                    value={causeOfDeath}
-                    onChangeText={setCauseOfDeath}
-                />
-              <TouchableOpacity onPress={handleOpenDeathDatePicker}>
-  <Text>
-    {dateOfDeath ? dateOfDeath.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    }) : 'Select Date of Death'}
-  </Text>
-</TouchableOpacity>
-
-<DateTimePickerModal
-  isVisible={openDeathDatePicker}
-  mode="date"
-  date={dateOfDeath || new Date()} 
-  onConfirm={handleConfirmDeathDate} 
-  onCancel={() => setOpenDeathDatePicker(false)}
-/>
-            </>
-        )}
+          {isEditing && isDeceased && (
+  <>
+    <TextInput
+      style={styles.input}
+      placeholder="Money Loss"
+      value={moneyLoss}
+      onChangeText={setMoneyLoss}
+      keyboardType="numeric"
+    />
+    {/* Existing cause of death and date of death inputs */}
+    <TextInput
+      style={styles.input}
+      placeholder="Cause of Death"
+      value={causeOfDeath}
+      onChangeText={setCauseOfDeath}
+    />
+    <TouchableOpacity onPress={handleOpenDeathDatePicker}>
+      <Text>
+        {dateOfDeath ? dateOfDeath.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        }) : 'Select Date of Death'}
+      </Text>
+    </TouchableOpacity>
+    <DateTimePickerModal
+      isVisible={openDeathDatePicker}
+      mode="date"
+      date={dateOfDeath || new Date()} 
+      onConfirm={handleConfirmDeathDate} 
+      onCancel={() => setOpenDeathDatePicker(false)}
+    />
+  </>
+)}
                     <View style={styles.modalsavecancel}>
                       <Button
                         title={isEditing ? 'Update Pig' : 'Add Pig'}
