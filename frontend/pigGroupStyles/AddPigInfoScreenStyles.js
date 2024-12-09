@@ -51,7 +51,7 @@ export default StyleSheet.create({
         marginBottom: 5, // Reduced margin
       },
       buttonAlive: {
-        backgroundColor: '#008000',
+        backgroundColor: '#F28585',
         borderRadius: 5, // Reduced border radius
         padding: 10, // Reduced padding
         marginHorizontal: 2, // Reduced margin
@@ -69,7 +69,7 @@ export default StyleSheet.create({
         marginHorizontal: 2, // Reduced margin
       },
       buttonSold: {
-        backgroundColor: '#000000FF',
+        backgroundColor: '#008000',
         borderRadius: 5, // Reduced border radius
         padding: 10, // Reduced padding
         marginHorizontal: 2, // Reduced margin
@@ -167,6 +167,14 @@ export default StyleSheet.create({
         insetBlockStart: -10,
       },
       buttonText: {
+        textAlign: 'center',
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#F5F5F5',
+        textTransform: 'uppercase',
+        lineHeight: 20, // Adjust the line height to your preference
+      },
+      aliveButtonText: {
         textAlign: 'center',
         fontSize: 18,
         fontWeight: '600',

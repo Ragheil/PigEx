@@ -665,7 +665,7 @@ const renderPig = ({ item }) => {
 
       <View style={styles.filterButtonContainer}>
           <TouchableOpacity style={styles.buttonAlive} onPress={() => setFilterType('alive')}>
-            <Text style={styles.buttonText}>Show {'\n'}Alive</Text>
+            <Text style={styles.aliveButtonText}>Show {'\n'}Alive</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.buttonDeceased} onPress={() => setFilterType('deceased')}>
             <Text style={styles.buttonText}>Show{'\n'} Deceased</Text>
