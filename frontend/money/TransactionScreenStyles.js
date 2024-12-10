@@ -72,7 +72,7 @@ const TransactionScreenStyles = StyleSheet.create({
     borderEndEndRadius: 12,
   },
   body: {
-    flex: 1,
+    // flex: 1,
     paddingTop: 10,
     paddingHorizontal: 20,
     // backgroundColor: 'lightgreen',
@@ -148,7 +148,7 @@ const TransactionScreenStyles = StyleSheet.create({
   pdfButton: {
     backgroundColor: '#007bff',
     padding: 15,
-    borderRadius: 8,
+    borderRadius: 12,
     alignItems: 'center',
   },
   pdfButtonText: {
@@ -172,18 +172,19 @@ const TransactionScreenStyles = StyleSheet.create({
     // flex:1,
     // width: '100%',
     flexDirection: 'row',
+    columnGap: 5,
     // justifyContent: 'center',
     // marginVertical: 10,
     // paddingHorizontal: 10,
     // backgroundColor: 'lightblue',
-    gap: 15,
-    paddingRight: 20,
+    // paddingRight: 20,
     // marginHorizontal: 10
     // height: 100,
   },
   button: {
+    height: 50,
     paddingHorizontal: 15,
-    borderRadius: 18,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
 
@@ -206,13 +207,30 @@ const TransactionScreenStyles = StyleSheet.create({
   //   borderRadius: 100,
   //   marginHorizontal: 5, // Space between buttons
   // },
+  picker: {
+    width: '100%',
+    // backgroundColor: '#B7B7B7',
+    borderRadius: 12,
+    borderColor: '#566F48',
+    borderWidth: 2,
+  },
   scrollView: {
     // flex: 1,
     // width: '100%',
+    // flexDirection: "column",
     padding: 10,
     // backgroundColor: 'red',
-    height: 150, // Set your desired height for the ScrollView
+    // height: '50%', // Set your desired height for the ScrollView
    // marginBottom: 10, // Optional: Add margin if needed
+  },
+  scrollviewDirection: {
+    // flex: 1,
+    flexDirection: 'column',
+    gap: 5,
+    backgroundColor: '#F5F5F5',
+    borderRadius: 20,
+    padding: 10,
+    // height: '100%',
   },
   scrollViewContent: {
     flexDirection: 'row', // Keep buttons in a horizontal layout

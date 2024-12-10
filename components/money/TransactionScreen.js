@@ -680,61 +680,65 @@ useEffect(() => {
           </View>
       </View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={TransactionScreenStyles.scrollView}>
-  <View style={TransactionScreenStyles.buttonContainer}>
-    
-    <TouchableOpacity
-      style={[
-        TransactionScreenStyles.button,
-        showMoneyIn ? TransactionScreenStyles.activeButtonIn : TransactionScreenStyles.inactiveButton,
-      ]}
-      onPress={handleShowMoneyIn}
-      activeOpacity={1}
-    >
-      <Text style={TransactionScreenStyles.buttonText}>Show all Money In</Text>
-    </TouchableOpacity>
-
-    <TouchableOpacity
-      style={[
-        TransactionScreenStyles.button,
-        showAllTransactions ? TransactionScreenStyles.activeButtonAll : TransactionScreenStyles.inactiveButton,
-      ]}
-      onPress={handleShowAllTransactions}
-      activeOpacity={1}
-    >
-      <Text style={TransactionScreenStyles.showAllButtonText}>Show All Records</Text>
-    </TouchableOpacity>
-
-    <TouchableOpacity
-      style={[
-        TransactionScreenStyles.button,
-        showMoneyOut ? TransactionScreenStyles.activeButtonOut : TransactionScreenStyles.inactiveButton,
-      ]}
-      onPress={handleShowMoneyOut}
-      activeOpacity={1}
-    >
-      <Text style={TransactionScreenStyles.buttonText}>Show all Money Out</Text>
-    </TouchableOpacity>
-
-    <View style={{ width: 150 }}> 
-    <Picker
+      <View style={TransactionScreenStyles.scrollView}>
+        <View style={TransactionScreenStyles.scrollviewDirection}>
+          <View style={TransactionScreenStyles.picker}> 
+            <Picker
               selectedValue={selectedCategory}
               onValueChange={(itemValue) => handleCategoryChange(itemValue)}
-              style={{ height: 50, width: '100%' }}
+              style={{width: '100%',}}
             >
               <Picker.Item label="Filter by Category" value="all" />
               {dynamicCategories.map((category, index) => (
                 <Picker.Item key={index} label={category} value={category} />
               ))}
             </Picker>
-    </View>
-  </View>
-</ScrollView>
+          </View>
+
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{borderRadius: 12}}>
+            <View style={TransactionScreenStyles.buttonContainer}>
+              <TouchableOpacity
+                style={[
+                  TransactionScreenStyles.button,
+                  showMoneyIn ? TransactionScreenStyles.activeButtonIn : TransactionScreenStyles.inactiveButton,
+                ]}
+                onPress={handleShowMoneyIn}
+                activeOpacity={1}
+              >
+                <Text style={TransactionScreenStyles.buttonText}>Show all Money In</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  TransactionScreenStyles.button,
+                  showAllTransactions ? TransactionScreenStyles.activeButtonAll : TransactionScreenStyles.inactiveButton,
+                ]}
+                onPress={handleShowAllTransactions}
+                activeOpacity={1}
+              >
+                <Text style={TransactionScreenStyles.showAllButtonText}>Show All Records</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  TransactionScreenStyles.button,
+                  showMoneyOut ? TransactionScreenStyles.activeButtonOut : TransactionScreenStyles.inactiveButton,
+                ]}
+                onPress={handleShowMoneyOut}
+                activeOpacity={1}
+              >
+                <Text style={TransactionScreenStyles.buttonText}>Show all Money Out</Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </View>
+      </View>
 
       <ScrollView
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
+        // style={{height: '100%'}}
       >
       <View style={TransactionScreenStyles.body}>
           <View style={{ alignItems: 'center', marginBottom: 20,}}>
@@ -816,7 +820,7 @@ useEffect(() => {
         </View>
       </ScrollView>
         
-      <View style={{paddingHorizontal: 20, marginBottom: 15}}>
+      <View style={{paddingHorizontal: 18, marginBottom: 15}}>
         <TouchableOpacity style={TransactionScreenStyles.pdfButton} onPress={generatePDF}>
           <Text style={TransactionScreenStyles.pdfButtonText}>Generate PDF</Text>
         </TouchableOpacity>
