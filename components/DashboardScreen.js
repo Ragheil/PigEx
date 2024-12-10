@@ -493,7 +493,7 @@ useEffect(() => {
             borderRadius: 13,
             alignItems: 'center',
             zIndex: 2, // High zIndex for priority
-            elevation: 1, // High elevation for priority
+            elevation: 5, // High elevation for priority
           }}
           onPress={() => navigation.navigate('PigGroups', {
             selectedBranch: selectedBranch === `Main Farm: ${farmName}` ? 'Main Farm' : selectedBranch,
@@ -519,9 +519,15 @@ useEffect(() => {
               borderWidth: 4,
               elevation: 5,
               height: 180,
-              
             }}>
-              <Image source={require('../assets/images/pigIcon.png')} style={styles.pigIcon} />
+              <TouchableOpacity
+                onPress={() => navigation.navigate('PigGroups', {
+                  selectedBranch: selectedBranch === `Main Farm: ${farmName}` ? 'Main Farm' : selectedBranch,
+                  farmName: farmName // Pass the farm name here
+                })}
+              >
+                <Image source={require('../assets/images/pigIcon.png')} style={styles.pigIcon} />
+              </TouchableOpacity>
               <Text style={{ fontSize: 18, color: '#333' }}>{item.name}</Text>
               <Text style={{ fontSize: 16, color: '#666' }}>
                 <Text style={{ fontWeight: 'bold' }}></Text>
@@ -532,27 +538,24 @@ useEffect(() => {
           horizontal
           showsHorizontalScrollIndicator={true}
           contentContainerStyle={{
-            // backgroundColor: 'red',
             paddingHorizontal: 0,
             height: 180,
-            
           }}
           snapToAlignment="center"
           snapToInterval={160}
           decelerationRate="fast"
           ListEmptyComponent={<Text 
-          style={{ 
-            fontSize: 16, 
-            color: 'gray', 
-            textAlign: 'center', 
-            marginTop: 20, 
-          }}>No pig groups available.</Text>}
+            style={{ 
+              fontSize: 16, 
+              color: 'gray', 
+              textAlign: 'center', 
+              marginTop: 20, 
+            }}>No pig groups available.</Text>}
           style={{
-            // alignSelf: 'center',
             width: '100%', // Ensure FlatList takes full width
-            zIndex: 1, // High zIndex for priority
+            zIndex: 2, // High zIndex for priority
             elevation: 5, // High elevation for priority
-              height: 0, //
+            height: 0, //
           }}
         />
 
