@@ -14,7 +14,7 @@ const MoneyOutScreen = ({ route }) => {
   const [amount, setAmount] = useState('');
   const [remarks, setRemarks] = useState('');
   const [totalBalance, setTotalBalance] = useState(0);
-  const [category, setCategory] = useState('expense');
+  const [category, setCategory] = useState('Expense');
   const [showOtherCategoryInput, setShowOtherCategoryInput] = useState(false);
   const [otherCategory, setOtherCategory] = useState('');
   const [date, setDate] = useState(new Date());
@@ -245,7 +245,7 @@ const MoneyOutScreen = ({ route }) => {
   const resetModalState = () => {
     setAmount('');
     setRemarks('');
-    setCategory('expense');
+    setCategory('Expense');
     setOtherCategory('');
     setModalVisible(false);
     setIsEditing(false);
@@ -369,9 +369,10 @@ const MoneyOutScreen = ({ route }) => {
             <RNPickerSelect
               onValueChange={handleCategoryChange}
               items={[
-                { label: 'Expense', value: 'expense' },
-                { label: 'Bill', value: 'bill' },
-                { label: 'Other', value: 'other' },
+                { label: 'Expense', value: 'Expense' },
+                { label: 'Bill', value: 'Bill' },
+                { label: 'Capital', value: 'Capital' },
+                { label: 'Other', value: 'Other' },
               ]}
               placeholder={{ label: 'Select a category', value: null }}
               MoneyOutScreenStyles={{

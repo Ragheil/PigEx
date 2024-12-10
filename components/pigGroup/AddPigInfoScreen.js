@@ -303,7 +303,7 @@ useEffect(() => {
           remarks: `Loss due to death of pig ${pigName}`,
           date: new Date().toISOString(), // Store current date as ISO string
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), // Store time as a formatted string
-          category: 'loss', // You can set a category for money loss if needed
+          category: 'Loss', // You can set a category for money loss if needed
           pigId: currentPigId, // Reference to the pig
         };
   

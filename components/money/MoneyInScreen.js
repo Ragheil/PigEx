@@ -13,7 +13,7 @@ const MoneyInScreen = ({ route }) => {
   const [amount, setAmount] = useState('');
   const [remarks, setRemarks] = useState('');
   const [totalBalance, setTotalBalance] = useState(0); // State for total balance
-  const [category, setCategory] = useState('salary'); // Default income category
+  const [category, setCategory] = useState('Salary'); // Default income category
   const [showOtherCategoryInput, setShowOtherCategoryInput] = useState(false); // State to show/hide text input for other category
   const [otherCategory, setOtherCategory] = useState(''); // Store other category
   const [date, setDate] = useState(new Date()); // Date picker state
@@ -141,7 +141,7 @@ const MoneyInScreen = ({ route }) => {
       fetchMoneyRecords();
       setAmount('');
       setRemarks('');
-      setCategory('salary');
+      setCategory('Salary');
       setOtherCategory('');
       setModalVisible(false);
     } catch (error) {
@@ -320,9 +320,9 @@ const handleDeleteMoney = async (id) => {
           <RNPickerSelect
             onValueChange={handleCategoryChange}
             items={[
-              { label: 'Salary', value: 'salary' },
-              { label: 'Sales', value: 'sales' },
-              { label: 'Other', value: 'other' },
+              { label: 'Salary', value: 'Salary' },
+              { label: 'Sales', value: 'Sales' },
+              { label: 'Other', value: 'Other' },
             ]}
             placeholder={{ label: 'Select a category', value: null }} // Optional placeholder
             style={{
