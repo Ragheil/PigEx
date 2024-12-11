@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
     fontWeight: '700', // Bold font weight for title
     marginBottom: 20,
     color: '#333', // Darker text color for better contrast
-    marginTop: 60,
+    marginTop: 20,
   },
   branchItem: {
     flexDirection: 'row',
@@ -147,7 +147,14 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     lineHeight: 20, // Adjust the line height to your preference
   },
-  
+  backImage: {
+    width: 30, // Adjust size as needed
+    height: 30, // Adjust size as needed
+    // backgroundColor: 'lightblue',
+    marginTop: '10%', // Added margin for better spacing
+    marginLeft: '3%', // Added margin for better spacing
+  },
+
 });
 
 export default styles;

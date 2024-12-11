@@ -5,8 +5,10 @@ import { firestore, auth } from '../../firebase/config2';
 import styles from '../../frontend/componentsStyles/SeeAllBranchesStyles'; // Import styles
 import editIcon from '../../assets/images/buttons/editIcon.png';
 import deleteIcon from '../../assets/images/buttons/deleteIcon.png';
+import backImage from '../../assets/images/buttons/backbutton.png'; // Adjust the path as needed
+import { useNavigation } from '@react-navigation/native';
 
-const SeeAllBranchesScreen = () => {
+const SeeAllBranchesScreen = ({ navigation }) => {
   const [branches, setBranches] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState(null);
@@ -151,7 +153,11 @@ const SeeAllBranchesScreen = () => {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+        <Image source={backImage} style={styles.backImage} />
+      </TouchableOpacity>
      <Text style={styles.title}> Farm Branches</Text>
+     
       <FlatList
         data={branches}
         keyExtractor={(item) => item.id}
