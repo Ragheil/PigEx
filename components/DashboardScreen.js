@@ -714,7 +714,7 @@ useEffect(() => {
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.closeModalButton} onPress={() => setModalVisible(false)}>
-              <Text style={styles.closeModalText}>Close</Text>
+              <Text style={styles.closeModalText}>Cancel</Text>
             </TouchableOpacity>
           </View>
         </View>

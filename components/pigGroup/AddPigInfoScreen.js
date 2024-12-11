@@ -895,7 +895,7 @@ const renderPig = ({ item }) => {
                       <Button
                         title="Cancel"
                         onPress={() => setModalVisible(false)}
-                        color="#B7B7B7"
+                        color="#DF2E38"
                       />
                     </View>
                   </View>

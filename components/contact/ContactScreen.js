@@ -330,7 +330,7 @@ const ContactScreen = ({ navigation }) => {
             />
             <View style={styles.buttonContainer}>
               <View style={{flex: 1}}>
-              <Button title="Cancel" onPress={closeModal} color="#B7B7B7" />
+              <Button title="Cancel" onPress={closeModal} color="#DF2E38" />
               </View>
               <View style={{flex: 1}}>
                 <Button title="Save" onPress={addOrUpdateContact} color="#399918" disabled={loading} />
