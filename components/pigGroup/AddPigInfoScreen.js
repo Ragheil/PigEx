@@ -55,7 +55,7 @@ export default function AddPigInfoScreen({ route }) {
   const [filterType, setFilterType] = useState('all'); // 'alive', 'deceased', 'all'
   const [soldModalVisible, setSoldModalVisible] = useState(false);
   const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState('sales'); // Default category
+  const [category, setCategory] = useState('Sales'); // Default category
   const [time, setTime] = useState(new Date());
   const [remarks, setRemarks] = useState('');
   const [openTimePicker, setOpenTimePicker] = useState(false);
@@ -479,7 +479,7 @@ const handleAddMoney = async (pigId) => {
     Alert.alert('Success', 'Money added and pig marked as sold successfully!');
     setAmount('');
     setRemarks('');
-    setCategory('sales');
+    setCategory('Sales');
     setSoldModalVisible(false);
   } catch (error) {
     console.error('Error adding money record:', error);
