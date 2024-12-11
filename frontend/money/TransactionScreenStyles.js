@@ -14,19 +14,21 @@ const TransactionScreenStyles = StyleSheet.create({
   navheader: {
     flexDirection: 'row',
     marginBottom: 15,
+    gap: 5
     // backgroundColor: 'lightblue',
   },
   navibackButton: {
     // padding: 10,
     // marginRight: 5, // Space between the back button and the title
     // paddingTop: 45,
-    flex: 1,
+    // flex: 1,
     justifyContent: 'center',
 
   },
   backImage: {
     width: 30, // Adjust size as needed
     height: 30, // Adjust size as needed
+    // backgroundColor: 'lightgreen',
     
   },
   header: {
