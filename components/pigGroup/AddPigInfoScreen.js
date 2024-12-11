@@ -467,13 +467,13 @@ const handleAddMoney = async (pigId) => {
     // Add the money record to the Firestore collection
     await addDoc(moneyInRecordsRef, moneyRecord);
 
-    // Mark the pig as sold
     const pigCollectionPath = selectedBranch === 'Main Farm'
       ? `users/${userId}/farmBranches/Main Farm/pigGroups/${pigGroupId}/pigs/${pigId}`
       : `users/${userId}/farmBranches/Farm Branch/Branches/${selectedBranch}/pigGroups/${pigGroupId}/pigs/${pigId}`;
 
     await updateDoc(doc(firestore, pigCollectionPath), {
       sold: true, // Mark the pig as sold
+      amount: parseFloat(amount), // Add the amount to the pig document
     });
 
     Alert.alert('Success', 'Money added and pig marked as sold successfully!');
@@ -902,63 +902,63 @@ const renderPig = ({ item }) => {
                 </View>
               </Modal>
 
-              {/* Pig Detail Modal */}
-              <Modal
-                visible={detailModalVisible}
-                transparent={true}
-                animationType="slide"
-                onRequestClose={() => setDetailModalVisible(false)}
-              >
-        <View style={styles.modalContainer}>
-        <Text style={styles.modalTitle}>Pig Details</Text>
-          <View style={styles.modalContent}>
-            {selectedPig && (
-              <>
-                <Text style={styles.detailText}>Name: {selectedPig.pigName}</Text>
-                <Text style={styles.detailText}>Tag Number: {selectedPig.tagNumber}</Text>
-                <Text style={styles.detailText}>Gender: {selectedPig.gender}</Text>
-                <Text style={styles.detailText}>Race: {selectedPig.race}</Text>
-                <Text style={styles.detailText}>Date of Birth: {selectedPig.dateOfBirth ? selectedPig.dateOfBirth.toDate().toDateString() : 'N/A'}</Text>                
-                <Text style={styles.detailText}>Vitality: {selectedPig.vitality}</Text>
-                 {/* View Medical Records Button 
-                <Text style={styles.detailText}>
-                  Mother Name: {
-                    selectedFemalePigId
-                      ? femalePigs.find(pig => pig.id === selectedFemalePigId)?.pigName || 'N/A'
-                      : 'N/A'
-                  }
-                </Text>
-                            */}
+{/* Pig Detail Modal */}
+<Modal
+  visible={detailModalVisible}
+  transparent={true}
+  animationType="slide"
+  onRequestClose={() => setDetailModalVisible(false)}
+>
+  <View style={styles.modalContainer}>
+    <Text style={styles.modalTitle}>Pig Details</Text>
+    <View style={styles.modalContent}>
+      {selectedPig && (
+        <>
+          <Text style={styles.detailText}>Name: {selectedPig.pigName}</Text>
+          <Text style={styles.detailText}>Tag Number: {selectedPig.tagNumber}</Text>
+          <Text style={styles.detailText}>Gender: {selectedPig.gender}</Text>
+          <Text style={styles.detailText}>Race: {selectedPig.race}</Text>
+          <Text style={styles.detailText}>Date of Birth: {selectedPig.dateOfBirth ? selectedPig.dateOfBirth.toDate().toDateString() : 'N/A'}</Text>
+          <Text style={styles.detailText}>Vitality: {selectedPig.vitality}</Text>
+          
+          {/* Check if the pig is sold and display the amount */}
+          {selectedPig.sold && (
+        <Text style={styles.detailText}>
+          Amount: {selectedPig.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (Sold Pig)
+        </Text>
+      )}
 
-                            
-                  {/* View Medical Records Button */}
-                  <Button
-                    title="View Medical Records"
-                    onPress={() => {
-                      if (selectedPig) {
-                        navigation.navigate('MedicalRecordScreen', {
-                          userId: user.uid,
-                          selectedBranch: selectedBranch, // Pass the selected branch
-                          pigGroupId: pigGroupId,         // Pass the pig group ID
-                          pigName: selectedPig.pigName,   // Pass the pig name
-                          selectedPigId: selectedPig.id,   // Pass the selected pig ID
-                        });
-                      } else {
-                        Alert.alert('Error', 'Please select a pig before viewing medical records.');
-                      }
-                    }}
-                    color="#000000FF"
-                  />
-              </>
-            )}
-            <Button
-              title="Close"
-              onPress={() => setDetailModalVisible(false)}
-              color="#f44336"
-            />
-          </View>
-        </View>
-      </Modal>
+          {/* View Medical Records Button */}
+          <Button
+            title="View Medical Records"
+            onPress={() => {
+              if (selectedPig) {
+                navigation.navigate('MedicalRecordScreen', {
+                  userId: user.uid,
+                  selectedBranch: selectedBranch, // Pass the selected branch
+                  pigGroupId: pigGroupId,         // Pass the pig group ID
+                  pigName: selectedPig.pigName,   // Pass the pig name
+                  selectedPigId: selectedPig.id,   // Pass the selected pig ID
+                });
+              } else {
+                Alert.alert('Error', 'Please select a pig before viewing medical records.');
+              }
+            }}
+            color="#000000FF"
+          />
+        </>
+      )}
+      <Button
+        title="Close"
+        onPress={() => setDetailModalVisible(false)}
+        color="#f44336"
+      />
+    </View>
+  </View>
+</Modal>
+
+
+
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             onPress={() => {
