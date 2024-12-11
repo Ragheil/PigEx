@@ -330,21 +330,32 @@ const PregnancyRecords = ({ route, navigation }) => {
           width: '100%',
           borderBottomLeftRadius: 25,
           borderBottomRightRadius: 25,
+          rowGap: 3,
+          paddingVertical: 5,
+          paddingTop: 10,
         }}>
           <View style={PregnancyRecordsStyles.piglogobox}>
             <Image source={require('../../assets/images/LOGO.png')} style={PregnancyRecordsStyles.piglogo} />
           </View>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={PregnancyRecordsStyles.backButton}>
-            <Image source={backImage} style={PregnancyRecordsStyles.backImage} />
-          </TouchableOpacity>
-          <Text style={PregnancyRecordsStyles.header}>List of all Female Pigs</Text>
+          <View style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingHorizontal: 10,
+              // backgroundColor: 'red'
+            }}>
+            {/* <TouchableOpacity onPress={() => navigation.goBack()} style={PregnancyRecordsStyles.backButton}>
+              <Image source={backImage} style={PregnancyRecordsStyles.backImage} />
+            </TouchableOpacity> */}
+            <Text style={PregnancyRecordsStyles.header}>List of all Female Pigs</Text>
+          </View>
       </SafeAreaView>
       <ScrollView style={PregnancyRecordsStyles.scrollContainer}>
         {femalePigs.sortedGroups.length === 0 ? (
           <Text style={PregnancyRecordsStyles.noDataText}>No female pigs found.</Text>
         ) : (
           femalePigs.sortedGroups.map(group => (
-            <View key={group}>
+            <View key={group} style={{}}>
               <Text style={PregnancyRecordsStyles.groupName}>{group}</Text>
               {femalePigs.groupedPigs[group].map(pig => (
                 <View key={pig.id} style={PregnancyRecordsStyles.pigContainer}>
@@ -357,20 +368,20 @@ const PregnancyRecords = ({ route, navigation }) => {
                   })}>
                   <View>
                       <Text style={PregnancyRecordsStyles.pigName}>{pig.pigName}</Text>
-                      <View style={PregnancyRecordsStyles.horizontalLine} />
+                      {/* <View style={PregnancyRecordsStyles.horizontalLine} /> */}
                     </View>
                   </TouchableOpacity>
                   <View style={PregnancyRecordsStyles.iconContainer}>
 
                     <TouchableOpacity 
                     onPress={() => fetchPiglets(pig.id, pig.pigName)} 
-                    style={PregnancyRecordsStyles.iconWithLabel}>
-                        <Image source={previewicon} style={PregnancyRecordsStyles.viewIcon} />
+                    style={[PregnancyRecordsStyles.viewPigletsButton, PregnancyRecordsStyles.buttonEdits]}>
+                        <Image source={previewicon} style={[PregnancyRecordsStyles.viewIcon, PregnancyRecordsStyles.viewPiglet_IconColor]} />
                         <Text style={PregnancyRecordsStyles.iconLabel}>View Piglets</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                      style={PregnancyRecordsStyles.addButtonPiglets}
+                      style={[PregnancyRecordsStyles.addPigletsButton, PregnancyRecordsStyles.buttonEdits]}
                       onPress={() => navigation.navigate('PigDetailsScreen', {
                         pigId: pig.id,
                         pigName: pig.pigName,
@@ -378,18 +389,19 @@ const PregnancyRecords = ({ route, navigation }) => {
                         user,
                         motherId: pig.motherId
                       })}>
-                      <Image source={addboxicon} style={PregnancyRecordsStyles.viewIcon} />
+                      <Image source={addboxicon} style={[PregnancyRecordsStyles.viewIcon, PregnancyRecordsStyles.addPiglet_IconColor]} />
                       <Text style={PregnancyRecordsStyles.iconLabel}>Add Piglets</Text>
                     </TouchableOpacity>
+
                     <TouchableOpacity
-                      style={PregnancyRecordsStyles.addBreedingDateButton}
+                      style={[PregnancyRecordsStyles.addBreedingDateButton, PregnancyRecordsStyles.buttonEdits]}
                       onPress={() => {
                         setSelectedPigId(pig.id);
                         setSelectedPigName(pig.pigName);
                         setModalType('breeding'); // Set modal type to breeding
                         setModalVisible(true);
                       }}>
-                      <Image source={calendaricon} style={PregnancyRecordsStyles.viewIcon} />
+                      <Image source={calendaricon} style={[PregnancyRecordsStyles.viewIcon, PregnancyRecordsStyles.addBreedingDate_IconColor]} />
                       <Text style={PregnancyRecordsStyles.iconLabel}>Breed date</Text>
                     </TouchableOpacity>
                   </View>

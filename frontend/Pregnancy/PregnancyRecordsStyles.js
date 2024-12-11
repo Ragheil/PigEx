@@ -11,18 +11,14 @@ const PregnancyRecordsStyles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   header: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    marginBottom: 16,
+    fontSize: 22,
+    fontWeight: '600',
     color: '#000000FF',
-    textAlign: 'center',
-    marginTop: 10,
   },
   headercontainer: {
     backgroundColor: 'red'
   }, 
   piglogobox: {
-    marginVertical: 5,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -40,23 +36,34 @@ const PregnancyRecordsStyles = StyleSheet.create({
   groupName: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: '#000000FF',
     marginVertical: 10,
-    color: '#000000FF', // Brand color for group names
   },
   pigName: {
+    paddingVertical: 5,
     fontSize: 18,
     fontWeight: 'bold', // Ensure emphasis on the pig name
-    marginBottom: 10, // Spacing between pig name and the container content
     color: '#333',
     textAlign: 'center', // Optional: center-align the pig name
+    borderRadius: 8,
+    backgroundColor: '#F5F5F5',
+
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
   },
   pigContainer: {
+    rowGap: 8,
     padding: 12,
-    marginVertical: 8,
-    borderRadius: 10,
+    // marginVertical: 8,
+    borderRadius: 20,
     backgroundColor: '#D4E1CDFF', 
     borderWidth: 1,
     borderColor: '#566F48',
+    marginBottom: 15,
+
     elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -69,28 +76,10 @@ const PregnancyRecordsStyles = StyleSheet.create({
     marginTop: 10, // Space between pig content and buttons
   },
   iconContainer: {
-    // flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    // columnGap: 5
     gap: 5,
-    paddingTop: 5,
     // backgroundColor: 'red'
-  },
-  iconWithLabel: {
-    flex: 1,
-    // width: '100%',
-    // height: 100,
-    alignItems: 'center', // Center the label below the image
-    backgroundColor: '#EEE2B5',
-    borderRadius: 10,
-    padding: 3,
-    
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
   },
   viewIcon: {
     width: 50,
@@ -98,6 +87,15 @@ const PregnancyRecordsStyles = StyleSheet.create({
     // marginRight: 60,
     // position: 'relative',
     // right: -30, //
+  },
+  viewPiglet_IconColor: {
+    tintColor: '#FF8E00'
+  },
+  addPiglet_IconColor: {
+    tintColor: '#799351'
+  },
+  addBreedingDate_IconColor: {
+    tintColor: '#D54062'
   },
   horizontalLine: {
     width: '100%', // Full width of the container
@@ -115,12 +113,11 @@ const PregnancyRecordsStyles = StyleSheet.create({
    // marginTop: 4, // Space between the image and label
     textAlign: 'center',
   },
-  
-  addButtonPiglets: {
+  buttonEdits: {
     flex: 1,
-    backgroundColor: '#D7B26D',
     alignItems: 'center',
     borderRadius: 10,
+    // borderWidth: 3,
     padding: 3,
     
     elevation: 3,
@@ -129,30 +126,30 @@ const PregnancyRecordsStyles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 2,
   },
+  viewPigletsButton: {
+    backgroundColor: '#F5F5F5',
+    // backgroundColor: '#a7c796',
+    // borderColor: '#EEE2B5',
+  },
+  addPigletsButton: {
+    backgroundColor: '#F5F5F5',
+    // backgroundColor: '#a7c796',
+    // borderColor: '#D7B26D',
+  },
+  addBreedingDateButton: {
+    backgroundColor: '#F5F5F5',
+    // backgroundColor: '#a7c796',
+    // borderColor: '#566F48',
+  },
 addButtonText: {
   color: '#FFFFFF',
   fontWeight: 'bold',
   // Adjust this value to move the text slightly to the left
 },
-
-addBreedingDateButton: {
-  flex: 1,
-  backgroundColor: '#CA7373',
-  alignItems: 'center',
-  borderRadius: 10,
-  padding: 3,
-  
-  elevation: 3,
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.3,
-  shadowRadius: 2,
-},
   addBreedingDateText: {
     color: '#FFFFFF',
     fontWeight: 'bold',
   },
-
   // Modal Background and Container
   modalBackground: {
     flex: 1,
@@ -276,7 +273,7 @@ addBreedingDateButton: {
   },
 
   backImage: {
-    width: 30, // Adjust size as needed
+    width: 28, // Adjust size as needed
     height: 20, // Adjust size as needed
   },
 
