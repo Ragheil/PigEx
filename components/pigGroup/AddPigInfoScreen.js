@@ -638,7 +638,7 @@ const renderPig = ({ item }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.mainheader}>
-        <View style={{flexDirection: 'row', marginBottom: 10, }}>
+        <View style={{flexDirection: 'row', marginBottom: 10, gap: 5}}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.navibackButton}>
             <Image source={backImage} style={styles.backImage} />
           </TouchableOpacity>
@@ -664,17 +664,17 @@ const renderPig = ({ item }) => {
       </View>
 
       <View style={styles.filterButtonContainer}>
-          <TouchableOpacity style={styles.buttonAlive} onPress={() => setFilterType('alive')}>
-            <Text style={styles.aliveButtonText}>Show {'\n'}Alive</Text>
+          <TouchableOpacity style={[styles.buttonAlive, styles.buttonPigInfo]} onPress={() => setFilterType('alive')}>
+            <Text style={styles.buttonText}>Show{'\n'}Alive</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonDeceased} onPress={() => setFilterType('deceased')}>
-            <Text style={styles.buttonText}>Show{'\n'} Deceased</Text>
+          <TouchableOpacity style={[styles.buttonDeceased, styles.buttonPigInfo]} onPress={() => setFilterType('deceased')}>
+            <Text style={styles.buttonText}>Show{'\n'}Deceased</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonAll} onPress={() => setFilterType('all')}>
-            <Text style={styles.buttonText}>Show{'\n'} All</Text>
+          <TouchableOpacity style={[styles.buttonAll, styles.buttonPigInfo]} onPress={() => setFilterType('all')}>
+            <Text style={styles.buttonText}>Show{'\n'}All</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonSold} onPress={() => setFilterType('sold')}>
-            <Text style={styles.buttonText}>Sold{'\n'} Pig</Text>
+          <TouchableOpacity style={[styles.buttonSold, styles.buttonPigInfo]} onPress={() => setFilterType('sold')}>
+            <Text style={styles.buttonText}>Sold{'\n'}Pig</Text>
           </TouchableOpacity>
       </View>
 

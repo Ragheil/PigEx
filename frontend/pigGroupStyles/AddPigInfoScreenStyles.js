@@ -20,7 +20,7 @@ export default StyleSheet.create({
         // padding: 10,
         // marginRight: 5, // Space between the back button and the title
         // paddingTop: 45,
-        flex: 1,
+        // flex: 1,
         justifyContent: 'center',
       },
       backImage: {
@@ -47,32 +47,32 @@ export default StyleSheet.create({
       filterButtonContainer: {
         flexDirection: 'row',
         paddingVertical: 5, // Reduced vertical padding
-        paddingHorizontal: 5,
+        paddingHorizontal: 15,
         marginBottom: 5, // Reduced margin
+        justifyContent: 'center'
+      },
+      buttonPigInfo: {
+        flex: 1,
+        borderRadius: 13, // Reduced border radius
+        padding: 7, // Reduced padding
+        marginHorizontal: 2, // Reduced margin
+        borderWidth: 3,
       },
       buttonAlive: {
-        backgroundColor: '#F28585',
-        borderRadius: 5, // Reduced border radius
-        padding: 10, // Reduced padding
-        marginHorizontal: 2, // Reduced margin
+        borderColor: '#566F48',
+        backgroundColor: '#F28585B3',
       },
       buttonDeceased: {
-        backgroundColor: '#FF0000',
-        borderRadius: 5, // Reduced border radius
-        padding: 10, // Reduced padding
-        marginHorizontal: 2, // Reduced margin
+        borderColor: '#566F48',
+        backgroundColor: '#FF0000B3',
       },
       buttonAll: {
-        backgroundColor: '#FFA500',
-        borderRadius: 5, // Reduced border radius
-        padding: 10, // Reduced padding
-        marginHorizontal: 2, // Reduced margin
+        borderColor: '#566F48',
+        backgroundColor: '#FFA500B3',
       },
       buttonSold: {
-        backgroundColor: '#008000',
-        borderRadius: 5, // Reduced border radius
-        padding: 10, // Reduced padding
-        marginHorizontal: 2, // Reduced margin
+        borderColor: '#566F48',
+        backgroundColor: '#008000B3',
       },
       
       
@@ -84,10 +84,11 @@ export default StyleSheet.create({
         marginBottom: 5,
         padding: 5,
         paddingHorizontal: 15,
-        borderTopStartRadius: 22,
-        borderTopRightRadius: 22,
-        borderBottomLeftRadius: 3,
-        borderBottomEndRadius: 3,
+        borderRadius: 10,
+        // borderTopStartRadius: 22,
+        // borderTopRightRadius: 22,
+        // borderBottomLeftRadius: 3,
+        // borderBottomEndRadius: 3,
         flexDirection: 'row',
         justifyContent: 'space-around',
         elevation: 3,
@@ -168,21 +169,12 @@ export default StyleSheet.create({
       },
       buttonText: {
         textAlign: 'center',
-        fontSize: 18,
-        fontWeight: '600',
+        fontSize: 16,
+        fontWeight: '900',
         color: '#F5F5F5',
         textTransform: 'uppercase',
         lineHeight: 20, // Adjust the line height to your preference
       },
-      aliveButtonText: {
-        textAlign: 'center',
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#F5F5F5',
-        textTransform: 'uppercase',
-        lineHeight: 20, // Adjust the line height to your preference
-      },
-      
       datePickerButton: {
         backgroundColor: '#B1C68CFF', // Green background
         padding: 10,
