@@ -44,14 +44,16 @@ const MoneyOutScreenStyles = StyleSheet.create({
     marginBottom: 10,
   },
   record: {
+    paddingTop: 10,
     padding: 15,
     backgroundColor: '#ffffff',
     borderRadius: 8,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: '#ced4da',
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25,
     borderTopRightRadius: 25,
+    marginBottom: 5,
   },
   recordText: {
     fontSize: 16,
