@@ -13,7 +13,8 @@ const TransactionScreenStyles = StyleSheet.create({
   },
   navheader: {
     flexDirection: 'row',
-    marginBottom: 15,
+    // marginBottom: 15,
+    marginVertical: 8,
     gap: 5
     // backgroundColor: 'lightblue',
   },

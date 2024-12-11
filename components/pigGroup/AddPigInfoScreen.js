@@ -638,7 +638,7 @@ const renderPig = ({ item }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.mainheader}>
-        <View style={{flexDirection: 'row', marginBottom: 10, gap: 5}}>
+        <View style={{flexDirection: 'row', marginVertical: 8, gap: 5}}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.navibackButton}>
             <Image source={backImage} style={styles.backImage} />
           </TouchableOpacity>
