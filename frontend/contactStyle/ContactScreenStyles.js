@@ -19,9 +19,11 @@ export default StyleSheet.create({
     },
     headerContainer: {
       // flex: 1,
+      gap: 5,
       flexDirection: 'row',
       // justifyContent: 'space-between',
-      marginBottom: 5,
+      // marginBottom: 5,
+      marginVertical: 8,
       // columnGap: 5,
     },
     searchAndAddContainer: {
@@ -201,14 +203,12 @@ export default StyleSheet.create({
       textTransform: 'uppercase',
     },
     title: {
-      flex: 1.90,
+      // flex: 1.90,
       fontWeight: 'bold',
       fontSize: 28,
-      textAlign: 'left',
-      alignSelf: 'center',
     }, 
     backButton: {
-      flex: 1,
+      // flex: 1,
       justifyContent: 'center',
 
     },
