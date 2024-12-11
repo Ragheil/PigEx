@@ -968,7 +968,7 @@ const renderPig = ({ item }) => {
             }}
             style={styles.addButton}
           >
-            <Text style={styles.buttonText}>Add Pig Group</Text>
+            <Text style={styles.buttonText}>Add Pig </Text>
           </TouchableOpacity>
         </View>
     </SafeAreaView>

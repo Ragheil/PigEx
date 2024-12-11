@@ -102,11 +102,11 @@ const SeeAllBranchesScreen = () => {
   };
 
   const renderBranchItem = ({ item }) => (
-    <View style={styles.branchItem}>
+    <View style={[styles.branchItem, { backgroundColor: '#ffffff',marginTop: 5,marginBottom: 5, borderRadius: 10, padding: 15 }]} key={item.id}>
       <TouchableOpacity onPress={() => handleBranchSelect(item)}>
         <Text style={styles.branchName}>{item.farmName}</Text>
       </TouchableOpacity>
-      <View style={ styles.iconContainer}>
+      <View style={styles.iconContainer}>
         <TouchableOpacity onPress={() => openEditModal(item)}>
           <Image source={editIcon} style={styles.icon} />
         </TouchableOpacity>
@@ -151,16 +151,23 @@ const SeeAllBranchesScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>All Farm Branches</Text>
+     <Text style={styles.title}> Farm Branches</Text>
       <FlatList
         data={branches}
         keyExtractor={(item) => item.id}
         renderItem={renderBranchItem}
         ListEmptyComponent={<Text>No branches available.</Text>}
+        contentContainerStyle={styles.listContent} 
       />
 
-      <Button title="Add Branch" onPress={() => setBranchModalVisible(true)} />
-
+      <TouchableOpacity
+        style={styles.buttonContainer} // Apply the button container styles
+        onPress={() => setBranchModalVisible(true)}
+      >
+        <View style={styles.addButton}> 
+          <Text style={styles.buttonText}>Add Branch</Text> 
+        </View>
+      </TouchableOpacity>
       <Modal
         animationType="slide"
         transparent={true}
