@@ -153,7 +153,7 @@ const handleConfirmDeathDate = (date) => {
 // Function to filter pigs based on the selected filter type
 const filterPigs = (pigs) => {
   if (filterType === 'alive') {
-    return pigs.filter(pig => pig.vitality === 'alive');
+    return pigs.filter(pig => pig.vitality === 'alive' && !pig.sold); // Exclude sold pigs
   } else if (filterType === 'deceased') {
     return pigs.filter(pig => pig.vitality === 'deceased');
   } else if (filterType === 'sold') {
