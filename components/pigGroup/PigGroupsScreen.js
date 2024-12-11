@@ -365,10 +365,10 @@ const fetchPigGroups = () => {
             />
             <View style={{flexDirection: 'row', columnGap: 10}}>
               <View style={{flex: 1}}>
-                <Button title="Save" onPress={addOrUpdatePigGroup} color="#4CAF50" />
+                <Button title="Save" onPress={addOrUpdatePigGroup} color="#399918" />
               </View>
               <View style={{flex: 1}}>
-                <Button title="Cancel" onPress={closeModal} color="#F44336" />    
+                <Button title="Cancel" onPress={closeModal} color="#B7B7B7" />    
               </View>
             </View>
           </View>

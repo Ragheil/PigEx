@@ -890,12 +890,12 @@ const renderPig = ({ item }) => {
                       <Button
                         title={isEditing ? 'Update Pig' : 'Add Pig'}
                         onPress={isEditing ? handleEditPig : handleAddPig}
-                        color="#4CAF50"
+                        color="#399918"
                       />
                       <Button
                         title="Cancel"
                         onPress={() => setModalVisible(false)}
-                        color="#f44336"
+                        color="#B7B7B7"
                       />
                     </View>
                   </View>

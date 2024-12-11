@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     height: 30, // Adjust size as needed
     // backgroundColor: 'lightblue',
     marginTop: '10%', // Added margin for better spacing
-    marginLeft: '3%', // Added margin for better spacing
+    marginLeft: '1%', // Added margin for better spacing
   },
 
 });
