@@ -20,7 +20,7 @@ export default StyleSheet.create({
         // padding: 10,
         // marginRight: 5, // Space between the back button and the title
         // paddingTop: 45,
-        flex: 1,
+        // flex: 1,
         justifyContent: 'center',
       },
       backImage: {
