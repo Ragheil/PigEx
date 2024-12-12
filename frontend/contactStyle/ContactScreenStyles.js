@@ -115,7 +115,7 @@ export default StyleSheet.create({
     deleteButtonSwiped: {
       borderTopRightRadius: 0,
       borderBottomRightRadius: 0,
-    },
+    }, 
     deleteButton: {
       backgroundColor: '#F44336',
       justifyContent: 'center',
