@@ -563,11 +563,8 @@ useEffect(() => {
               <View
                   style={{
                     flex: .75,
-                    // width: '100%',
                     flexDirection: 'column',
-                    // padding: 10,
-                    // width: width * 0.9, // 90% of screen width
-                    alignSelf: 'center', // Center the container
+                    alignSelf: 'center',
                     // backgroundColor: 'lightblue'
                   }}
                 >

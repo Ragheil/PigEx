@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, FlatList, Button, TouchableOpacity, Alert, TextInput, Image } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, FlatList, Button, TouchableOpacity, Alert, TextInput, Image, SafeAreaView } from 'react-native';
 import { firestore } from '../../firebase/config2';
 import { collection, getDocs, doc, setDoc, writeBatch, getDoc, deleteDoc, query, where } from 'firebase/firestore';
 import PigDetailsScreenStyles from '../../frontend/Pregnancy/PigDetailsScreenStyles';
@@ -258,75 +258,119 @@ const filteredPigs = allPigs.filter(pig =>
   }
 
   return (
-    <View style={PigDetailsScreenStyles.container}>
-
-      <Text style={PigDetailsScreenStyles.title}>Pig Details</Text>
-      
-      <Text style={PigDetailsScreenStyles.pigInfo}>Mothers Name: {pigName}</Text>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={PigDetailsScreenStyles.backButton}>
-            <Image source={backImage} style={PigDetailsScreenStyles.backImage} />
-          </TouchableOpacity>
-       {/*  <Text style={PigDetailsScreenStyles.pigInfo}>Pig ID: {pigId}</Text> */}
-
-      <View style={PigDetailsScreenStyles.headerContainer}>
-        <Text style={PigDetailsScreenStyles.header}>All Pigs</Text>
-        <TextInput
-          style={PigDetailsScreenStyles.searchInput}
-          placeholder="Search by name, Group Name, or gender"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-      </View>
+    <SafeAreaView style={PigDetailsScreenStyles.container}>
+      <View 
+        style={{
+          backgroundColor: '#869f77',
+          width: '100%',
+          borderBottomLeftRadius: 25,
+          borderBottomRightRadius: 25,
+          rowGap: 5,
+          paddingHorizontal: 12,
+          paddingBottom: 10,
+          paddingTop: 25,
+        }}>
+          <View style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              paddingTop: 5,
+              columnGap: 5,
+              // backgroundColor: 'red'
+            }}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Image source={backImage} style={PigDetailsScreenStyles.backImage} />
+            </TouchableOpacity>
+          <Text style={PigDetailsScreenStyles.title}>Pig Details</Text>
+          </View>
+          
+          <View style={PigDetailsScreenStyles.header}>
+            <View style={PigDetailsScreenStyles.headerContainter}>
+              <View style={PigDetailsScreenStyles.header_box1}>
+                <Text style={[PigDetailsScreenStyles.pigInfo, {flex: 1}]}>Mothers Name:</Text>
+                <Text style={[PigDetailsScreenStyles.pigInfo, {fontWeight: '600', flex: 1.6}]}>{pigName}</Text>
+              </View>
+              <View style={PigDetailsScreenStyles.header_box2}>
+                <Text style={[PigDetailsScreenStyles.pigInfo, {flex: 1}]}>Pig ID:</Text>
+                <Text style={[PigDetailsScreenStyles.pigInfo, {fontWeight: '600', flex: 1.6}]}>{pigId}</Text>
+              </View>
+            </View>
+            
+            <View style={{flexDirection: 'row',}}>
+              <Text style={PigDetailsScreenStyles.searchText}>All Pigs</Text>
+              <View style={PigDetailsScreenStyles.searchContainer}>
+                <Image 
+                  source={require('../../assets/images/search.png')}
+                  style={PigDetailsScreenStyles.iconsearch}
+                />
+                <TextInput
+                  style={PigDetailsScreenStyles.searchInput}
+                  placeholder="Search by name, Group Name, or gender"
+                  value={searchQuery}
+                  onChangeText={setSearchQuery}
+                />
+              </View>
+            </View>
+          </View>
+        </View>
 
       <FlatList
-  data={filteredPigs}
-  keyExtractor={item => item.id}
-  numColumns={2}
-  renderItem={({ item }) => {
-    const assignedMotherName = assignedPiglets[item.id] || null;
-    const isAssignedToDifferentMother = assignedMotherName && assignedMotherName !== pigName;
+        style={{
+          // backgroundColor: 'red',
+          marginHorizontal: 10,
+        }}
+        data={filteredPigs}
+        keyExtractor={item => item.id}
+        numColumns={2}
+        renderItem={({ item }) => {
+          const assignedMotherName = assignedPiglets[item.id] || null;
+          const isAssignedToDifferentMother = assignedMotherName && assignedMotherName !== pigName;
+        
+          return (
+            <View style={PigDetailsScreenStyles.pigContainer}>
+              <Text style={PigDetailsScreenStyles.detail}>Name: {item.pigName}</Text>
+              <Text style={PigDetailsScreenStyles.detail}>Group: {item.groupName}</Text>
+              <Text style={PigDetailsScreenStyles.detail}>Gender: {item.gender}</Text>
+              
+              {/* Show assigned text for all piglets regardless of selection */}
+              {assignedMotherName && (
+                <Text style={PigDetailsScreenStyles.assignedText}>
+                  Assigned to mother: {assignedMotherName}
+                </Text>
+              )}
+              
+              <TouchableOpacity
+                style={[
+                  PigDetailsScreenStyles.selectButton,
+                  isAssignedToDifferentMother ? PigDetailsScreenStyles.disabledButton : null,
+                  selectedPiglets.includes(item.id) && PigDetailsScreenStyles.selectedButton,
+                ]}
+                onPress={() => togglePigletSelection(item.id)}
+                disabled={isAssignedToDifferentMother} // Disable button if assigned to a different mother
+              >
+                <Text style={PigDetailsScreenStyles.buttonText}>
+                  {isAssignedToDifferentMother
+                    ? `Already assigned to ${assignedMotherName}` // Using template literals
+                    : selectedPiglets.includes(item.id)
+                    ? "Deselect Piglet"
+                    : "Select as Piglet"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          );
+        }}
+      />
 
-    return (
-      <View style={PigDetailsScreenStyles.pigContainer}>
-        <Text style={PigDetailsScreenStyles.detail}>Name: {item.pigName}</Text>
-        <Text style={PigDetailsScreenStyles.detail}>Group: {item.groupName}</Text>
-        <Text style={PigDetailsScreenStyles.detail}>Gender: {item.gender}</Text>
-        
-        {/* Show assigned text for all piglets regardless of selection */}
-        {assignedMotherName && (
-          <Text style={PigDetailsScreenStyles.assignedText}>
-            Assigned to mother: {assignedMotherName}
-          </Text>
-        )}
-        
+      <View style={PigDetailsScreenStyles.savedbuttonContainer}>
         <TouchableOpacity
-          style={[
-            PigDetailsScreenStyles.selectButton,
-            isAssignedToDifferentMother ? PigDetailsScreenStyles.disabledButton : null,
-            selectedPiglets.includes(item.id) && PigDetailsScreenStyles.selectedButton,
-          ]}
-          onPress={() => togglePigletSelection(item.id)}
-          disabled={isAssignedToDifferentMother} // Disable button if assigned to a different mother
+          onPress={saveSelectedPigs}
+          style={PigDetailsScreenStyles.saveButton}
         >
-          <Text style={PigDetailsScreenStyles.buttonText}>
-          {isAssignedToDifferentMother
-            ? `Already assigned to ${assignedMotherName}` // Using template literals
-            : selectedPiglets.includes(item.id)
-            ? "Deselect Piglet"
-            : "Select as Piglet"}
-        </Text>
+          <Text style={PigDetailsScreenStyles.savebuttonText}>Save Selected Pigs</Text>
         </TouchableOpacity>
       </View>
-    );
-  }}
-/>
 
-      <Button
-        title="Save Selected Pigs"
-        onPress={saveSelectedPigs}
-        color="#4CAF50"
-      />
-    </View>
+    </SafeAreaView>
   );
 };
  

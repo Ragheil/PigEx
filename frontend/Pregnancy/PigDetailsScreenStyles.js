@@ -3,46 +3,80 @@ import { StyleSheet } from 'react-native';
 const PigDetailsScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: '#F5F5F5', // Light background color
+    backgroundColor: '#a7c796',
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 12,
-    color: '#333', // Darker text color for better contrast
-    textAlign: 'center',
+    color: '#000', // Darker text color for better contrast
   },
   pigInfo: {
     fontSize: 20,
-    marginBottom: 12,
-    color: '#555', // Slightly lighter text color
-    textAlign: 'center',
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 16,
+    color: '#000',
+    justifyContent: 'flex-start',
   },
   header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000000FF', // Brand color for header
+    backgroundColor: '#fefefe',
+    flexDirection: 'column', 
+    rowGap: 5,
+    borderRadius: 15,
+    padding: 10,
+  },
+  headerContainter: {
+    rowGap: 2,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 10,
+    padding: 10,
+    borderColor: '#ccc',
+    borderWidth: 1,
+  },
+  header_box1: {
+    flexDirection: 'row',
+    // columnGap: 15,
+  },
+  header_box2: {
+    flexDirection: 'row',
+    // columnGap: 80,
+  },
+  searchContainer: {
+    flex: 3,
+    alignSelf: 'center',
+    // backgroundColor: 'lightblue',
+    flexDirection: 'row',
+    columnGap: 10,
+    // width: '95%',
   },
   searchInput: {
+    // flex: 1,
+    width: '100%',
+    backgroundColor: '#f5f5f5',
+    borderColor: '#ccc',
     borderWidth: 1,
-    borderColor: '#00FF33FF',
-    borderRadius: 5,
-    padding: 10,
-    width: '75%',
-    marginLeft: 10,
-    backgroundColor: '#FFFFFF', // White background for input
-    elevation: 2, // Slight shadow for input
+    borderRadius: 10,
+    // padding: 8,
+    paddingLeft: 30,
+  },
+  iconsearch: {
+    width: 25, // Set your icon width
+    height: 25, // Set your icon height
+    position: 'absolute', // Position the icon absolutely
+    zIndex: 1,
+    marginLeft: 5,
+    opacity: .5,
+    alignSelf: 'center',
+  },
+  searchText: {
+    flex: .9,
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#000000FF',
+    alignSelf: 'center',
+    textAlign: 'center',
+    // backgroundColor: 'red'
   },
   pigContainer: {
     flex: 1,
-    margin: 8,
+    margin: 10,
     padding: 12,
     borderWidth: 1,
     borderColor: '#E0E0E0',
@@ -50,6 +84,7 @@ const PigDetailsScreenStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#FFFFFF', // White background for pig cards
+   
     shadowColor: '#000', // Shadow for pig cards
     shadowOffset: {
       width: 0,
@@ -71,7 +106,7 @@ const PigDetailsScreenStyles = StyleSheet.create({
     marginTop: 4,
   },
   selectButton: {
-    backgroundColor: '#007BFF',
+    backgroundColor: '#074799',
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',
@@ -80,7 +115,7 @@ const PigDetailsScreenStyles = StyleSheet.create({
     elevation: 2,
   },
   selectedButton: {
-    backgroundColor: '#28A745', // Success color for selected button
+    backgroundColor: '#399918', // Success color for selected button
   },
   disabledButton: {
     backgroundColor: '#B0BEC5', // Disabled button color
@@ -92,7 +127,30 @@ const PigDetailsScreenStyles = StyleSheet.create({
   },
   backImage: {
     width: 30, // Adjust size as needed
-    height: 20, // Adjust size as needed
+    height: 20, // Adjust size as needed'
+  },
+  savedbuttonContainer: {
+    // flex: 1,
+    height: 50,
+    width: '90%',
+    alignSelf: 'center',
+    bottom: 5,
+    marginTop: 15,
+  },
+  saveButton: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#566F48',
+    borderRadius: 20,
+    paddingHorizontal: 3,
+    insetBlockStart: -10,
+  },
+  savebuttonText: {
+    textAlign: 'center',
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#F5F5F5',
+    textTransform: 'uppercase',
   },
 });
 
