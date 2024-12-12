@@ -4,14 +4,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f7f7f7', // Light background color
+    backgroundColor: '#a7c796', // Light background color
   },
   title: {
     fontSize: 26, // Increased font size for better readability
     fontWeight: '700', // Bold font weight for title
     marginBottom: 20,
     color: '#333', // Darker text color for better contrast
-    marginTop: 60,
+    marginTop: 20,
   },
   branchItem: {
     flexDirection: 'row',
@@ -110,6 +110,51 @@ const styles = StyleSheet.create({
     fontSize: 18, // Increased font size for better readability
     fontWeight: '600', // Semi-bold font weight for buttons
   },
+  buttonContainer: {
+    // flex: 1,
+    height: 50,
+    width: '90%',
+    alignSelf: 'center',
+    // backgroundColor: 'red',
+    // height: 70,
+    // marginBottom: 20,
+    // marginHorizontal: 10,
+    // position: 'relative',
+    bottom: 5,
+    // justifyContent: 'flex-end',
+    // paddingHorizontal: 20,
+    // paddingBottom: 20,
+  },
+  filterButtonContainer: {
+    flexDirection: 'row',
+    paddingVertical: 5, // Reduced vertical padding
+    paddingHorizontal: 5,
+    marginBottom: 5, // Reduced margin
+  },
+  addButton: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#566F48',
+    borderRadius: 20,
+    paddingHorizontal: 3,
+    insetBlockStart: -10,
+  },
+  buttonText: {
+    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#F5F5F5',
+    textTransform: 'uppercase',
+    lineHeight: 20, // Adjust the line height to your preference
+  },
+  backImage: {
+    width: 30, // Adjust size as needed
+    height: 30, // Adjust size as needed
+    // backgroundColor: 'lightblue',
+    marginTop: '10%', // Added margin for better spacing
+    marginLeft: '1%', // Added margin for better spacing
+  },
+
 });
 
 export default styles;

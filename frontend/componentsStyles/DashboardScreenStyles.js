@@ -373,7 +373,7 @@ addButtonText: {
     marginBottom: 5,
   },
   updateButton: {
-    backgroundColor: '#E5791AFF',
+    backgroundColor: '#399918',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
@@ -387,7 +387,7 @@ addButtonText: {
     marginBottom: 5,
   },
   closeModalButton: {
-    backgroundColor: '#BD4D34FF',
+    backgroundColor: '#DF2E38',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
