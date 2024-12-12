@@ -344,7 +344,7 @@ const PregnancyRecords = ({ route, navigation }) => {
               paddingHorizontal: 10,
               // backgroundColor: 'red'
             }}>
-            {/* <TouchableOpacity onPress={() => navigation.goBack()} style={PregnancyRecordsStyles.backButton}>
+            {/* <TouchableOpacity onPress={() => navigation.goBack()}>
               <Image source={backImage} style={PregnancyRecordsStyles.backImage} />
             </TouchableOpacity> */}
             <Text style={PregnancyRecordsStyles.header}>List of all Female Pigs</Text>

@@ -2,7 +2,7 @@ Radius Size:
 
     15  Search Bar
     25  Header Container
-    10  Buttos (Add,Delete,Save,Cancel)
+    10  Buttons (Add,Delete,Save,Cancel)
 
 Fonts Size:
 
