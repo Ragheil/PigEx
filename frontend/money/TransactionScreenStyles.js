@@ -94,7 +94,6 @@ const TransactionScreenStyles = StyleSheet.create({
     fontSize: 25,
     fontWeight: '900',
     color: 'black',
-    // width: 100
   },
   totalIncomeText: {
     fontSize: 16,

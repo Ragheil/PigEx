@@ -654,7 +654,7 @@ useEffect(() => {
                   
                   <View style={{gap: 3, flexDirection: 'column'}}>
                     
-                    <View style={{marginTop:3, marginBottom: 5, width: 180}}>
+                    <View style={{marginTop:3, marginBottom: 5, width: '100%',}}>
                       <Text style={TransactionScreenStyles.subHeaderText}>Total Balance: </Text>
                       <Text style={TransactionScreenStyles.totalBalanceText}>PHP {formatBalance(totalBalance)}</Text>
                     </View>
