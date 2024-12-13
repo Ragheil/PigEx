@@ -11,9 +11,11 @@ const PigDetailsScreenStyles = StyleSheet.create({
     color: '#000', // Darker text color for better contrast
   },
   pigInfo: {
-    fontSize: 20,
+    fontSize: 16,
     color: '#000',
+    alignSelf: 'center',
     justifyContent: 'flex-start',
+    fontWeight: '450',
   },
   header: {
     backgroundColor: '#fefefe',
@@ -67,8 +69,8 @@ const PigDetailsScreenStyles = StyleSheet.create({
   },
   searchText: {
     flex: .9,
-    fontSize: 24,
-    fontWeight: '800',
+    fontSize: 20,
+    fontWeight: '700',
     color: '#000000FF',
     alignSelf: 'center',
     textAlign: 'center',
