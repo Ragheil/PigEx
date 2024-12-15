@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/images/pigIcon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#E1EADEFF"
+      "backgroundColor": "#a7c796"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -21,7 +21,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/pigIcon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#a7c796"
       },
       "package": "com.pigex.app",
       "versionCode": 8
