@@ -175,6 +175,14 @@ export default StyleSheet.create({
         textTransform: 'uppercase',
         lineHeight: 20, // Adjust the line height to your preference
       },
+      buttonDeceasedText: {
+        textAlign: 'center',
+        fontSize: 11,
+        fontWeight: '900',
+        color: '#F5F5F5',
+        textTransform: 'uppercase',
+        lineHeight: 17, // Adjust the line height to your preference
+      },
       datePickerButton: {
         backgroundColor: '#B1C68CFF', // Green background
         padding: 10,

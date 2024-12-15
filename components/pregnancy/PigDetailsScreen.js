@@ -287,12 +287,12 @@ const filteredPigs = allPigs.filter(pig =>
           <View style={PigDetailsScreenStyles.header}>
             <View style={PigDetailsScreenStyles.headerContainter}>
               <View style={PigDetailsScreenStyles.header_box1}>
-                <Text style={[PigDetailsScreenStyles.pigInfo, {flex: 1}]}>Mothers Name:</Text>
+                <Text style={[PigDetailsScreenStyles.pigInfo, {flex: 1}]}>Mother's Name:</Text>
                 <Text style={[PigDetailsScreenStyles.pigInfo, {fontSize: 18, fontWeight: '600', flex: 1.6}]}>{pigName}</Text>
               </View>
               <View style={PigDetailsScreenStyles.header_box2}>
-                <Text style={[PigDetailsScreenStyles.pigInfo, {flex: 1}]}>Pig ID:</Text>
-                <Text style={[PigDetailsScreenStyles.pigInfo, {fontSize: 18, fontWeight: '600', flex: 1.6}]}>{pigId}</Text>
+                {/*<Text style={[PigDetailsScreenStyles.pigInfo, {flex: 1}]}>Pig ID:</Text>
+                <Text style={[PigDetailsScreenStyles.pigInfo, {fontSize: 18, fontWeight: '600', flex: 1.6}]}>{pigId}</Text>*/}
               </View>
             </View>
             

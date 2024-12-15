@@ -668,7 +668,7 @@ const renderPig = ({ item }) => {
             <Text style={styles.buttonText}>Show{'\n'}Alive</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.buttonDeceased, styles.buttonPigInfo]} onPress={() => setFilterType('deceased')}>
-            <Text style={styles.buttonText}>Show{'\n'}Deceased</Text>
+            <Text style={styles.buttonDeceasedText}>Show{'\n'}Deceased</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.buttonAll, styles.buttonPigInfo]} onPress={() => setFilterType('all')}>
             <Text style={styles.buttonText}>Show{'\n'}All</Text>
