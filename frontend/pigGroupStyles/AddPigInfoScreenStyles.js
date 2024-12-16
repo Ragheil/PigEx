@@ -274,7 +274,20 @@ export default StyleSheet.create({
       detailText: {
         fontSize: 18,
         fontWeight: '700',
+        color: '#000000FF',
       },
+      ammountLossText: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#F10000FF',
+      },
+
+      ammountSoldText: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#000000FF',
+      },
+
 
       //modal
       modalContainer: {

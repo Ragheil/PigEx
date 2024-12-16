@@ -24,7 +24,7 @@
         "backgroundColor": "#a7c796"
       },
       "package": "com.pigex.app",
-      "versionCode": 8
+      "versionCode": 9
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -176,7 +176,6 @@ const filterPigs = (pigs) => {
 
 
   // Fetch Pigs from the selected branch
-  // Fetch Pigs from the selected branch
 useEffect(() => {
   const fetchPigs = async () => {
     const pigsCollectionPath = selectedBranch === 'Main Farm'
@@ -903,6 +902,7 @@ const renderPig = ({ item }) => {
               </Modal>
 
 {/* Pig Detail Modal */}
+{/* Pig Detail Modal */}
 <Modal
   visible={detailModalVisible}
   transparent={true}
@@ -921,12 +921,19 @@ const renderPig = ({ item }) => {
           <Text style={styles.detailText}>Date of Birth: {selectedPig.dateOfBirth ? selectedPig.dateOfBirth.toDate().toDateString() : 'N/A'}</Text>
           <Text style={styles.detailText}>Vitality: {selectedPig.vitality}</Text>
           
+          {/* Check if the pig is deceased and display the amount loss */}
+          {selectedPig.vitality === 'deceased' && (
+            <Text style={styles.ammountLossText}>
+              Amount Loss: ₱{selectedPig.amount ? selectedPig.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'N/A'}
+            </Text>
+          )}
+
           {/* Check if the pig is sold and display the amount */}
           {selectedPig.sold && (
-        <Text style={styles.detailText}>
-          Amount: {selectedPig.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (Sold Pig)
-        </Text>
-      )}
+            <Text style={styles.ammountSoldText}>
+              Amount Sold: ₱{selectedPig.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </Text>
+          )}
 
           {/* View Medical Records Button */}
           <Button

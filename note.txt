@@ -26,3 +26,5 @@
 
 #B7B7B7
  - cancel grey
+
+ Peso sign: ₱
