@@ -3,8 +3,6 @@ import { View, Text, TextInput, Button, TouchableOpacity, Alert, ScrollView, Ima
 import { collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc, where, getDoc,onSnapshot } from 'firebase/firestore';
 import { auth, firestore } from '../../firebase/config2';
 import Modal from 'react-native-modal';
-import { useRoute } from '@react-navigation/native';
-import pigImage from '../../assets/images/pigIcon.png';
 import editIcon from '../../assets/images/buttons/editIcon.png';
 import deleteIcon from '../../assets/images/buttons/deleteIcon.png';
 import styles from '../../frontend/pigGroupStyles/PigGroupsScreenStyles';
