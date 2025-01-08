@@ -782,7 +782,7 @@ useEffect(() => {
                   <Text style={styles.closeModalText}>Close</Text>
                 </TouchableOpacity>
               </View>
-            </View>
+            </View> 
           </View>
         </Modal>
       </LinearGradient>
