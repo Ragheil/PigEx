@@ -3,8 +3,8 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#f0f4f8', // Softer light background for contrast
+    // padding: 20,
+    backgroundColor: '#a7c796', // Softer light background for contrast
   },
   title: {
     fontSize: 26, // Slightly larger font size for the title
@@ -12,6 +12,66 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: '#2c3e50', // Darker text for better readability
     textAlign: 'center', // Center align title
+  },
+  mainheader: {
+    backgroundColor: '#869f77',
+    paddingHorizontal: 15,
+    // paddingTop: 30,
+    paddingBottom: 10,
+    borderBottomRightRadius: 25,
+    borderBottomLeftRadius: 25,
+    elevation: 10,
+    // rowGap: 15,
+  },
+  navibackButton: {
+    // padding: 10,
+    // marginRight: 5, // Space between the back button and the title
+    // paddingTop: 45,
+    // flex: 1,
+    justifyContent: 'center',
+  },
+  backImage: {
+    width: 30, // Adjust size as needed
+    height: 30, // Adjust size as needed
+    // backgroundColor: 'lightblue',
+  },
+  headerText: {
+    flex: 3,
+    fontSize: 28,
+    fontWeight: 'bold',
+    alignSelf: 'center', 
+    // marginBottom: 10,
+    // marginTop: 5,
+    // backgroundColor: 'lightblue',
+  },
+  searchContainer: {
+    // backgroundColor: 'lightblue',
+    flexDirection: 'row',
+    // justifyContent: 'center',
+    // justifyContent: 'center',
+    width: '95%',
+    alignSelf: 'center',
+    columnGap: 10,
+  },
+  searchInput: {
+    // flex: 1,
+    width: '100%',
+    borderColor: '#ccc',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderRadius: 15,
+    // padding: 8,
+    paddingLeft: 30,
+  },
+  iconsearch: {
+    width: 25, // Set your icon width
+    height: 25, // Set your icon height
+    position: 'absolute', // Position the icon absolutely
+    zIndex: 1,
+    marginLeft: 5,
+    opacity: .5,
+    alignSelf: 'center',
+    // backgroundColor: 'red'
   },
   recordItem: {
     marginBottom: 15,
@@ -101,6 +161,75 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 18, // Slightly larger font size
     fontWeight: '600', // Semi-bold font weight
+  },
+  buttonContainer: {
+    // flex: 1,
+    height: 50,
+    width: '90%',
+    alignSelf: 'center',
+    // backgroundColor: 'red',
+    // height: 70,
+    // marginBottom: 20,
+    // marginHorizontal: 10,
+    // position: 'relative',
+    bottom: 5,
+    // justifyContent: 'flex-end',
+    // paddingHorizontal: 20,
+    // paddingBottom: 20,
+  },
+  addButton: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#566F48',
+    borderRadius: 20,
+    paddingHorizontal: 3,
+    insetBlockStart: -10,
+  },
+  addButtonText: {
+    textAlign: 'center',
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#F5F5F5',
+    textTransform: 'uppercase',
+    lineHeight: 20, // Adjust the line height to your preference
+  },
+  groupnameContainer: {
+    backgroundColor: '#869f77',
+    marginHorizontal: 20,
+    marginTop: 10,
+    marginBottom: 5,
+    padding: 5,
+    paddingHorizontal: 15,
+    borderRadius: 10,
+    // borderTopStartRadius: 22,
+    // borderTopRightRadius: 22,
+    // borderBottomLeftRadius: 3,
+    // borderBottomEndRadius: 3,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    elevation: 3,
+  },
+  groupname:{
+    flex: 1,
+    fontSize: 18,
+    fontWeight: 'bold',
+    // backgroundColor: 'lightblue'
+    
+  },
+  groupNametext: {
+    flex: 3,
+    // alignContent: 'center',
+    // alignItems: 'center',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    // backgroundColor: 'red'
+  },
+  groupNamevalue: {
+    // alignContent: 'center',
+    // alignSelf: 'center',
+    // alignItems: 'center',
+    textAlign: 'center',
+    // backgroundColor: 'red'
   },
 });
 

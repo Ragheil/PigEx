@@ -7,6 +7,8 @@ import {
   FlatList,
   Modal,
   Alert,
+  TouchableOpacity,
+  Image
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { firestore } from '../../firebase/config2';
@@ -21,7 +23,9 @@ import {
   Timestamp
 } from 'firebase/firestore';
 import styles from '../../frontend/medicalStyles/MedicalRecordScreenStyles';
-
+import backImage from '../../assets/images/buttons/backbutton.png'; // Adjust the path as needed
+import { SafeAreaView } from 'react-native-safe-area-context';
+    
 const MedicalRecordScreen = ({ route, navigation }) => {
   const { userId, selectedBranch, pigGroupId, pigName, selectedPigId } = route.params;
   const [records, setRecords] = useState([]);
@@ -169,21 +173,32 @@ useEffect(() => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Medical Records for {pigName}</Text>
+      {/* <Text style={styles.title}>Medical Records for {pigName}</Text> */}
+      <SafeAreaView style={styles.mainheader}>
+        <View style={{flexDirection: 'row', marginVertical: 8, gap: 5}}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.navibackButton}>
+            <Image source={backImage} style={styles.backImage} />
+          </TouchableOpacity>
+          <Text style={styles.headerText}>Medical Records</Text>
+        </View>
+        <View style={styles.searchContainer}>
+          <Image 
+                source={require('../../assets/images/search.png')}
+                style={styles.iconsearch}
+          />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search by Name"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+        </View>
+      </SafeAreaView>
 
-      {/* Search Bar */}
-      <TextInput
-        placeholder="Search by Name"
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        style={styles.input}
-      />
-
-      <Button title="Add Medical Record" onPress={() => {
-        resetFields();
-        setModalVisible(true);
-        setEditRecordId(null); // Ensure no record is set for editing
-      }} color="#4CAF50" />
+      <View style={styles.groupnameContainer}>
+        <Text style={[styles.groupname, styles.groupNametext]}>Medical Records:</Text>
+        <Text style={[styles.groupname, styles.groupNamevalue]}>{pigName}</Text>
+      </View>
 
       <FlatList
         data={filteredRecords}
@@ -246,6 +261,20 @@ useEffect(() => {
           <Button title="Cancel" onPress={() => setModalVisible(false)} />
         </View>
       </Modal>
+
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          onPress={() => {
+            resetFields();
+            setModalVisible(true);
+            setEditRecordId(null); // Ensure no record is set for editing
+          }}
+          style={styles.addButton}
+        >
+          <Text style={styles.addButtonText}>Add Medical Record</Text>
+        </TouchableOpacity>
+      </View>
+
     </View>
   );
 };

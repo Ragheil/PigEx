@@ -200,6 +200,8 @@ const TransactionScreenStyles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     borderRadius: 10,
+    paddingVertical: 10,
+    backgroundColor: '#566F48',
     // textAlign: 'center'
     // height: '100%',
   },
@@ -245,21 +247,22 @@ const TransactionScreenStyles = StyleSheet.create({
     backgroundColor: 'red',
   },
   inactiveButton: {
+    opacity: .7,
     backgroundColor: 'grey',
   },
   buttonText: {
     color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
+    fontWeight: '500',
+    fontSize: 20,
     textAlign: 'center'
   },
   activeButtonAll: {
     backgroundColor: '#FF5900FF',
   },
-  showAllButtonText: {
+  showButtonText: {
     color: '#FFFFFFFF',
-    fontWeight: 'bold',
-    fontSize: 16,
+    fontWeight: '700',
+    fontSize: 18,
   },
   
 });

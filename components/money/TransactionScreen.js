@@ -18,15 +18,14 @@ const TransactionScreen = ({ route }) => {
   const { selectedBranch, userId } = route.params;
   const navigation = useNavigation();
   const screenWidth = Dimensions.get('window').width;
-  const [selectedPeriod, setSelectedPeriod] = useState('month'); // Default to month
   const [transactions, setTransactions] = useState([]);
+  const [selectedPeriod, setSelectedPeriod] = useState('month'); // Default to month
   const [userDetails, setUserDetails] = useState({
     firstName: '',
     lastName: '',
     farmName: '',
   });
   const [showAllTransactions, setShowAllTransactions] = useState(false);
-
   const [refreshing, setRefreshing] = useState(false);
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpense, setTotalExpense] = useState(0);
@@ -51,8 +50,8 @@ const TransactionScreen = ({ route }) => {
   const [branchFarmName, setBranchFarmName] = useState('');
   const [showMoneyIn, setShowMoneyIn] = useState(true); // Show Money In by default
   const [showMoneyOut, setShowMoneyOut] = useState(false); // Hide Money Out by default
-const [loading, setLoading] = useState(true);
-const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   useEffect(() => {
     const unsubscribeUser = fetchUserDetails();
     fetchTransactionRecords();
@@ -278,7 +277,6 @@ useEffect(() => {
     setFilteredTransactions(filtered);
     calculateTotals(filtered);
   };
-
 
   const openDatePicker = (type) => {
     DateTimePickerAndroid.open({
@@ -546,7 +544,6 @@ useEffect(() => {
     { title: "Month", value: "month" },
     { title: "Year", value: "year" },
   ];
-  const navbuttonColor = '#566F48';
 
   return (
     <SafeAreaView style={TransactionScreenStyles.container}>
@@ -562,25 +559,29 @@ useEffect(() => {
             <View style={TransactionScreenStyles.infoHeader}>
               <View
                   style={{
-                    flex: .75,
-                    flexDirection: 'column',
+                    flex: 1,
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
                     alignSelf: 'center',
+                    paddingHorizontal: 10,
                     // backgroundColor: 'lightblue'
                   }}
                 >
                   <TouchableOpacity onPress={() => openDatePicker('start')}>
                     <Text
                       style={{
-                        fontSize: width > 320 ? 15 : 14, // Adjust font size for smaller screens
-                        fontWeight: '500',
+                        fontSize: 18,
+                        // fontSize: width > 320 ? 15 : 14, // Adjust font size for smaller screens
+                        fontWeight: '400',
                         marginVertical: 1, // Space between items
                       }}
                     >
                       Start Date:{' '}
                       <Text
                         style={{
-                          fontSize: width > 320 ? 15 : 14, // Match font size with the label
-                          fontWeight: '800',
+                          fontSize: 14,
+                          // fontSize: width > 320 ? 15 : 14, // Match font size with the label
+                          fontWeight: '900',
                         }}
                       >
                         {startDate.toLocaleDateString()}
@@ -591,15 +592,17 @@ useEffect(() => {
                   <TouchableOpacity onPress={() => openDatePicker('end')}>
                     <Text
                       style={{
-                        fontSize: width > 320 ? 15 : 14,
-                        fontWeight: '500',
+                        fontSize: 18,
+                        // fontSize: width > 320 ? 15 : 14,
+                        fontWeight: '400',
                         marginVertical: 1,
                       }}
                     >
                       End Date:{' '}
                       <Text
                         style={{
-                          fontSize: width > 320 ? 15 : 14,
+                          fontSize: 14,
+                          // fontSize: width > 320 ? 15 : 14,
                           fontWeight: '900',
                         }}
                       >
@@ -607,38 +610,6 @@ useEffect(() => {
                       </Text>
                     </Text>
                   </TouchableOpacity>
-              </View>
-
-              <View style={{ 
-                flex: 1,
-                flexDirection: 'row', 
-                justifyContent: 'center', 
-                columnGap: 5,
-                height: '100%',
-                width: '100%'
-              }}>
-                {/* <Button color='#566F48' title="Week" onPress={() => setSelectedPeriod('week')} />
-                <Button color='#566F48' title="Month" onPress={() => setSelectedPeriod('month')} />
-                <Button color='#566F48' title="Year" onPress={() => setSelectedPeriod('year')} /> */}
-                {periods.map(period => (
-                    // <Button 
-                    //     key={period.value} 
-                    //     color={navbuttonColor} 
-                    //     title={period.title}
-                    //     onPress={() => setSelectedPeriod(period.value)} 
-                    // />
-                    <TouchableOpacity
-                      key={period.value}
-                      style={[
-                          TransactionScreenStyles.datebutton, // Add your button styles here
-                          { backgroundColor: navbuttonColor }, // Set the background color
-                      ]}
-                      onPress={() => setSelectedPeriod(period.value)}
-                      activeOpacity={0.7} // Optional: Adjust opacity for touch feedback
-                    >
-                      <Text style={TransactionScreenStyles.buttonText}>{period.title}</Text>
-                    </TouchableOpacity>
-                ))}
               </View>
 
             </View>
@@ -702,7 +673,7 @@ useEffect(() => {
                 onPress={handleShowMoneyIn}
                 activeOpacity={1}
               >
-                <Text style={TransactionScreenStyles.buttonText}>Show all Money In</Text>
+                <Text style={TransactionScreenStyles.showButtonText}>Show all Money In</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -713,7 +684,7 @@ useEffect(() => {
                 onPress={handleShowAllTransactions}
                 activeOpacity={1}
               >
-                <Text style={TransactionScreenStyles.showAllButtonText}>Show All Records</Text>
+                <Text style={TransactionScreenStyles.showButtonText}>Show All Records</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -724,7 +695,7 @@ useEffect(() => {
                 onPress={handleShowMoneyOut}
                 activeOpacity={1}
               >
-                <Text style={TransactionScreenStyles.buttonText}>Show all Money Out</Text>
+                <Text style={TransactionScreenStyles.showButtonText}>Show all Money Out</Text>
               </TouchableOpacity>
             </View>
           </ScrollView>
@@ -738,14 +709,42 @@ useEffect(() => {
         // style={{height: '100%'}}
       >
       <View style={TransactionScreenStyles.body}>
-          <View style={{ alignItems: 'center', marginBottom: 20,}}>
-            <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: 'bold', marginBottom: 10,}}>
+          <View style={{ alignItems: 'center', marginBottom: 20 }}>
+            
+            <Text style={{ textAlign: 'center', fontSize: 20, fontWeight: 'bold', marginBottom: 10,}}>
                 {selectedPeriod === 'week'
                     ? 'Weekly Transactions'
                     : selectedPeriod === 'month'
                     ? `${new Date().toLocaleString('default', { month: 'long' })} Transactions`
                     : 'Yearly Transactions'}
             </Text>
+
+            <View style={{ 
+                flex: 1,
+                flexDirection: 'row', 
+                justifyContent: 'center', 
+                columnGap: 5,
+                height: '100%',
+                width: '100%',
+              }}>
+                {/* <Button color='#566F48' title="Week" onPress={() => setSelectedPeriod('week')} />
+                <Button color='#566F48' title="Month" onPress={() => setSelectedPeriod('month')} />
+                <Button color='#566F48' title="Year" onPress={() => setSelectedPeriod('year')} /> */}
+                {periods.map(period => (
+                    <TouchableOpacity
+                      key={period.value}
+                      style={[
+                        TransactionScreenStyles.datebutton,
+                        { backgroundColor: selectedPeriod === period.value ? '#4d6340' : '#566F48B3' }
+                      ]}
+                      onPress={() => setSelectedPeriod(period.value)}
+                      activeOpacity={1}
+                    >
+                      <Text style={TransactionScreenStyles.buttonText}>{period.title}</Text>
+                    </TouchableOpacity>
+                ))}
+              </View>
+
               <ScrollView 
               horizontal
               showsHorizontalScrollIndicator={false} 

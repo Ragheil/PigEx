@@ -74,9 +74,6 @@ export default StyleSheet.create({
         borderColor: '#566F48',
         backgroundColor: '#008000B3',
       },
-      
-      
-      
       groupnameContainer: {
         backgroundColor: '#869f77',
         marginHorizontal: 20,
@@ -169,20 +166,20 @@ export default StyleSheet.create({
       },
       buttonText: {
         textAlign: 'center',
-        fontSize: 16,
-        fontWeight: '900',
+        fontSize: 14,
+        fontWeight: '800',
         color: '#F5F5F5',
         textTransform: 'uppercase',
         lineHeight: 20, // Adjust the line height to your preference
       },
-      buttonDeceasedText: {
-        textAlign: 'center',
-        fontSize: 11,
-        fontWeight: '900',
-        color: '#F5F5F5',
-        textTransform: 'uppercase',
-        lineHeight: 17, // Adjust the line height to your preference
-      },
+      // buttonDeceasedText: {
+      //   textAlign: 'center',
+      //   fontSize: 14,
+      //   fontWeight: '900',
+      //   color: '#F5F5F5',
+      //   textTransform: 'uppercase',
+      //   lineHeight: 17, // Adjust the line height to your preference
+      // },
       datePickerButton: {
         backgroundColor: '#B1C68CFF', // Green background
         padding: 10,

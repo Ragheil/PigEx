@@ -365,10 +365,23 @@ const fetchPigGroups = () => {
             />
             <View style={{flexDirection: 'row', columnGap: 10}}>
               <View style={{flex: 1}}>
-                <Button title="Save" onPress={addOrUpdatePigGroup} color="#399918" />
+                {/* <Button title="Cancel" onPress={closeModal} color="#DF2E38" /> */}
+                <TouchableOpacity
+                  style={[styles.buttonModal, { backgroundColor: '#DF2E3833', borderColor: '#DF2E38', borderWidth: 1.5 }]}
+                  onPress={closeModal}
+                >
+                  <Text style={[styles.buttonTextModal, {color: '#DF2E38'}]}>Cancel</Text>
+                </TouchableOpacity>
               </View>
-              <View style={{flex: 1}}>
-                <Button title="Cancel" onPress={closeModal} color="#DF2E38" />    
+              
+              <View style={{flex: 2}}>
+                {/* <Button title="Save" onPress={addOrUpdatePigGroup} color="#566F48" /> */}
+                <TouchableOpacity
+                  style={[styles.buttonModal, { backgroundColor: '#566F48', borderColor: '#566F48', borderWidth: 1.5  }]}
+                  onPress={addOrUpdatePigGroup}
+                >
+                  <Text style={styles.buttonTextModal}>Save</Text>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -389,10 +402,23 @@ const fetchPigGroups = () => {
           />
           <View style={{flexDirection: 'row', columnGap: 10}}>
             <View style={{flex: 1}}>
-              <Button title="Cancel" onPress={closeModal} color="#DF2E38" />
+              {/* <Button title="Cancel" onPress={closeModal} color="#DF2E38" /> */}
+              <TouchableOpacity
+                style={[styles.buttonModal, { backgroundColor: '#DF2E3833' }]}
+                onPress={closeModal}
+              >
+                <Text style={[styles.buttonTextModal, {color: '#DF2E38'}]}>No, Keep it.</Text>
+              </TouchableOpacity>
             </View>
+            
             <View style={{flex: 1}}>
-              <Button title="Delete" onPress={deletePigGroup} color="#F44336" />  
+              {/* <Button title="Save" onPress={addOrUpdatePigGroup} color="#566F48" /> */}
+              <TouchableOpacity
+                style={[styles.buttonModal, { backgroundColor: '#DF2E38' }]}
+                onPress={deletePigGroup}
+              >
+                <Text style={styles.buttonTextModal}>Yes, Delete!</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>

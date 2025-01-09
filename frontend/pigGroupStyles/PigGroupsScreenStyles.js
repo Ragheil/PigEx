@@ -262,7 +262,7 @@ export default StyleSheet.create({
         backgroundColor: '#fff',
         borderColor: '#ccc',
         borderWidth: 1,
-        borderRadius: 4,
+        borderRadius: 5,
         paddingLeft: 10,
         width: '100%',
         marginBottom: 15,
@@ -274,5 +274,14 @@ export default StyleSheet.create({
         width: '100%',
         // backgroundColor: 'lightblue',
       },
-      
+      buttonModal: {
+        padding: 10,
+        borderRadius: 8,
+      },
+      buttonTextModal: {
+        textAlign: 'center',
+        fontSize: 18,
+        fontWeight: '500',
+        color: '#F5F5F5',
+      }
 });
