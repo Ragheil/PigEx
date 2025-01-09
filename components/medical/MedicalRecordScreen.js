@@ -303,7 +303,7 @@ useEffect(() => {
                     borderWidth: 2,
                     padding: 10
                   }}>
-                  <Text style={styles.buttonText}>Cancel</Text>
+                  <Text style={[styles.buttonText, {textAlign: 'center'}]}>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => {
@@ -320,7 +320,7 @@ useEffect(() => {
                     padding: 10
                   }}
                 >
-                  <Text style={styles.buttonText}>{editRecordId ? 'Update Record' : 'Add Record'}</Text>
+                  <Text style={[styles.buttonText, {textAlign: 'center'}]}>{editRecordId ? 'Update Record' : 'Add Record'}</Text>
                 </TouchableOpacity>
               </View>
             </View>
