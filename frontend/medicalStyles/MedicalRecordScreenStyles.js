@@ -74,7 +74,8 @@ const styles = StyleSheet.create({
     // backgroundColor: 'red'
   },
   recordItem: {
-    margin: 15,
+    marginTop: 5,
+    marginBottom: 10,
     marginHorizontal: 25,
     padding: 15,
     // borderWidth: 1,
