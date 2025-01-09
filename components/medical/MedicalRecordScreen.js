@@ -241,7 +241,12 @@ useEffect(() => {
                 }}
                 style={{flex: 1.5, padding: 10, backgroundColor: '#566F48', borderRadius: 5 }}
               >
-                <Text style={{ color: 'white', textAlign: 'center' }}>Edit</Text>
+                <Text style={{ 
+                  color: 'white', 
+                  textAlign: 'center' ,
+                  fontWeight: '500', 
+                  fontSize: 18, 
+                  }}>Edit</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -249,38 +254,77 @@ useEffect(() => {
         keyExtractor={item => item.id}
       />
 
-      <Modal visible={modalVisible} animationType="slide">
+      <Modal visible={modalVisible} animationType="slide" transparent={true}>
         <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>{editRecordId ? 'Edit Record' : 'Add Record'}</Text>
-          <TextInput
-            placeholder="Name"
-            value={name}
-            onChangeText={setName}
-            style={styles.input}
-          />
-          <TextInput
-            placeholder="Remarks"
-            value={remarks}
-            onChangeText={setRemarks}
-            style={styles.input}
-          />
-          <Button title="Show Date Picker" onPress={() => setIsDatePickerVisible(true)} />
-          {isDatePickerVisible && (
-            <DateTimePicker
-              value={date}
-              mode="date"
-              display="default"
-              onChange={handleDateChange}
+          <View style={{backgroundColor: 'white', padding: 20, borderRadius: 15,}}>
+            <Text style={styles.modalTitle}>{editRecordId ? 'Edit Record' : 'Add Record'}</Text>
+            <TextInput
+              placeholder="Name"
+              value={name}
+              onChangeText={setName}
+              style={styles.input}
             />
-          )}
-          <Button title={editRecordId ? 'Update Record' : 'Add Record'} onPress={() => {
-            if (editRecordId) {
-              handleEditRecord(editRecordId);
-            } else {
-              handleAddRecord();
-            }
-          }} />
-          <Button title="Cancel" onPress={() => setModalVisible(false)} />
+            <TextInput
+              placeholder="Remarks"
+              value={remarks}
+              onChangeText={setRemarks}
+              style={styles.input}
+            />
+            <View style={{gap: 5}}>
+            <TouchableOpacity onPress={() => setIsDatePickerVisible(true)} 
+              style={{
+                backgroundColor: '#064ACB',
+                padding: 10,
+                borderRadius: 12,
+              }}>
+              <Text style={{
+                color: '#ffffff', 
+                fontSize: 18,
+                fontWeight: '600', 
+                textAlign: 'center'
+              }}>Show Date Picker</Text>
+            </TouchableOpacity>
+              {isDatePickerVisible && (
+                <DateTimePicker
+                  value={date}
+                  mode="date"
+                  display="default"
+                  onChange={handleDateChange}
+                />
+              )}
+              <View style={{flexDirection: 'row', gap: 5}}>
+                <TouchableOpacity onPress={() => setModalVisible(false)} 
+                  style={{
+                    flex: 1,
+                    backgroundColor: '#DF2E3880', 
+                    borderRadius: 5, 
+
+                    borderColor: '#DF2E38',
+                    borderWidth: 2,
+                    padding: 10
+                  }}>
+                  <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (editRecordId) {
+                      handleEditRecord(editRecordId);
+                    } else {
+                      handleAddRecord();
+                    }
+                  }}
+                  style={{
+                    flex: 1.5,
+                    backgroundColor: '#566F48', 
+                    borderRadius: 5, 
+                    padding: 10
+                  }}
+                >
+                  <Text style={styles.buttonText}>{editRecordId ? 'Update Record' : 'Add Record'}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
         </View>
       </Modal>
 
