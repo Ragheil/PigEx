@@ -91,7 +91,7 @@ const MoneyOutScreenStyles = StyleSheet.create({
   },
   buttonText: {
     color: '#ffffff',
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center',
   },
