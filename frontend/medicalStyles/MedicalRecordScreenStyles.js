@@ -99,19 +99,22 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: 'center',
-    backgroundColor: '#ffffff', // White background for modal
-    borderRadius: 12, // More pronounced rounded corners for modal
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
+    backgroundColor: '#00000040', // White background 
+    // alignSelf: 'center',
+    // alignItems: 'center',
+    // alignContent: 'center',for modal
+    // borderRadius: 12, // More pronounced rounded corners for modal
+    // shadowColor: '#000',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 4,
+    // },
+    // shadowOpacity: 0.3,
+    // shadowRadius: 8,
+    // elevation: 6,
   },
   modalTitle: {
-    fontSize: 24, // Slightly larger font size for modal title
+    fontSize: 26, // Slightly larger font size for modal title
     marginBottom: 20,
     color: '#27ae60', // Softer green color for title
     textAlign: 'center',
