@@ -204,24 +204,46 @@ useEffect(() => {
         data={filteredRecords}
         renderItem={({ item }) => (
           <View style={styles.recordItem}>
-            <Text>Name: {item.name}</Text>
-            <Text>Date: {item.date ? item.date.toDate().toLocaleDateString() : "Date not available"}</Text>
-            <Text>Remarks: {item.remarks}</Text>
-            <Button
-              title="Edit"
-              onPress={() => {
-                setName(item.name);
-                setDate(item.date ? item.date.toDate() : new Date());
-                setRemarks(item.remarks);
-                setEditRecordId(item.id);
-                setModalVisible(true);
-              }}
-            />
-            <Button
-              title="Delete"
-              onPress={() => handleDeleteRecord(item.id)}
-              color="red"
-            />
+            <View style={{marginBottom: 10, gap: 3}}>
+              <Text style={styles.recordItemText}>Name: {item.name}</Text>
+              <Text style={styles.recordItemText}>Date: {item.date ? item.date.toDate().toLocaleDateString() : "Date not available"}</Text>
+              <Text style={styles.recordItemText}>Remarks: {item.remarks}</Text>
+            </View>
+            <View style={{flexDirection: 'row', gap: 5,}}>
+              <TouchableOpacity
+                onPress={() => handleDeleteRecord(item.id)}
+                style={{
+                  flex: 1, 
+                  padding: 10, 
+                  backgroundColor: '#DF2E3880', 
+                  borderRadius: 5, 
+
+                  borderColor: '#DF2E38',
+                  borderWidth: 2}}
+              >
+                <Text style={{ 
+                  color: 'white', 
+                  textAlign: 'center', 
+                  fontWeight: '500', 
+                  fontSize: 18, 
+                }}>
+                  Delete
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => {
+                  setName(item.name);
+                  setDate(item.date ? item.date.toDate() : new Date());
+                  setRemarks(item.remarks);
+                  setEditRecordId(item.id);
+                  setModalVisible(true);
+                }}
+                style={{flex: 1.5, padding: 10, backgroundColor: '#566F48', borderRadius: 5 }}
+              >
+                <Text style={{ color: 'white', textAlign: 'center' }}>Edit</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
         keyExtractor={item => item.id}

@@ -74,12 +74,13 @@ const styles = StyleSheet.create({
     // backgroundColor: 'red'
   },
   recordItem: {
-    marginBottom: 15,
+    margin: 15,
+    marginHorizontal: 25,
     padding: 15,
-    borderWidth: 1,
-    borderColor: '#dcdcdc', // Lighter border color
+    // borderWidth: 1,
+    // borderColor: '#dcdcdc', // Lighter border color
     borderRadius: 12, // More pronounced rounded corners
-    backgroundColor: '#ffffff', // White background for each record
+    backgroundColor: '#F5F5F5', // White background for each record
     shadowColor: '#000', // Adding shadow for depth
     shadowOffset: {
       width: 0,
@@ -88,6 +89,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 3, // For Android shadow
+  },
+  recordItemText: {
+    fontSize: 18,
+    fontWeight: '500',
   },
   modalContainer: {
     flex: 1,
