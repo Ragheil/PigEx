@@ -88,7 +88,6 @@ const handleConfirmDeathDate = (date) => {
   setOpenDeathDatePicker(false);
 };
 
-
   const handleOpenDatePicker = () => {
     setOpenDatePicker(true);
   };
@@ -749,16 +748,33 @@ const renderPig = ({ item }) => {
             />
 
             <View style={styles.modalsavecancel}>
-                <Button
-                    title="Add Sold Pig"
-                    onPress={() => handleAddMoney(selectedPig.id)} // Ensure selectedPig is an object with an id
-                    color="#4CAF50"
-                />
-                <Button
-                    title="Cancel"
-                    onPress={() => setSoldModalVisible(false)}
-                    color="#f44336"
-                />
+              <TouchableOpacity
+                onPress={() => setSoldModalVisible(false)}
+                style={{
+                  flex: 1,
+                  backgroundColor: '#DF2E3880',
+                  padding: 10,
+                  borderRadius: 8,
+
+                  borderColor: '#DF2E38',
+                  borderWidth: 2
+                }} // Red color for Cancel
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => handleAddMoney(selectedPig.id)}
+                style={{ 
+                  flex: 1.5,
+                  backgroundColor: '#399918', 
+                  padding: 10,
+                  borderRadius: 8,
+                  
+                }} // Green color for Add/Update
+              >
+                <Text style={styles.buttonText}>Add Sold Pig</Text>
+              </TouchableOpacity>
             </View>
         </View>
     </View>
@@ -886,16 +902,33 @@ const renderPig = ({ item }) => {
   </>
 )}
                     <View style={styles.modalsavecancel}>
-                      <Button
-                        title={isEditing ? 'Update Pig' : 'Add Pig'}
-                        onPress={isEditing ? handleEditPig : handleAddPig}
-                        color="#399918"
-                      />
-                      <Button
-                        title="Cancel"
+                      <TouchableOpacity
                         onPress={() => setModalVisible(false)}
-                        color="#DF2E38"
-                      />
+                        style={{
+                          flex: 1,
+                          backgroundColor: '#DF2E3880',
+                          padding: 10,
+                          borderRadius: 8,
+
+                          borderColor: '#DF2E38',
+                          borderWidth: 2
+                        }} // Red color for Cancel
+                      >
+                        <Text style={styles.buttonText}>Cancel</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        onPress={isEditing ? handleEditPig : handleAddPig}
+                        style={{ 
+                          flex: 1.5,
+                          backgroundColor: '#399918', 
+                          padding: 10,
+                          borderRadius: 8,
+                          
+                        }} // Green color for Add/Update
+                      >
+                        <Text style={styles.buttonText}>{isEditing ? 'Update Pig' : 'Add Pig'}</Text>
+                      </TouchableOpacity>
                     </View>
                   </View>
                 </View>
@@ -936,8 +969,7 @@ const renderPig = ({ item }) => {
           )}
 
           {/* View Medical Records Button */}
-          <Button
-            title="View Medical Records"
+          <TouchableOpacity
             onPress={() => {
               if (selectedPig) {
                 navigation.navigate('MedicalRecordScreen', {
@@ -951,16 +983,29 @@ const renderPig = ({ item }) => {
                 Alert.alert('Error', 'Please select a pig before viewing medical records.');
               }
             }}
-            color="#000000FF"
-          />
+            style={{
+              backgroundColor: '#000000',
+              padding: 10,
+              borderRadius: 10,
+            }} // Apply styles to the TouchableOpacity
+          >
+            <Text style={styles.buttonText}>View Medical Records</Text>
+          </TouchableOpacity>
         </>
       )}
-      <Button
-        title="Close"
-        onPress={() => setDetailModalVisible(false)}
-        color="#f44336"
-      />
-    </View>
+
+    <TouchableOpacity 
+      onPress={() => setDetailModalVisible(false)}
+      style={{
+        // flex: 1,
+        backgroundColor: '#DF2E38', 
+        borderRadius: 10, 
+        padding: 10
+      }}>
+      <Text style={[styles.buttonText]}>Close</Text>
+    </TouchableOpacity>
+
+  </View>
   </View>
 </Modal>
 

@@ -326,7 +326,7 @@ export default StyleSheet.create({
         flexWrap: 'wrap',
         justifyContent: 'flex-end',
         alignSelf: 'flex-end',
-        gap: 10,
+        gap: 5,
         width: '70%',
         // backgroundColor: 'lightblue',
 
