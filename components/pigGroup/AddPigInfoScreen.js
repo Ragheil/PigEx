@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, FlatList, Modal, TouchableOpacity, Image, Switch, SafeAreaView, ScrollView   } from 'react-native';
 import { addDoc, collection, query, onSnapshot, doc, getDoc, updateDoc, deleteDoc, getDocs, where, writeBatch } from 'firebase/firestore';
 import { auth, firestore } from '../../firebase/config2';
-import { Picker } from '@react-native-picker/picker';
-import DatePicker from 'react-native-date-picker';
+//import { Picker } from '@react-native-picker/picker';
+//import DatePicker from 'react-native-date-picker';
 import deleteIcon from '../../assets/images/buttons/deleteIcon.png';
 import editIcon from '../../assets/images/buttons/editIcon.png';
 import viewIcon from '../../assets/images/buttons/viewIcon.png';
@@ -36,7 +36,7 @@ export default function AddPigInfoScreen({ route }) {
   const [moneyLoss, setMoneyLoss] = useState('');
   const [openDatePicker, setOpenDatePicker] = useState(false); // Corrected
   const [vitality, setVitality] = useState('alive'); // Vitality state (alive/disabled)
-  const [isVitalityEditable, setIsVitalityEditable] = useState(false); // Controls the picker state
+ // const [isVitalityEditable, setIsVitalityEditable] = useState(false); // Controls the picker state
   const [date, setDate] = useState(new Date());
   const datePickerRef = useRef(null);
   const handleOpenDeathDatePicker = () => setOpenDeathDatePicker(true);
@@ -50,17 +50,17 @@ export default function AddPigInfoScreen({ route }) {
   const user = auth.currentUser;
   const [loading, setLoading] = useState(true);
   const [motherName, setMotherName] = useState("");
-  const [selectedPiglets, setSelectedPiglets] = useState([]); // Add this line to your state initialization
-  const [showDatePicker, setShowDatePicker] = useState(false); // State to control DatePicker visibility
+  //const [selectedPiglets, setSelectedPiglets] = useState([]); // Add this line to your state initialization
+ // const [showDatePicker, setShowDatePicker] = useState(false); // State to control DatePicker visibility
   const [filterType, setFilterType] = useState('all'); // 'alive', 'deceased', 'all'
   const [soldModalVisible, setSoldModalVisible] = useState(false);
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('Sales'); // Default category
   const [time, setTime] = useState(new Date());
   const [remarks, setRemarks] = useState('');
-  const [openTimePicker, setOpenTimePicker] = useState(false);
+  //const [openTimePicker, setOpenTimePicker] = useState(false);
   const userId = user ? user.uid : null; // Ensure userId is defined
-  const [moneyRecords, setMoneyRecords] = useState([]); // State to hold money records
+ // const [moneyRecords, setMoneyRecords] = useState([]); // State to hold money records
   const [soldDate, setSoldDate] = useState(new Date());
   const [soldTime, setSoldTime] = useState(new Date());
   const [openSoldDatePicker, setOpenSoldDatePicker] = useState(false);
