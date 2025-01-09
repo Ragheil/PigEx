@@ -366,7 +366,9 @@ addButtonText: {
     marginBottom: 5,
   },
   cancelButton: {
-    backgroundColor: '#3476BDFF',
+    backgroundColor: '#DF2E3833', borderColor: '#DF2E38', borderWidth: 1.5,
+
+
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
