@@ -749,10 +749,10 @@ useEffect(() => {
             style={styles.cancelButton}
             onPress={() => setEmailModalVisible(false)}
           >
-            <Text style={styles.buttonText}>Cancel</Text>
+            <Text style={[styles.buttonTextModal, {color: '#DF2E38'}]}>Cancel</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.confirmButton}
+            style={[styles.confirmButton, { backgroundColor: '#566F48', borderColor: '#566F48', borderWidth: 1.5  }]}
             onPress={updateUserEmail} // Make sure to call the correct function
           >
             <Text style={styles.buttonText}>Confirm</Text>
