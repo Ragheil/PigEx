@@ -91,7 +91,7 @@ const MoneyOutScreenStyles = StyleSheet.create({
   },
   buttonText: {
     color: '#ffffff',
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: 'bold',
     textAlign: 'center',
   },
@@ -228,10 +228,6 @@ const MoneyOutScreenStyles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
   },
   input: {
     height: 40,
