@@ -1,3 +1,8 @@
-untag maka graduate mi labyo so much lord
+-npm install
+-log in to fiebase 
+-create firebase account
+-create firebase folder/config2.js and paste API
+-register firebase web application
+-install authentication, email, and firestore
 
-igo ra ni sya i npm install papi
+    
